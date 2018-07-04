@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1cpp", "ConsoleApplication1cpp\ConsoleApplication1cpp.vcxproj", "{E83EC261-FC55-4B84-AA10-270DE7F255BA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dna", "dna\dna.vcxproj", "{E83EC261-FC55-4B84-AA10-270DE7F255BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
