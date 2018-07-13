@@ -1,7 +1,7 @@
 # dna
 ## dnaspider.exe 
 Note: c:\dna\db.txt does not auto create and must be created manually
-<br>Getting started: https://www.youtube.com/watch?v=eREkcFJht8k
+<br>Getting started: https://youtu.be/eREkcFJht8k
 
 ## Download
 [Release](https://github.com/dnaspider/dna/releases "dnaspider.exe")
