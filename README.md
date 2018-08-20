@@ -1,7 +1,12 @@
 # dna
-## dnaspider.exe 
+## dnaspider.exe
+Hello world example code saved to db.txt: `h:ello world`
+<br>Description: Press H in your text editor to output `ello world`  
 Note: c:\dna\db.txt does not auto create and must be created manually
-<br>Getting started: [https://youtu.be/eREkcFJht8k](https://youtu.be/eREkcFJht8k "video")
+<br>Demo: [https://youtu.be/eREkcFJht8k](https://youtu.be/eREkcFJht8k "Getting started video")
+
+## Wiki
+[View](https://github.com/dnaspider/dna/wiki "WiKi")
 
 ## Download
 [Release](https://github.com/dnaspider/dna/releases "dnaspider.exe")
