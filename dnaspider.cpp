@@ -54,7 +54,6 @@ bool close_ctrl_mode_strict = false; //x>
 bool clear_after_stock = true; //<se, <db
 bool SlightPauseInBetweenConnects = true;
 string OutsTemplate = "strand: ";
-
 #pragma endregion
 
 #pragma region "global sub"
@@ -676,7 +675,7 @@ int main() {
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
 #pragma region "az"
 		if (!ignoreAZ) {
-			if (GetAsyncKeyState(0x41)) { key("a"); continue; continue; continue; }
+			if (GetAsyncKeyState(0x41)) { key("a"); continue; }
 			if (GetAsyncKeyState(0x42)) { key("b"); continue; }
 			if (GetAsyncKeyState(0x43)) { key("c"); continue; }
 			if (GetAsyncKeyState(0x44)) { key("d"); continue; }
