@@ -54,6 +54,7 @@ bool close_ctrl_mode_strict = false; //x>
 bool clear_after_stock = true; //<se, <db
 bool SlightPauseInBetweenConnects = true;
 string OutsTemplate = "strand: ";
+bool EscCommaAutoBs = true;
 #pragma endregion
 
 #pragma region "global sub"
@@ -501,6 +502,7 @@ void loadSe() {
 		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
 		if (se == "CloseCtrlModeStrict:") { close_ctrl_mode_strict = stoi(v); continue; }
 		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
+		if (se == "EscCommaAutoBs:") { EscCommaAutoBs = stoi(v); continue; }
 	}f.close();
 }
 
@@ -560,6 +562,7 @@ void printSe() {
 	cout << "StartHidden: " << startHidden << endl;
 	cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 	cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
+	cout << "EscCommaAutoBs: " << EscCommaAutoBs << endl;
 	cout << endl;
 }
 
@@ -627,7 +630,7 @@ int main() {
 	if (CreateDirectory(L"c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory(L"c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nCloseCtrlModeStrict: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nCloseCtrlModeStrict: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -672,7 +675,7 @@ int main() {
 		if (GetAsyncKeyState(reKey)) { out(tail); continue; }//repeat
 		if (GetAsyncKeyState(VK_PAUSE)) { if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }		
 		if (GetAsyncKeyState(VK_ESCAPE)) { if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("."); } 		
-			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); kb(VK_BACK); GetAsyncKeyState(VK_BACK);//,
+			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } //,
 			if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) { if (strand=="<")continue; strand.append(">"); prints(); scanDb(); if (strand > "") { strand.clear(); }
 				} else {if (strand.substr(0, 1) == "<"){strand.clear(); prints(); continue;}strand.clear(); strand="<"; prints(); }
 			}		
