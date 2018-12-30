@@ -50,7 +50,6 @@ auto qyc = 0;
 bool shft = false;
 size_t i = 0;
 bool close_ctrl_mode = true; //x>, x:, x- 
-bool close_ctrl_mode_strict = false; //x> 
 bool clear_after_stock = true; //<se, <db
 bool SlightPauseInBetweenConnects = true;
 string OutsTemplate = "strand: ";
@@ -213,14 +212,14 @@ void scanDb() {
 				return;
 		}
 		else {
-			if (close_ctrl_mode_strict && strand.substr(strand.length() - 1) != ">")
+			if (strand.substr(strand.length() - 1) != ">")
 				return;
 		}
 
 	}
 
 	ifstream f(database); string cell; while (getline(f, cell)) { //cout << cell << endl;
-		if (re > "" || cell.substr(0, strand.length() + 1) == strand + ":" || cell.substr(0, strand.length() + 1) == strand + "-" || (!close_ctrl_mode && cell.substr(0, strand.length() + 1) == strand + ">") || (close_ctrl_mode && strand.substr(strand.length() - 1, 1) == ">" && strand == cell.substr(0, strand.length()) || (close_ctrl_mode && (cell.substr(0,strand.length()+1)==strand.substr(0,strand.length()-1) + ":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + "->" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + "-" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + ":")) ) || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != "<")) { // found:tail, found-tail, found>tail, <found>tail, foundtail
+		if (re > "" || (close_ctrl_mode && (cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + ":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + "->" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + "-" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + ":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + ">")) || cell.substr(0, strand.length() + 1) == strand + ":" || cell.substr(0, strand.length() + 1) == strand + "-" || cell.substr(0, strand.length() + 1) == strand + ">" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != "<")) { //<found>tail, found:tail, found-tail, found>tail, foundtail
 
 			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == ">") strand = strand.substr(0, strand.length() - 1);
 
@@ -500,7 +499,6 @@ void loadSe() {
 		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
 		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
 		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
-		if (se == "CloseCtrlModeStrict:") { close_ctrl_mode_strict = stoi(v); continue; }
 		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
 		if (se == "EscCommaAutoBs:") { EscCommaAutoBs = stoi(v); continue; }
 	}f.close();
@@ -515,7 +513,6 @@ void printSe() {
 			cout << "<s o:  Toggle ShowOuts: " << showOuts << endl;
 			cout << "<q s:  Toggle < scan only | CtrlScanOnlyMode: " << qScanOnly << endl;
 			cout << "<c q:  Toggle CloseCtrlMode: " << close_ctrl_mode << endl;
-			cout << "<c s:  Toggle CloseCtrlModeStrict: " << close_ctrl_mode_strict << endl;
 			cout << "<q k:  Change < key | CtrlKey: " << cKey << endl;
 			if (!qScanOnly) {
 				cout << "<s lm:  Toggle StrandLengthMode: " << strandLengthMode << endl;
@@ -541,7 +538,6 @@ void printSe() {
 	cout << "StrandLengthMode: " << strandLengthMode << endl;
 	cout << "StrandLength: " << strandLength << endl;
 	cout << "CloseCtrlMode: " << close_ctrl_mode << endl;
-	cout << "CloseCtrlModeStrict: " << close_ctrl_mode_strict << endl;
 	cout << "RepeatKey: " << reKey << endl;
 	cout << "Frequency: " << frequency << endl;
 	cout << "Ignore_A-Z: " << ignoreAZ << endl;
@@ -576,6 +572,7 @@ void printIn() {
 		cout << "Esc:  Stop" << endl;
 		cout << "Esc + H:  Toggle visibility" << endl;
 		cout << "Esc + X:  Exit" << endl;
+		cout << "Esc + Comma:  <" << endl;
 		string c; if (cKey == VK_CONTROL) c = "Ctrl"; else if (cKey == VK_LCONTROL) c = "LCtrl"; else if (cKey == VK_RCONTROL) c = "RCtrl"; else if (cKey == VK_ESCAPE) c = "Esc";
 		cout << c << ":  Toggle <" << endl;
 		if (reKey == VK_SCROLL) cout << "Scroll Lock:  Repeat" << endl;
@@ -616,7 +613,6 @@ void key(string k) {
 			if (strand == "<d b") { kb(VK_ESCAPE); string sl; cout << "Enter new database:" << endl;  cin >> sl; if (sl > "") { database = sl; } else { return; } clearAllKeys(); cout << "database: " << database << endl; strand.clear(); }
 			if (strand == "<s s") { showStrand = !showStrand; cout << "<s s: " << showStrand << endl; strand.clear(); }
 			if (strand == "<c q") { close_ctrl_mode = !close_ctrl_mode; cout << "<c q: " << close_ctrl_mode << endl; strand.clear(); }
-			if (strand == "<c s") { close_ctrl_mode_strict = !close_ctrl_mode_strict; cout << "<c s: " << close_ctrl_mode_strict << endl; strand.clear(); }
 			if (strand == "<s o") { showOuts = !showOuts; cout << "<s o: " << showOuts << endl; strand.clear(); }
 		}
 	}
@@ -630,7 +626,7 @@ int main() {
 	if (CreateDirectory(L"c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory(L"c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nCloseCtrlModeStrict: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
