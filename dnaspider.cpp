@@ -671,7 +671,7 @@ int main() {
 		if (GetAsyncKeyState(reKey)) { out(tail); continue; }//repeat
 		if (GetAsyncKeyState(VK_PAUSE)) { if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }		
 		if (GetAsyncKeyState(VK_ESCAPE)) { if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("."); } 		
-			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } //,
+			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } clearAllKeys(); //,
 			if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) { if (strand=="<")continue; strand.append(">"); prints(); scanDb(); if (strand > "") { strand.clear(); }
 				} else {if (strand.substr(0, 1) == "<"){strand.clear(); prints(); continue;}strand.clear(); strand="<"; prints(); }
 			}		
