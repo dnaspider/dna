@@ -299,7 +299,7 @@ void scanDb() {
 							break;
 						}
 						else if (qqb("<+:") && qp.length() > 0) {//calc +
-							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							if (check_if_num(qp) == "") { printq(); continue; }
 							ic += stoi(qp);
 							out(to_string(ic));
 							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
@@ -310,7 +310,7 @@ void scanDb() {
 						break;
 					case'-':
 						if (qqb("<-:") && qp.length() > 0) {//-
-							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							if (check_if_num(qp) == "") { printq(); continue; }
 							ic -= stoi(qp);
 							out(to_string(ic));
 							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
@@ -321,7 +321,7 @@ void scanDb() {
 						break;
 					case'*':
 						if (qqb("<*:") && qp.length() > 0) {//*
-							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							if (check_if_num(qp) == "") { printq(); continue; }
 							ic += stoi(qp);
 							out(to_string(ic));
 							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
@@ -332,7 +332,7 @@ void scanDb() {
 						break;
 					case'/':
 						if (qqb("</:") && qp.length() > 0) {//divide
-							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							if (check_if_num(qp) == "") { printq(); continue; }
 							ic /= stoi(qp);
 							out(to_string(ic));
 							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
@@ -343,7 +343,7 @@ void scanDb() {
 						break;
 					case'%':
 						if (qqb("<%:") && qp.length() > 0) {//%
-							if (check_if_num(qp.substr(1,qp.length())) == "" && qp.length()>1 || qp.length() == 1 && check_if_num(qp)=="") { printq(); continue; }
+							if (check_if_num(qp) == "") { printq(); continue; }
 							ic %= stoi(qp);
 							out(to_string(ic));
 							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
@@ -491,13 +491,12 @@ void scanDb() {
 						else conn();
 						break;
 					case'x':
-						if (qqb("<xy:"))
-							if (check_if_num(qx) != "" && check_if_num(qy) != "") { SetCursorPos(stoi(qx), stoi(qy)); rei(); }
-							else printq();
+						if (qqb("<xy:")) { //if (check_if_num(qx) != "" && check_if_num(qy) != "") { SetCursorPos(stoi(qx), stoi(qy)); rei(); } else printq();
+							SetCursorPos(stoi(qx), stoi(qy)); rei(); 
+						}
 						else if (qqb("<x:")) {//x + or - 1px
 							if (qp == "") { conn(); break; }
 							if (check_if_num(qp) != "") {
-								if (check_if_num(qp.substr(1, qp.length())) == "") { printq(); break; }
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
 								rei();
@@ -514,8 +513,7 @@ void scanDb() {
 						}
 						else if (qqb("<y:")) {//y + or - 1px
 							if (qp == "") { conn(); break; }
-							if (check_if_num(qp) != "" || stoi(qp) < 0 || stoi(qp) > 0) {
-								if (check_if_num(qp.substr(1, qp.length())) == "") { printq(); break; }
+							if (check_if_num(qp) != "") {
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos((int)(pt.x), stoi(qp) + (int)(pt.y));
 								rei();
