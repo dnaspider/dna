@@ -9,7 +9,10 @@
 using namespace std;
 
 #pragma region "global var"
-//bool ignoreMiscKeys = true;//vk >> `-=[]\;',./
+//bool ignoreMediaKeys = false;
+int ic = 0; //<+>
+bool ignoreNumPad = true;
+bool ignoreMenuKey = true;
 bool ignoreGraveAccent = true; //`
 bool ignoreMinus = true;
 bool ignoreEqual = true;
@@ -71,19 +74,17 @@ bool EscCommaAutoBs = true;
 #pragma region "global sub"
 string check_if_num(string s) {
 	if (s > "") {
-		for (size_t t = 0; t < s.length(); t++) {//!0-9 . -- <x:- <y:-
-			//if (s[t] == '\'') break; //<x*3'test>
-			if (s[t] >= 48 && s[t] <= 57 == false || s[t] == '.' || s[t] == '*' || s[t + 1] == '-' || s[t] == '-' && qq.substr(0, 3) != "<x:" && qq.substr(0, 3) != "<y:") { s = ""; return s; }
+		for (size_t t = 0; t < s.length(); t++) {//!0-9
+			if ((s[t] >= 48 && s[t] <= 57) == false ) { s = ""; return s; }
 		}
-		if (s == "-") s = "";
 	}
 	else s = "";
 	return s;
 }
 
-inline void rei() { i += qq.find(">"); }
+void rei() { i += qq.find(">"); }
 
-inline void kb(short b) {//out char
+void kb(short b) {//out char
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
 	if (VkKeyScan(b) == -1) { ip[0].ki.wScan = b; ip[0].ki.wVk = 0; }
@@ -100,13 +101,13 @@ void kb1(string b) {//alt codes, emoji
 	SendInput(2, ip, sizeof(ip[0]));
 }
 
-inline void kbHold(short key) {
+void kbHold(short key) {
 	INPUT ip; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key; ip.ki.time = 0;
 	if (key == VK_LMENU || key == VK_CONTROL) ip.ki.dwFlags = 0; else ip.ki.dwFlags = 1;
 	SendInput(1, &ip, sizeof(INPUT));
 }
 
-inline void kbRelease(short key) {
+void kbRelease(short key) {
 	INPUT ip; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key;
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; SendInput(1, &ip, sizeof(INPUT));
 }
@@ -130,7 +131,7 @@ void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
 void prints() { if (showStrand) cout << OutsTemplate << strand << '\n'; }
 
-inline bool qqb(string s) {
+bool qqb(string s) {
 	if (qq.substr(0, s.length()) == s) return true; else return false;
 }
 
@@ -187,8 +188,10 @@ void clearAllKeys() {
 	if (!ignoreComma)GetAsyncKeyState(VK_OEM_COMMA);
 	if (!ignorePeriod)GetAsyncKeyState(VK_OEM_PERIOD);
 	if (!ignoreForwardslash)GetAsyncKeyState(VK_OEM_2);
+	if (!ignoreNumPad) { GetAsyncKeyState(VK_NUMLOCK); GetAsyncKeyState(VK_DIVIDE); GetAsyncKeyState(VK_MULTIPLY); GetAsyncKeyState(VK_SUBTRACT); GetAsyncKeyState(VK_ADD); GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_DECIMAL); GetAsyncKeyState(VK_NUMPAD0); GetAsyncKeyState(VK_NUMPAD1); GetAsyncKeyState(VK_NUMPAD2); GetAsyncKeyState(VK_NUMPAD3); GetAsyncKeyState(VK_NUMPAD4); GetAsyncKeyState(VK_NUMPAD5); GetAsyncKeyState(VK_NUMPAD6); GetAsyncKeyState(VK_NUMPAD7); GetAsyncKeyState(VK_NUMPAD8); GetAsyncKeyState(VK_NUMPAD9); }
+	//if (!ignoreMediaKeys) {GetAsyncKeyState(VK_INSERT);GetAsyncKeyState(VK_DELETE);GetAsyncKeyState(VK_HOME);GetAsyncKeyState(VK_END);GetAsyncKeyState(VK_PRIOR);GetAsyncKeyState(VK_NEXT);}
+	if (!ignoreMenuKey) GetAsyncKeyState(VK_APPS); //menu
 }
-
 
 void scanDb(); void conn() {//<connect:>	
 	bool con = false; string qqs = qq.substr(0, qq.find(">") + 1);
@@ -228,6 +231,7 @@ void scanDb(); void conn() {//<connect:>
 	else printq();
 }
 
+void out(string);
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -254,7 +258,7 @@ void scanDb() {
 			tail = cell.substr(strand.length() + 1, cell.length() - strand.length() + 1);//return
 			if (cell.substr(0, strand.length() + 1) == strand + "-") {//<bs> strand.length()
 				//for (size_t t = 0; t < strand.length(); t++) { if (strand.substr(l, 1) == "<" || !ignoreArrows && (strand.substr(l, 1) == "L" || strand.substr(l, 1) == "U" || strand.substr(l, 1) == "R" || strand.substr(l, 1) == "D") || !ignoreF1s && (strand.substr(l, 1) == "!" || strand.substr(l, 1) == "@" || strand.substr(l, 1) == "#" || strand.substr(l, 1) == "$" || strand.substr(l, 1) == "%" || strand.substr(l, 1) == "^" || strand.substr(l, 1) == "&" || strand.substr(l, 1) == "*" || strand.substr(l, 1) == "(" || strand.substr(l, 1) == ")" || strand.substr(l, 1) == "_" || strand.substr(l, 1) == "+") || strand.substr(l, 1) == "." || strand.substr(l, 1) == "S" || strand.substr(l, 1) == "H" || strand.substr(l, 1) == "A" || strand.substr(l, 1) == "M" || strand.substr(l, 1) == "C" || strand.substr(l, 1) == "O" || strand.substr(l, 1) == "P") { continue; } kb(VK_BACK); }GetAsyncKeyState(VK_BACK);//ignore non bs
-				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); }GetAsyncKeyState(VK_BACK);//exclude non bs
+				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); }GetAsyncKeyState(VK_BACK);//exclude non bs
 			}
 			if (strandLengthMode && strand.length() == strandLength && cell.substr(0, 1) != "<") {
 				if (re == "") tail = cell.substr(strandLength, cell.length());
@@ -283,6 +287,70 @@ void scanDb() {
 						//cout << "qp: " << qp  << endl; cout << "qx: " << qx << endl; cout << "qy: " << qy << endl;
 					}
 					switch (qq[1]) {
+					case'+': //calc
+						if (qqb("<+>")) {//repeat#
+							string to_string(long v), t = tail;
+							rei();
+							qq = to_string(ic) + qq.substr(qq.find(">")+1,qq.length());
+							out(qq);
+							tail = t;
+							i = tail.length();
+							break;
+						}
+						else if (qqb("<+:") && qp.length() > 0) {//calc +
+							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							ic += stoi(qp);
+							out(to_string(ic));
+							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
+							i += qq.find(">") - to_string(ic).length();
+							break;
+						}
+						else printq();
+						break;
+					case'-':
+						if (qqb("<-:") && qp.length() > 0) {//-
+							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							ic -= stoi(qp);
+							out(to_string(ic));
+							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
+							i += qq.find(">") - to_string(ic).length();
+							break;
+						}
+						else printq();
+						break;
+					case'*':
+						if (qqb("<*:") && qp.length() > 0) {//*
+							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							ic += stoi(qp);
+							out(to_string(ic));
+							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
+							i += qq.find(">") - to_string(ic).length();
+							break;
+						}
+						else printq();
+						break;
+					case'/':
+						if (qqb("</:") && qp.length() > 0) {//divide
+							if (check_if_num(qp.substr(1, qp.length())) == "" && qp.length() > 1 || qp.length() == 1 && check_if_num(qp) == "") { printq(); continue; }
+							ic /= stoi(qp);
+							out(to_string(ic));
+							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
+							i += qq.find(">") - to_string(ic).length();
+							break;
+						}
+						else printq();
+						break;
+					case'%':
+						if (qqb("<%:") && qp.length() > 0) {//%
+							if (check_if_num(qp.substr(1,qp.length())) == "" && qp.length()>1 || qp.length() == 1 && check_if_num(qp)=="") { printq(); continue; }
+							ic %= stoi(qp);
+							out(to_string(ic));
+							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
+							i += qq.find(">") - to_string(ic).length();
+							break;
+						}
+						else printq();
+						break;
 					case',':
 						if (qqb("<,>") || qqb("<,*")) kbPress("<,*", VK_F7);//sleep150ms, vk_dud
 						else printq();
@@ -426,7 +494,9 @@ void scanDb() {
 							if (check_if_num(qx) != "" && check_if_num(qy) != "") { SetCursorPos(stoi(qx), stoi(qy)); rei(); }
 							else printq();
 						else if (qqb("<x:")) {//x + or - 1px
-							if (check_if_num(qp) != "") {
+							if (qp == "") { conn(); break; }
+							if (check_if_num(qp) != "" || qp[0]=='-' || qp[0] == '+') {
+								if (check_if_num(qp.substr(1, qp.length())) == "") { printq(); break; }
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
 								rei();
@@ -442,7 +512,9 @@ void scanDb() {
 							else { i = tail.length(); break; }
 						}
 						else if (qqb("<y:")) {//y + or - 1px
-							if (check_if_num(qp) != "") {
+							if (qp == "") { conn(); break; }
+							if (check_if_num(qp) != "" || stoi(qp) < 0 || stoi(qp) > 0) {
+								if (check_if_num(qp.substr(1, qp.length())) == "") { printq(); break; }
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos((int)(pt.x), stoi(qp) + (int)(pt.y));
 								rei();
@@ -457,7 +529,7 @@ void scanDb() {
 					break;
 				default:
 					//if ((ctail == "<") || (ctail == ">") || (ctail == "?") || (ctail == ":") || (ctail == "\"") || (ctail == "|") || (ctail == "}") || (ctail == "{") || (ctail == "+") || (ctail == "_") || (ctail == ")") || (ctail == "(") || (ctail == "*") || (ctail == "&") || (ctail == "^") || (ctail == "%") || (ctail == "$") || (ctail == "#") || (ctail == "@") || (ctail == "!") || (ctail == "~") || (ctail == "A") || (ctail == "B") || (ctail == "C") || (ctail == "D") || (ctail == "E") || (ctail == "F") || (ctail == "G") || (ctail == "H") || (ctail == "I") || (ctail == "J") || (ctail == "K") || (ctail == "L") || (ctail == "M") || (ctail == "N") || (ctail == "O") || (ctail == "P") || (ctail == "Q") || (ctail == "R") || (ctail == "S") || (ctail == "T") || (ctail == "U") || (ctail == "V") || (ctail == "W") || (ctail == "X") || (ctail == "Y") || (ctail == "Z")) { shft = true; }//if must hold shift
-					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 91) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if must hold shift
+					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 90) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if must hold shift
 					if (shft) kbHold(VK_LSHIFT);
 					kb(ctail[0]);
 					if (shft) shftRelease();
@@ -530,6 +602,9 @@ void loadSe() {
 		if (se == "Ignore_Comma:") { ignoreComma = stoi(v); continue; }
 		if (se == "Ignore_Period:") { ignorePeriod = stoi(v); continue; }
 		if (se == "Ignore_Forwardslash:") { ignoreForwardslash = stoi(v); continue; }
+		if (se == "Ignore_Menu:") { ignoreMenuKey = stoi(v); continue; }
+		//if (se == "Ignore_MediaKeys:") { ignoreMediaKeys = stoi(v); continue; }
+		if (se == "Ignore_NumPad:") { ignoreNumPad = stoi(v); continue; }
 		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
 		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
 		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
@@ -600,6 +675,9 @@ void printSe() {
 	cout << "Ignore_Comma: " << ignoreComma << endl;
 	cout << "Ignore_Period: " << ignorePeriod << endl;
 	cout << "Ignore_Forwardslash: " << ignoreForwardslash << endl;
+	cout << "Ignore_Menu: " << ignoreMenuKey << endl;
+	//cout << "Ignore_MediaKeys: " << ignoreMediaKeys << endl;
+	cout << "Ignore_NumPad: " << ignoreNumPad << endl;
 	cout << "StartHidden: " << startHidden << endl;
 	cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 	cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
@@ -625,7 +703,7 @@ void printIn() {
 		cout << "<odb:  Open database: " << database << endl;
 		cout << "<ose:  Open settings: " << settings << endl;
 
-		cout << "\nAPI\n<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  150 milliseconds sleep\n<xy:0-0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ps>  Press Print Screen\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>" << endl;
+		cout << "\nAPI\n<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  150 milliseconds sleep\n<xy:0-0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ps>  Press Print Screen\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>" << endl;
 		string l = "h:ello\n"; string l1 = "h, "; if (qScanOnly) { l = ""; l1 = ""; } cout << "\n" << database << " hello example\n" << l << "<h->Hello\n<i:><bs><h->!\nCopy examples to " << database << ", save, then press " << l1 << "ctrl h, or ctrl i\n" << endl;
 	}
 }
@@ -669,9 +747,9 @@ void key(string k) {
 int main() {
 	cout << "@dnaspider" << endl << endl;
 	if (CreateDirectory(L"c:/dna", NULL)) {
-		cout << database << " not found.\nPress [1] to create.\n\n";
+		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory(L"c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\n/*Ignore_MediaKeys: 1\n*/Ignore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -810,5 +888,34 @@ int main() {
 		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); key(","); continue; }
 		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { kbRelease(VK_OEM_PERIOD); GetAsyncKeyState(VK_OEM_PERIOD); key("."); continue; }
 		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { kbRelease(VK_OEM_2); GetAsyncKeyState(VK_OEM_2); key("/"); continue; }
+
+		if (!ignoreNumPad) {
+			if (GetAsyncKeyState(VK_NUMPAD0)) { kbRelease(VK_NUMPAD0); GetAsyncKeyState(VK_NUMPAD0); key("Z"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD1)) { kbRelease(VK_NUMPAD1); GetAsyncKeyState(VK_NUMPAD1); key("Q"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD2)) { kbRelease(VK_NUMPAD2); GetAsyncKeyState(VK_NUMPAD2); key("V"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD3)) { kbRelease(VK_NUMPAD3); GetAsyncKeyState(VK_NUMPAD3); key("W"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD4)) { kbRelease(VK_NUMPAD4); GetAsyncKeyState(VK_NUMPAD4); key("X"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD5)) { kbRelease(VK_NUMPAD5); GetAsyncKeyState(VK_NUMPAD5); key("Y"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD6)) { kbRelease(VK_NUMPAD6); GetAsyncKeyState(VK_NUMPAD6); key("B"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD7)) { kbRelease(VK_NUMPAD7); GetAsyncKeyState(VK_NUMPAD7); key("F"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD8)) { kbRelease(VK_NUMPAD8); GetAsyncKeyState(VK_NUMPAD8); key("G"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD9)) { kbRelease(VK_NUMPAD9); GetAsyncKeyState(VK_NUMPAD9); key("I"); continue; }
+			if (GetAsyncKeyState(VK_NUMLOCK)) { kbRelease(VK_NUMLOCK); GetAsyncKeyState(VK_NUMLOCK); key("N"); continue; }
+			if (GetAsyncKeyState(VK_DIVIDE)) { kbRelease(VK_DIVIDE); GetAsyncKeyState(VK_DIVIDE); key("J"); continue; }
+			if (GetAsyncKeyState(VK_MULTIPLY)) { kbRelease(VK_MULTIPLY); GetAsyncKeyState(VK_MULTIPLY); key("K"); continue; }
+			if (GetAsyncKeyState(VK_SUBTRACT)) { kbRelease(VK_SUBTRACT); GetAsyncKeyState(VK_SUBTRACT); key("{"); continue; }
+			if (GetAsyncKeyState(VK_ADD)) { kbRelease(VK_ADD); GetAsyncKeyState(VK_ADD); key("}"); continue; }
+			if (GetAsyncKeyState(VK_DECIMAL)) { kbRelease(VK_DECIMAL); GetAsyncKeyState(VK_DECIMAL); key("\""); continue; }
+			if (GetAsyncKeyState(VK_RETURN)) { kbRelease(VK_RETURN); GetAsyncKeyState(VK_RETURN); key(":"); continue; }
+		}
+		/*if (!ignoreMediaKeys) {
+			if (GetAsyncKeyState(VK_INSERT)) { kbRelease(VK_INSERT); GetAsyncKeyState(VK_INSERT); key("?"); continue; }
+			if (GetAsyncKeyState(VK_DELETE)) { kbRelease(VK_DELETE); GetAsyncKeyState(VK_DELETE); key("?"); continue; }
+			if (GetAsyncKeyState(VK_HOME)) { kbRelease(VK_HOME); GetAsyncKeyState(VK_HOME); key("?"); continue; }
+			if (GetAsyncKeyState(VK_END)) { kbRelease(VK_END); GetAsyncKeyState(VK_END); key("?"); continue; }
+			if (GetAsyncKeyState(VK_PRIOR)) { kbRelease(VK_PRIOR); GetAsyncKeyState(VK_PRIOR); key("?"); continue; }
+			if (GetAsyncKeyState(VK_NEXT)) { kbRelease(VK_NEXT); GetAsyncKeyState(VK_NEXT); key("?"); continue; }
+		}*/
+		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { kbRelease(VK_APPS); GetAsyncKeyState(VK_APPS); key("?"); continue; } //menu
 	}
 }
