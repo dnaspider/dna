@@ -75,6 +75,7 @@ bool EscCommaAutoBs = true;
 string check_if_num(string s) {
 	if (s > "") {
 		for (size_t t = 0; t < s.length(); t++) {//!0-9
+			if (t == 0 && s[0] == '-' || s[0] == '+')continue;
 			if ((s[t] >= 48 && s[t] <= 57) == false ) { s = ""; return s; }
 		}
 	}
@@ -495,7 +496,7 @@ void scanDb() {
 							else printq();
 						else if (qqb("<x:")) {//x + or - 1px
 							if (qp == "") { conn(); break; }
-							if (check_if_num(qp) != "" || qp[0]=='-' || qp[0] == '+') {
+							if (check_if_num(qp) != "") {
 								if (check_if_num(qp.substr(1, qp.length())) == "") { printq(); break; }
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
