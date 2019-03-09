@@ -75,7 +75,7 @@ bool EscCommaAutoBs = true;
 string check_if_num(string s) {
 	if (s > "") {
 		for (size_t t = 0; t < s.length(); t++) {//!0-9
-			if (t == 0 && s[0] == 45 || s[0] == 43)continue; //-+
+			if (t == 0 && s[0] == 45 || s[0] == 43 && s.length() > 1)continue; //-+
 			if ((s[t] >= 48 && s[t] <= 57) == false ) { s = ""; return s; }
 		}
 	}
@@ -233,6 +233,15 @@ void scanDb(); void conn() {//<connect:>
 }
 
 void out(string);
+void calc() {
+	string to_string(long v), t = tail;
+	rei();
+	qq = to_string(ic) + qq.substr(qq.find(">") + 1, qq.length());
+	out(qq);
+	tail = t;
+	i = tail.length();
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -290,64 +299,49 @@ void scanDb() {
 					switch (qq[1]) {
 					case'+': //calc
 						if (qqb("<+>")) {//repeat#
-							string to_string(long v), t = tail;
-							rei();
-							qq = to_string(ic) + qq.substr(qq.find(">")+1,qq.length());
-							out(qq);
-							tail = t;
-							i = tail.length();
+							calc();
 							break;
 						}
-						else if (qqb("<+:") && qp.length() > 0) {//calc +
+						else if (qqb("<+:")) {//calc +
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic += stoi(qp);
-							out(to_string(ic));
-							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
-							i += qq.find(">") - to_string(ic).length();
+							calc();
 							break;
 						}
 						else printq();
 						break;
 					case'-':
-						if (qqb("<-:") && qp.length() > 0) {//-
+						if (qqb("<-:")) {//-
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic -= stoi(qp);
-							out(to_string(ic));
-							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
-							i += qq.find(">") - to_string(ic).length();
+							calc();
 							break;
 						}
 						else printq();
 						break;
 					case'*':
-						if (qqb("<*:") && qp.length() > 0) {//*
+						if (qqb("<*:")) {//*
 							if (check_if_num(qp) == "") { printq(); continue; }
-							ic += stoi(qp);
-							out(to_string(ic));
-							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
-							i += qq.find(">") - to_string(ic).length();
+							ic *= stoi(qp);
+							calc();
 							break;
 						}
 						else printq();
 						break;
 					case'/':
-						if (qqb("</:") && qp.length() > 0) {//divide
+						if (qqb("</:")) {//divide
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic /= stoi(qp);
-							out(to_string(ic));
-							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
-							i += qq.find(">") - to_string(ic).length();
+							calc();
 							break;
 						}
 						else printq();
 						break;
 					case'%':
-						if (qqb("<%:") && qp.length() > 0) {//%
+						if (qqb("<%:")) {//%
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic %= stoi(qp);
-							out(to_string(ic));
-							tail = qq.substr(0, qq.find(">")) + qq.substr(qq.find(">"), qq.length());
-							i += qq.find(">") - to_string(ic).length();
+							calc();
 							break;
 						}
 						else printq();
