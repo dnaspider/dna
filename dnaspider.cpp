@@ -59,7 +59,7 @@ bool showSettings = false;
 string star_num; //*#
 string qq; //<x>
 string qp; //<x:#>
-string qx, qy; //<xy:#|#>
+string qx, qy; //<xy:#,#>
 auto qxc = 0;//<rp>
 auto qyc = 0;
 bool shft = false;
@@ -262,7 +262,7 @@ void scanDb() {
 
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 4) == ">xy:") { POINT pt; GetCursorPos(&pt); string to_string(long v); cell = ">xy:" + to_string(pt.x) + "|" + to_string(pt.y) + ">"; }
+				if (re.substr(0, 4) == ">xy:") { POINT pt; GetCursorPos(&pt); string to_string(long v); cell = ">xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; }
 			}
 
 			tail = cell.substr(strand.length() + 1, cell.length() - strand.length() + 1);//return
@@ -292,8 +292,8 @@ void scanDb() {
 					if (showOuts) { cout << "qq: " << qq << endl; }
 					if (qq.find(":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(":") + 1, qq.find(">") - qq.find(":") - 1);//#
-						qx = qp.substr(0, qp.find("|"));//x <xy:#|#>
-						qy = qp.substr(qp.find("|") + 1, qp.find(">") - qp.find("|") - 1);//y
+						qx = qp.substr(0, qp.find(","));//x <xy:#,#>
+						qy = qp.substr(qp.find(",") + 1, qp.find(">") - qp.find(",") - 1);//y
 						//cout << "qp: " << qp  << endl; cout << "qx: " << qx << endl; cout << "qy: " << qy << endl;
 					}					
 					switch (qq[1]) {
@@ -555,8 +555,8 @@ void printDb() {
 
 void printXy() {
 	POINT pt; GetCursorPos(&pt);
-	if (strand == "x") { if (showOuts) cout << "xy: " << pt.x << "|" << pt.y << endl; }
-	else { string to_string(long v); out("<bs*2>"); out("xy:" + to_string(pt.x) + "|" + to_string(pt.y) + ">"); }
+	if (strand == "x") { if (showOuts) cout << "xy: " << pt.x << "," << pt.y << endl; }
+	else { string to_string(long v); out("<bs*2>"); out("xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); }
 }
 
 void loadSe() {
@@ -702,7 +702,7 @@ void printIn() {
 		cout << "<odb:  Open database: " << database << endl;
 		cout << "<ose:  Open settings: " << settings << endl;
 
-		cout << "\nAPI\n<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  150 milliseconds sleep\n<xy:0|0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>" << endl;
+		cout << "\nAPI\n<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  150 milliseconds sleep\n<xy:0,0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>" << endl;
 		string l = "h:ello\n"; string l1 = "h, "; if (qScanOnly) { l = ""; l1 = ""; } cout << "\n" << database << " hello example\n" << l << "<h->Hello\n<i:><bs><h->!\nCopy examples to " << database << ", save, then press " << l1 << "ctrl h, or ctrl i\n" << endl;
 	}
 }
