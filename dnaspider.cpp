@@ -419,6 +419,10 @@ void scanDb() {
 						if (qqb("<home>") || qqb("<home*")) kbPress("<home*", VK_HOME);
 						else conn();
 						break;
+					case'i':
+						if (qqb("<ins>") || qqb("<ins*")) kbPress("<ins*", VK_INSERT);
+						else conn();
+						break;
 					case'l':
 						if (qqb("<lc>") || qqb("<lc*")) kbPress("<lc*", VK_F7); //left click
 						else if (qqb("<lh>")) {//left hold
@@ -440,6 +444,8 @@ void scanDb() {
 						break;
 					case'p':
 						if (qqb("<ps>") || qqb("<ps*")) kbPress("<ps*", VK_SNAPSHOT);
+						else if (qqb("<pu>") || qqb("<pu*")) kbPress("<pu*", VK_PRIOR);//pgup
+						else if (qqb("<pd>") || qqb("<pd*")) kbPress("<pd*", VK_NEXT);//pgdn
 						else conn();
 						break;
 					case'r':
@@ -696,7 +702,7 @@ void printIn() {
 		cout << "<odb:  Open database: " << database << endl;
 		cout << "<ose:  Open settings: " << settings << endl;
 
-		cout << "\nAPI\n<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  150 milliseconds sleep\n<xy:0|0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ps>  Press Print Screen\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>" << endl;
+		cout << "\nAPI\n<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  150 milliseconds sleep\n<xy:0|0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>" << endl;
 		string l = "h:ello\n"; string l1 = "h, "; if (qScanOnly) { l = ""; l1 = ""; } cout << "\n" << database << " hello example\n" << l << "<h->Hello\n<i:><bs><h->!\nCopy examples to " << database << ", save, then press " << l1 << "ctrl h, or ctrl i\n" << endl;
 	}
 }
