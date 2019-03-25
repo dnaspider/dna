@@ -1,15 +1,15 @@
 // @dnaspider
 
 #include "pch.h"
-//#include "stdafx.h"
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <windows.h.>
+#include <windows.h>
 using namespace std;
 
 #pragma region "global var"
 //bool ignoreMediaKeys = false;
+bool enableEscX = true;
 int ic = 0; //<+>
 bool ignoreNumPad = true;
 bool ignoreMenuKey = true;
@@ -491,7 +491,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'x':
-						if (qqb("<xy:")) { //if (check_if_num(qx) != "" && check_if_num(qy) != "") { SetCursorPos(stoi(qx), stoi(qy)); rei(); } else printq();
+						if (qqb("<xy:")) {
 							SetCursorPos(stoi(qx), stoi(qy)); rei(); 
 						}
 						else if (qqb("<x:")) {//x + or - 1px
@@ -527,8 +527,7 @@ void scanDb() {
 					}//<x>
 					break;
 				default:
-					//if ((ctail == "<") || (ctail == ">") || (ctail == "?") || (ctail == ":") || (ctail == "\"") || (ctail == "|") || (ctail == "}") || (ctail == "{") || (ctail == "+") || (ctail == "_") || (ctail == ")") || (ctail == "(") || (ctail == "*") || (ctail == "&") || (ctail == "^") || (ctail == "%") || (ctail == "$") || (ctail == "#") || (ctail == "@") || (ctail == "!") || (ctail == "~") || (ctail == "A") || (ctail == "B") || (ctail == "C") || (ctail == "D") || (ctail == "E") || (ctail == "F") || (ctail == "G") || (ctail == "H") || (ctail == "I") || (ctail == "J") || (ctail == "K") || (ctail == "L") || (ctail == "M") || (ctail == "N") || (ctail == "O") || (ctail == "P") || (ctail == "Q") || (ctail == "R") || (ctail == "S") || (ctail == "T") || (ctail == "U") || (ctail == "V") || (ctail == "W") || (ctail == "X") || (ctail == "Y") || (ctail == "Z")) { shft = true; }//if must hold shift
-					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 90) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if must hold shift
+					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 90) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if !"#$%& ()*+ : > ?&AZ ^ _ {|}~
 					if (shft) kbHold(VK_LSHIFT);
 					kb(ctail[0]);
 					if (shft) shftRelease();
@@ -575,6 +574,7 @@ void loadSe() {
 		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
 		if (se == "OutsTemplate:") { OutsTemplate = (v.length() > 0) ? v.substr(1) : v; continue; }
 		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
+		if (se == "Exit_Escape+X:") { enableEscX = stoi(v); continue; }
 		if (se == "Ignore_A-Z:") { ignoreAZ = stoi(v); continue; }
 		if (se == "Ignore_0-9:") { ignore09 = stoi(v); continue; }
 		if (se == "Ignore_Space:") { ignoreSpace = stoi(v); continue; }
@@ -681,6 +681,7 @@ void printSe() {
 	cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 	cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
 	cout << "EscCommaAutoBs: " << EscCommaAutoBs << endl;
+	cout << "Exit_Escape+X: " << enableEscX << endl;
 	cout << endl;
 }
 
@@ -748,7 +749,7 @@ int main() {
 	if (CreateDirectory(L"c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory(L"c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nExit_Escape+X: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -797,7 +798,7 @@ int main() {
 			if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) { if (strand=="<")continue; strand.append(">"); prints(); scanDb(); if (strand > "") { strand.clear(); }
 				} else {if (strand.substr(0, 1) == "<"){strand.clear(); prints(); continue;}strand.clear(); strand="<"; prints(); }
 			}		
-			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; } 
+			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; } 
 		}
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
 #pragma region "az"
