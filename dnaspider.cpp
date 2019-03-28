@@ -75,7 +75,7 @@ bool EscCommaAutoBs = true;
 string check_if_num(string s) {
 	if (s > "") {
 		for (size_t t = 0; t < s.length(); t++) {//!0-9
-			if (t == 0 && s[0] == 45 || s[0] == 43 && s.length() > 1)continue; //-+
+			if (t == 0 && (s[0] == 45 || s[0] == 43))continue; //-+
 			if ((s[t] >= 48 && s[t] <= 57) == false ) { s = ""; return s; }
 		}
 	}
@@ -138,12 +138,11 @@ bool qqb(string s) {
 
 void kbPress(string code, short key) {
 	star_num = "1"; if (qqb(code)) {
-		star_num = qq.substr(qq.find("*") + 1, qq.find(">") - qq.find("*") - 1);
-		//star_num = qq.substr(code.length(), qq.find(">") - code.length());
-		if (check_if_num(star_num) == "") star_num = "0";
+		star_num = qq.substr(code.length(), qq.find(">") - code.length());
+		if (check_if_num(star_num) == "" || star_num[0] == '-' || star_num == "+") star_num = "0";
 	}//cout << "star_num: <x* " << star_num << endl;
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
-	if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
+	ip[0].ki.dwFlags = key >= 0x23 && key <= 0x28 ?  1 : 0;//if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
 	for (int j = 0; j < stoi(star_num); j++) {
 		if (code == "<,*") {
