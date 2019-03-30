@@ -75,8 +75,8 @@ bool EscCommaAutoBs = true;
 string check_if_num(string s) {
 	if (s > "") {
 		for (size_t t = 0; t < s.length(); t++) {//!0-9
-			if (t == 0 && (s[0] == 45 || s[0] == 43))continue; //-+
-			if ((s[t] >= 48 && s[t] <= 57) == false ) { s = ""; return s; }
+			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1)continue; //-+
+			if ((s[t] >= 48 && s[t] <= 57) == false) { s = ""; return s; }
 		}
 	}
 	else s = "";
@@ -142,7 +142,8 @@ void kbPress(string code, short key) {
 		if (check_if_num(star_num) == "" || star_num[0] == '-' || star_num == "+") star_num = "0";
 	}//cout << "star_num: <x* " << star_num << endl;
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
-	ip[0].ki.dwFlags = key >= 0x23 && key <= 0x28 ?  1 : 0;//if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
+	//ip[0].ki.dwFlags = key >= 0x23 && key <= 0x28 ? 1 : 0;
+	if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
 	for (int j = 0; j < stoi(star_num); j++) {
 		if (code == "<,*") {
@@ -231,7 +232,8 @@ void scanDb(); void conn() {//<connect:>
 	else printq();
 }
 
-void out(string);
+void out(string ai) { re = ">" + ai; strand.clear(); scanDb(); re.clear(); }
+
 void calc() {
 	string to_string(long v), t = tail;
 	rei();
@@ -543,8 +545,6 @@ void scanDb() {
 	f.close();
 }
 
-void out(string ai) { re = ">" + ai; strand.clear(); scanDb(); re.clear(); }
-
 void printDb() {
 	ifstream f(database); string cell;
 	SetConsoleOutputCP(CP_UTF8); while (getline(f, cell)) { cout << cell << endl; }
@@ -573,7 +573,7 @@ void loadSe() {
 		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
 		if (se == "OutsTemplate:") { OutsTemplate = (v.length() > 0) ? v.substr(1) : v; continue; }
 		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
-		if (se == "Exit_Escape+X:") { enableEscX = stoi(v); continue; }
+		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }
 		if (se == "Ignore_A-Z:") { ignoreAZ = stoi(v); continue; }
 		if (se == "Ignore_0-9:") { ignore09 = stoi(v); continue; }
 		if (se == "Ignore_Space:") { ignoreSpace = stoi(v); continue; }
@@ -680,7 +680,7 @@ void printSe() {
 	cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 	cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
 	cout << "EscCommaAutoBs: " << EscCommaAutoBs << endl;
-	cout << "Exit_Escape+X: " << enableEscX << endl;
+	cout << "Exit_EscX: " << enableEscX << endl;
 	cout << endl;
 }
 
@@ -748,7 +748,7 @@ int main() {
 	if (CreateDirectory(L"c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory(L"c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nExit_Escape+X: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -771,6 +771,7 @@ int main() {
 					if (strand.find(">") != std::string::npos) strand.clear();
 					else {
 						if (strand.length() > 1) {
+							//if (cKey >= 160 && cKey <= 165 || cKey == 27) { Sleep(115); } key(">");
 							if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(115); kbRelease(cKey); GetAsyncKeyState(cKey); } key(">");
 							if (strand > "") { strand.clear(); prints(); }
 							continue;
@@ -781,6 +782,7 @@ int main() {
 				else strand.clear();
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find(">") == std::string::npos) {//x>
+				//strand.append(">"); if (cKey >= 160 && cKey <= 165 || cKey == 27) { Sleep(115); } scanDb();
 				strand.append(">"); if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(115); kbRelease(cKey); GetAsyncKeyState(cKey); } scanDb();
 				if (strand > "") { prints(); strand.clear(); }
 			}//reg
