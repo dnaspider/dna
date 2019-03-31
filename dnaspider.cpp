@@ -693,7 +693,7 @@ void printIn() {
 		cout << "<xy:  <xy:>" << endl;
 		cout << "Esc:  Stop" << endl;
 		cout << "Esc + H:  Toggle visibility" << endl;
-		cout << "Esc + X:  Exit" << endl;
+		if (enableEscX) cout << "Esc + X:  Exit" << endl;
 		cout << "Esc + Comma:  <" << endl;
 		string c; if (cKey == VK_CONTROL) c = "Ctrl"; else if (cKey == VK_LCONTROL) c = "LCtrl"; else if (cKey == VK_RCONTROL) c = "RCtrl"; else if (cKey == VK_ESCAPE) c = "Esc";
 		cout << c << ":  Toggle <" << endl;
