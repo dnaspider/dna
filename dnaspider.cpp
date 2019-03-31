@@ -139,7 +139,7 @@ bool qqb(string s) {
 void kbPress(string code, short key) {
 	star_num = "1"; if (qqb(code)) {
 		star_num = qq.substr(code.length(), qq.find(">") - code.length());
-		if (check_if_num(star_num) == "" || star_num[0] == '-' || star_num == "+") star_num = "0";
+		if (check_if_num(star_num) == "") star_num = "0";
 	}//cout << "star_num: <x* " << star_num << endl;
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
 	//ip[0].ki.dwFlags = key >= 0x23 && key <= 0x28 ? 1 : 0;
@@ -361,10 +361,10 @@ void scanDb() {
 						else if (qqb("<a:")) { kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
 							for (int w = 0; w < 25; w++) {
-								if (w >= 24) { if (showOuts) { cout << "app: " << qp << " not found\n"; strand.clear(); }return; }
+								if (w >= 24) { if (showOuts) { cout << "app: " << qp << " not found\n"; strand.clear(); } f.close(); return; }
 								DWORD pid; HWND h = FindWindowA(0, qp.c_str());	GetWindowThreadProcessId(h, &pid);
 								if (h) { if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); } SetForegroundWindow(h); w = 24; continue; }
-								if (GetAsyncKeyState(VK_ESCAPE)) return;
+								if (GetAsyncKeyState(VK_ESCAPE)) { f.close(); return; }
 								Sleep(333);
 							}Sleep(150);
 							rei();
@@ -802,7 +802,7 @@ int main() {
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; } 
 		}
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
-#pragma region "az"
+#pragma region "a-z"
 		if (!ignoreAZ) {
 			if (GetAsyncKeyState(0x41)) { key("a"); continue; }
 			if (GetAsyncKeyState(0x42)) { key("b"); continue; }
@@ -832,7 +832,7 @@ int main() {
 			if (GetAsyncKeyState(0x5A)) { key("z"); continue; }
 		}
 #pragma endregion
-#pragma region "09"
+#pragma region "0-9"
 		if (!ignore09) {
 			if (GetAsyncKeyState(0x30)) { key("0"); continue; }
 			if (GetAsyncKeyState(0x31)) { key("1"); continue; }
@@ -846,7 +846,7 @@ int main() {
 			if (GetAsyncKeyState(0x39)) { key("9"); continue; }
 		}
 #pragma endregion
-#pragma region "ignoreF1sF12"
+#pragma region "F1-F12"
 		if (!ignoreF1s) {
 			if (GetAsyncKeyState(0x70)) { key("!"); continue; } //VK_F1
 			if (GetAsyncKeyState(0x71)) { key("@"); continue; }
@@ -862,6 +862,7 @@ int main() {
 			if (GetAsyncKeyState(0x7B)) { key("+"); continue; }
 		}
 #pragma endregion
+#pragma region "_"
 		if (!ignoreArrows) { 
 			if (GetAsyncKeyState(VK_LEFT)) { key("L"); continue;  } 
 			if (GetAsyncKeyState(VK_UP)) { key("U"); continue;  } 
@@ -917,6 +918,7 @@ int main() {
 			if (GetAsyncKeyState(VK_PRIOR)) { kbRelease(VK_PRIOR); GetAsyncKeyState(VK_PRIOR); key("?"); continue; }
 			if (GetAsyncKeyState(VK_NEXT)) { kbRelease(VK_NEXT); GetAsyncKeyState(VK_NEXT); key("?"); continue; }
 		}*/
-		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { kbRelease(VK_APPS); GetAsyncKeyState(VK_APPS); key("?"); continue; } //menu
+		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { kbRelease(VK_APPS); GetAsyncKeyState(VK_APPS); key("?"); continue; }
+#pragma endregion
 	}
 }
