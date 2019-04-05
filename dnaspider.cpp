@@ -1,6 +1,5 @@
 // @dnaspider
 
-#include "pch.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -85,7 +84,7 @@ string check_if_num(string s) {
 
 void rei() { i += qq.find(">"); }
 
-void kb(short b) {//out char
+void kb(CHAR b) {//out char
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
 	if (VkKeyScan(b) == -1) { ip[0].ki.wScan = b; ip[0].ki.wVk = 0; }
@@ -296,7 +295,7 @@ void scanDb() {
 						qx = qp.substr(0, qp.find(","));//x <xy:#,#>
 						qy = qp.substr(qp.find(",") + 1, qp.find(">") - qp.find(",") - 1);//y
 						//cout << "qp: " << qp  << endl; cout << "qx: " << qx << endl; cout << "qy: " << qy << endl;
-					}					
+					}
 					switch (qq[1]) {
 					case'+': //calc
 						if (qqb("<+>")) {//repeat#
@@ -493,7 +492,7 @@ void scanDb() {
 						break;
 					case'x':
 						if (qqb("<xy:")) {
-							SetCursorPos(stoi(qx), stoi(qy)); rei(); 
+							SetCursorPos(stoi(qx), stoi(qy)); rei();
 						}
 						else if (qqb("<x:")) {//x + or - 1px
 							if (qp == "") { conn(); break; }
@@ -745,9 +744,9 @@ void key(string k) {
 
 int main() {
 	cout << "@dnaspider" << endl << endl;
-	if (CreateDirectory(L"c:/dna", NULL)) {
+	if (CreateDirectory("c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
-		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory(L"c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
+		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
 		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
@@ -793,13 +792,17 @@ int main() {
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { out(tail); continue; }//repeat
-		if (GetAsyncKeyState(VK_PAUSE)) { if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }		
-		if (GetAsyncKeyState(VK_ESCAPE)) { if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); } 		
-			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } clearAllKeys(); //,
-			if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) { if (strand=="<")continue; strand.append(">"); prints(); scanDb(); if (strand > "") { strand.clear(); }
-				} else {if (strand.substr(0, 1) == "<"){strand.clear(); prints(); continue;}strand.clear(); strand="<"; prints(); }
-			}		
-			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; } 
+		if (GetAsyncKeyState(VK_PAUSE)) { if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }
+		if (GetAsyncKeyState(VK_ESCAPE)) {
+			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); }
+			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {
+				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } clearAllKeys(); //,
+				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) {
+					if (strand == "<")continue; strand.append(">"); prints(); scanDb(); if (strand > "") { strand.clear(); }
+				}
+				else { if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }strand.clear(); strand = "<"; prints(); }
+			}
+			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; }
 		}
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
 #pragma region "a-z"
@@ -863,14 +866,14 @@ int main() {
 		}
 #pragma endregion
 #pragma region "_"
-		if (!ignoreArrows) { 
-			if (GetAsyncKeyState(VK_LEFT)) { key("L"); continue;  } 
-			if (GetAsyncKeyState(VK_UP)) { key("U"); continue;  } 
-			if (GetAsyncKeyState(VK_RIGHT)) { key("R"); continue;  } 
-			if (GetAsyncKeyState(VK_DOWN)) { key("D"); continue;  } 
+		if (!ignoreArrows) {
+			if (GetAsyncKeyState(VK_LEFT)) { key("L"); continue; }
+			if (GetAsyncKeyState(VK_UP)) { key("U"); continue; }
+			if (GetAsyncKeyState(VK_RIGHT)) { key("R"); continue; }
+			if (GetAsyncKeyState(VK_DOWN)) { key("D"); continue; }
 		}
-		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(" "); continue;  }
-		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key("T"); continue;  }
+		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(" "); continue; }
+		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key("T"); continue; }
 		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); key("S"); continue; }
 		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { kbRelease(VK_RSHIFT); GetAsyncKeyState(VK_RSHIFT); key("H"); continue; }
 		if (!ignoreLAlt && GetAsyncKeyState(VK_LMENU)) { kbRelease(VK_LMENU); GetAsyncKeyState(VK_LMENU); key("A"); continue; }
