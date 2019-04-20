@@ -791,7 +791,7 @@ int main() {
 			}
 			prints(); continue;
 		}
-		if (GetAsyncKeyState(reKey)) { out(tail); continue; }//repeat
+		if (GetAsyncKeyState(reKey)) { out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
 		if (GetAsyncKeyState(VK_PAUSE)) { if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }
 		if (GetAsyncKeyState(VK_ESCAPE)) {
 			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); }
