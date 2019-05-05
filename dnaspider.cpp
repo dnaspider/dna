@@ -874,54 +874,54 @@ int main() {
 		}
 		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(" "); continue; }
 		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key("T"); continue; }
-		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); key("S"); continue; }
-		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { kbRelease(VK_RSHIFT); GetAsyncKeyState(VK_RSHIFT); key("H"); continue; }
-		if (!ignoreLAlt && GetAsyncKeyState(VK_LMENU)) { kbRelease(VK_LMENU); GetAsyncKeyState(VK_LMENU); key("A"); continue; }
-		if (!ignoreRAlt && GetAsyncKeyState(VK_RMENU)) { kbRelease(VK_RMENU); GetAsyncKeyState(VK_RMENU); key("M"); continue; }
-		if (!ignoreLCtrl && GetAsyncKeyState(VK_LCONTROL)) { kbRelease(VK_LCONTROL); GetAsyncKeyState(VK_LCONTROL); key("C"); continue; }
-		if (!ignoreRCtrl && GetAsyncKeyState(VK_RCONTROL)) { kbRelease(VK_RCONTROL); GetAsyncKeyState(VK_RCONTROL); key("O"); continue; }
-		if (!ignoreEnter && GetAsyncKeyState(VK_RETURN)) { kbRelease(VK_RETURN); GetAsyncKeyState(VK_RETURN); key("E"); continue; }
-		if (!ignoreCaps && GetAsyncKeyState(VK_CAPITAL)) { kbRelease(VK_CAPITAL); GetAsyncKeyState(VK_CAPITAL); key("P"); continue; }
-		if (!ignoreGraveAccent && GetAsyncKeyState(VK_OEM_3)) { kbRelease(VK_OEM_3); GetAsyncKeyState(VK_OEM_3); key("`"); continue; }
-		if (!ignoreMinus && GetAsyncKeyState(VK_OEM_MINUS)) { kbRelease(VK_OEM_MINUS); GetAsyncKeyState(VK_OEM_MINUS); key("-"); continue; }
-		if (!ignoreEqual && GetAsyncKeyState(VK_OEM_PLUS)) { kbRelease(VK_OEM_PLUS); GetAsyncKeyState(VK_OEM_PLUS); key("="); continue; }
-		if (!ignoreLBracket && GetAsyncKeyState(VK_OEM_4)) { kbRelease(VK_OEM_4); GetAsyncKeyState(VK_OEM_4); key("["); continue; }
-		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { kbRelease(VK_OEM_6); GetAsyncKeyState(VK_OEM_6); key("]"); continue; }
-		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { kbRelease(VK_OEM_5); GetAsyncKeyState(VK_OEM_5); key("\\"); continue; }
-		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { kbRelease(VK_OEM_1); GetAsyncKeyState(VK_OEM_1); key(";"); continue; }
-		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { kbRelease(VK_OEM_7); GetAsyncKeyState(VK_OEM_7); key("'"); continue; }
-		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); key(","); continue; }
-		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { kbRelease(VK_OEM_PERIOD); GetAsyncKeyState(VK_OEM_PERIOD); key("."); continue; }
-		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { kbRelease(VK_OEM_2); GetAsyncKeyState(VK_OEM_2); key("/"); continue; }
+		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { key("S"); continue; }
+		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { key("H"); continue; }
+		if (!ignoreLAlt && GetAsyncKeyState(VK_LMENU)) { key("A"); continue; }
+		if (!ignoreRAlt && GetAsyncKeyState(VK_RMENU)) { key("M"); continue; }
+		if (!ignoreLCtrl && GetAsyncKeyState(VK_LCONTROL)) { key("C"); continue; }
+		if (!ignoreRCtrl && GetAsyncKeyState(VK_RCONTROL)) { key("O"); continue; }
+		if (!ignoreEnter && GetAsyncKeyState(VK_RETURN)) { key("E"); continue; }
+		if (!ignoreCaps && GetAsyncKeyState(VK_CAPITAL)) { key("P"); continue; }
+		if (!ignoreGraveAccent && GetAsyncKeyState(VK_OEM_3)) { key("`"); continue; }
+		if (!ignoreMinus && GetAsyncKeyState(VK_OEM_MINUS)) { key("-"); continue; }
+		if (!ignoreEqual && GetAsyncKeyState(VK_OEM_PLUS)) { key("="); continue; }
+		if (!ignoreLBracket && GetAsyncKeyState(VK_OEM_4)) { key("["); continue; }
+		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { key("]"); continue; }
+		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { key("\\"); continue; }
+		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { key(";"); continue; }
+		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key(","); continue; }
+		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(","); continue; }
+		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key("."); continue; }
+		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key("/"); continue; }
 
 		if (!ignoreNumPad) {
-			if (GetAsyncKeyState(VK_NUMPAD0)) { kbRelease(VK_NUMPAD0); GetAsyncKeyState(VK_NUMPAD0); key("Z"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD1)) { kbRelease(VK_NUMPAD1); GetAsyncKeyState(VK_NUMPAD1); key("Q"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD2)) { kbRelease(VK_NUMPAD2); GetAsyncKeyState(VK_NUMPAD2); key("V"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD3)) { kbRelease(VK_NUMPAD3); GetAsyncKeyState(VK_NUMPAD3); key("W"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD4)) { kbRelease(VK_NUMPAD4); GetAsyncKeyState(VK_NUMPAD4); key("X"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD5)) { kbRelease(VK_NUMPAD5); GetAsyncKeyState(VK_NUMPAD5); key("Y"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD6)) { kbRelease(VK_NUMPAD6); GetAsyncKeyState(VK_NUMPAD6); key("B"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD7)) { kbRelease(VK_NUMPAD7); GetAsyncKeyState(VK_NUMPAD7); key("F"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD8)) { kbRelease(VK_NUMPAD8); GetAsyncKeyState(VK_NUMPAD8); key("G"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD9)) { kbRelease(VK_NUMPAD9); GetAsyncKeyState(VK_NUMPAD9); key("I"); continue; }
-			if (GetAsyncKeyState(VK_NUMLOCK)) { kbRelease(VK_NUMLOCK); GetAsyncKeyState(VK_NUMLOCK); key("N"); continue; }
-			if (GetAsyncKeyState(VK_DIVIDE)) { kbRelease(VK_DIVIDE); GetAsyncKeyState(VK_DIVIDE); key("J"); continue; }
-			if (GetAsyncKeyState(VK_MULTIPLY)) { kbRelease(VK_MULTIPLY); GetAsyncKeyState(VK_MULTIPLY); key("K"); continue; }
-			if (GetAsyncKeyState(VK_SUBTRACT)) { kbRelease(VK_SUBTRACT); GetAsyncKeyState(VK_SUBTRACT); key("{"); continue; }
-			if (GetAsyncKeyState(VK_ADD)) { kbRelease(VK_ADD); GetAsyncKeyState(VK_ADD); key("}"); continue; }
-			if (GetAsyncKeyState(VK_DECIMAL)) { kbRelease(VK_DECIMAL); GetAsyncKeyState(VK_DECIMAL); key("\""); continue; }
-			if (GetAsyncKeyState(VK_RETURN)) { kbRelease(VK_RETURN); GetAsyncKeyState(VK_RETURN); key(":"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD0)) { key("Z"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD1)) { key("Q"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD2)) { key("V"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD3)) { key("W"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD4)) { key("X"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD5)) { key("Y"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD6)) { key("B"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD7)) { key("F"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD8)) { key("G"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD9)) { key("I"); continue; }
+			if (GetAsyncKeyState(VK_NUMLOCK)) { key("N"); continue; }
+			if (GetAsyncKeyState(VK_DIVIDE)) { key("J"); continue; }
+			if (GetAsyncKeyState(VK_MULTIPLY)) { key("K"); continue; }
+			if (GetAsyncKeyState(VK_SUBTRACT)) { key("{"); continue; }
+			if (GetAsyncKeyState(VK_ADD)) { key("}"); continue; }
+			if (GetAsyncKeyState(VK_DECIMAL)) { key("\""); continue; }
+			if (GetAsyncKeyState(VK_RETURN)) { key(":"); continue; }
 		}
 		/*if (!ignoreMediaKeys) {
-			if (GetAsyncKeyState(VK_INSERT)) { kbRelease(VK_INSERT); GetAsyncKeyState(VK_INSERT); key("?"); continue; }
-			if (GetAsyncKeyState(VK_DELETE)) { kbRelease(VK_DELETE); GetAsyncKeyState(VK_DELETE); key("?"); continue; }
-			if (GetAsyncKeyState(VK_HOME)) { kbRelease(VK_HOME); GetAsyncKeyState(VK_HOME); key("?"); continue; }
-			if (GetAsyncKeyState(VK_END)) { kbRelease(VK_END); GetAsyncKeyState(VK_END); key("?"); continue; }
-			if (GetAsyncKeyState(VK_PRIOR)) { kbRelease(VK_PRIOR); GetAsyncKeyState(VK_PRIOR); key("?"); continue; }
-			if (GetAsyncKeyState(VK_NEXT)) { kbRelease(VK_NEXT); GetAsyncKeyState(VK_NEXT); key("?"); continue; }
+			if (GetAsyncKeyState(VK_INSERT)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_DELETE)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_HOME)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_END)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_PRIOR)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_NEXT)) { key("?"); continue; }
 		}*/
-		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { kbRelease(VK_APPS); GetAsyncKeyState(VK_APPS); key("?"); continue; }
+		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key("?"); continue; }
 #pragma endregion
 	}
 }
