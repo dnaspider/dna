@@ -262,7 +262,8 @@ void scanDb() {
 
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 4) == ">xy:") { POINT pt; GetCursorPos(&pt); string to_string(long v); cell = ">xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; }
+				if (re.substr(0, 20) == "><shift>,<shift->xy:") {
+					POINT pt; GetCursorPos(&pt); string to_string(long v); cell = "><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; }
 			}
 
 			tail = cell.substr(strand.length() + 1, cell.length() - strand.length() + 1);//return
@@ -553,7 +554,7 @@ void printDb() {
 void printXy() {
 	POINT pt; GetCursorPos(&pt);
 	if (strand == "x") { if (showOuts) cout << "xy: " << pt.x << "," << pt.y << endl; }
-	else { string to_string(long v); out("<bs*2>"); out("xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); }
+	else { string to_string(long v); out("<bs*2>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); }
 }
 
 void loadSe() {
@@ -795,6 +796,12 @@ int main() {
 		if (GetAsyncKeyState(VK_PAUSE)) { if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }
 		if (GetAsyncKeyState(VK_ESCAPE)) {
 			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); }
+			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
+				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
+				POINT pt; GetCursorPos(&pt);
+				string to_string(long v); out("<bs>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">");
+
+			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } clearAllKeys(); //,
 				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) {
