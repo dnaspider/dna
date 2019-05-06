@@ -285,7 +285,6 @@ void scanDb() {
 
 				string ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { cout << "ctail: " << ctail << endl; }
-
 				switch (ctail[0]) {
 				case'<':
 					qq = tail.substr(i, tail.length() - i); //<test>										
@@ -696,7 +695,7 @@ void printIn() {
 		cout << "Esc + Comma:  <" << endl;
 		string c; if (cKey == VK_CONTROL) c = "Ctrl"; else if (cKey == VK_LCONTROL) c = "LCtrl"; else if (cKey == VK_RCONTROL) c = "RCtrl"; else if (cKey == VK_ESCAPE) c = "Esc";
 		cout << c << ":  Toggle <" << endl;
-		if (reKey == VK_SCROLL) cout << "Scroll Lock:  Repeat" << endl;
+		(reKey == 145) ? c="Scroll Lock" : c="reKey"; cout << c << " or Esc + Plus: Repeat" << endl;
 		cout << "Pause Break:  Clear strand | Pause/Resume" << endl;
 		cout << "<odb:  Open database: " << database << endl;
 		cout << "<ose:  Open settings: " << settings << endl;
@@ -800,6 +799,12 @@ int main() {
 				POINT pt; GetCursorPos(&pt);
 				string to_string(long v); out("<bs>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">");
 
+			}
+			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
+				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
+				string t = tail;
+				out("<bs>");
+				out(t);
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } clearAllKeys(); //,
