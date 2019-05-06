@@ -695,7 +695,7 @@ void printIn() {
 		cout << "Esc + Comma:  <" << endl;
 		string c; if (cKey == VK_CONTROL) c = "Ctrl"; else if (cKey == VK_LCONTROL) c = "LCtrl"; else if (cKey == VK_RCONTROL) c = "RCtrl"; else if (cKey == VK_ESCAPE) c = "Esc";
 		cout << c << ":  Toggle <" << endl;
-		(reKey == 145) ? c="Scroll Lock" : c="reKey"; cout << c << " or Esc + Plus: Repeat" << endl;
+		(reKey == 145) ? c="Scroll Lock" : c="repeatKey: "+reKey; cout << c << " or Esc + Plus: Repeat" << endl;
 		cout << "Pause Break:  Clear strand | Pause/Resume" << endl;
 		cout << "<odb:  Open database: " << database << endl;
 		cout << "<ose:  Open settings: " << settings << endl;
