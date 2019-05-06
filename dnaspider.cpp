@@ -262,8 +262,7 @@ void scanDb() {
 
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 20) == "><shift>,<shift->xy:") {
-					POINT pt; GetCursorPos(&pt); string to_string(long v); cell = "><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; }
+				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string to_string(long v); cell = "><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; }
 			}
 
 			tail = cell.substr(strand.length() + 1, cell.length() - strand.length() + 1);//return
