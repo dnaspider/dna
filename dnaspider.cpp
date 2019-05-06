@@ -690,7 +690,7 @@ void printIn() {
 		string se;
 		if (qScanOnly)se = "<se"; else se = "se"; cout << se << ":  Settings | Load settings" << endl;
 		if (qScanOnly)se = "<db"; else se = "db"; cout << se << ":  Database" << endl;
-		cout << "<xy:  <xy:>" << endl;
+		cout << "<xy or Esc + P:  <xy:>" << endl;
 		cout << "Esc:  Stop" << endl;
 		cout << "Esc + H:  Toggle visibility" << endl;
 		if (enableEscX) cout << "Esc + X:  Exit" << endl;
