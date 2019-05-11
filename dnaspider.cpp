@@ -707,11 +707,6 @@ void printIn() {
 	}
 }
 
-void changeKey(string msg, int ke) {
-	kb(VK_ESCAPE); int sl; cout << "Enter new " << msg << ":" << endl;  cin >> sl; if (sl > 0) { ke = sl; }
-	else { return; } clearAllKeys(); cout << msg << ": " << ke << endl; strand.clear();
-}
-
 void key(string k) {
 	strand.append(k);
 	if (strandLengthMode && (int)strand.length() > strandLength && strand.substr(0, 1) != "<") { strand = strand.substr(strand.length() - strandLength); }
