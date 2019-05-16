@@ -10,7 +10,7 @@ Programmable keyboard software for Windows 10 (32/64-bit).
  <span title="strand: <h">`<h-ello`</span>
  <span title="strand: <h">`<h>ello`</span>
  <span title="Connect&#13;&#13;=db.txt========&#13;<i-><o->&#13;<o->Hello!&#13;<h:>ello&#13;===============&#13;&#13;Run&#13;Press ctrl, release ctrl, i&#13;&#13;strand: <i">`<h:>ello`</span>
- <span title="Infinate loop&#13;&#13;db.txt&#13;<h->Hello <speed:250><h->&#13;&#13;Press esc or pause key to stop&#13;&#13;strand: <h">`<h->ello`</span></strong>
+ <span title="Infinate loop&#13;&#13;db.txt&#13;<h-><speed:250>Hello <h->&#13;&#13;Press esc or pause key to stop&#13;&#13;strand: <h">`<h->ello`</span></strong>
 
 <h2><a href="https://github.com/dnaspider/dna/wiki" title="API, db.txt, Settings, Interface">Wiki</a>&nbsp;
 <a href="https://github.com/dnaspider/dna/releases" title="Press [win + pause] for system type">Download</a>&nbsp;
