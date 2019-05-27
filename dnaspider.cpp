@@ -707,7 +707,6 @@ void printInterfaceCtrls() {
 	cout << "Interface" << endl;
 	if (StockInterfaceControls) {
 		string se = qScanOnly ? "<se" : "se"; cout << se << ":  Settings (Press " << (qScanOnly ? c+" S E" : "S E") << " to load " << settings << ")\n";
-		//if (qScanOnly)se = "<se"; else se = "se"; cout << se << ":  Settings | Load settings\n";
 		if (qScanOnly)se = "<db"; else se = "db"; cout << se << ":  Database" << endl;
 	}
 	(StockInterfaceControls) ? cout << "<xy" : cout << "Esc + P"; cout << ":  <xy:>" << endl;
