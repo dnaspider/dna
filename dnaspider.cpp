@@ -506,10 +506,10 @@ void scanDb() {
 							for (int w = 0; w < 25; w++) {
 								if (w >= 24) { if (showOuts) { cout << "app: " << qp << " not found\n"; strand.clear(); } f.close(); return; }
 								DWORD pid; HWND h = FindWindowA(0, qp.c_str());	GetWindowThreadProcessId(h, &pid);
-								if (h) { if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); } SetForegroundWindow(h); w = 24; continue; }
+								if (h) { if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); } SetForegroundWindow(h); break; }
 								if (GetAsyncKeyState(VK_ESCAPE)) { f.close(); return; }
 								Sleep(333);
-							}Sleep(150);
+							}//Sleep(150);
 							rei();
 						}
 						else conn();
