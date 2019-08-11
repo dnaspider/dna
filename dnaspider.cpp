@@ -566,7 +566,7 @@ void scanDb() {
 					case'i':
 						if (qqb("<ins>") || qqb("<ins*")) kbPress("<ins*", VK_INSERT);
 						else conn();
-						break;
+						break;					
 					case'l':
 						if (qqb("<lc>") || qqb("<lc*")) kbPress("<lc*", VK_F7); //left click
 						else if (qqb("<lh>")) {//left hold
@@ -767,7 +767,7 @@ int main() {
 	if (CreateDirectory("c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting started\nPress h (h:), ctrl h (<h-), or ctrl i (<i:) in a text area to run.\nOr clear \"strand:\" first by toggling ctrl, backspace, esc + comma or pause/break key."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nCommaSleep: 150\nStockInterfaceControls: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma or pause/break key\nPress keys independently. e.g., right ctrl, release right ctrl, h"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nCommaSleep: 150\nStockInterfaceControls: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -955,6 +955,7 @@ int main() {
 			if (GetAsyncKeyState(VK_NEXT)) { key("?"); continue; }
 		}*/
 		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key("?"); continue; }
+		//if (GetAsyncKeyState(JOY_BUTTON1)) { key("?"); continue; }
 #pragma endregion
 	}
 }
