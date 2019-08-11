@@ -566,7 +566,7 @@ void scanDb() {
 					case'i':
 						if (qqb("<ins>") || qqb("<ins*")) kbPress("<ins*", VK_INSERT);
 						else conn();
-						break;					
+						break;
 					case'l':
 						if (qqb("<lc>") || qqb("<lc*")) kbPress("<lc*", VK_F7); //left click
 						else if (qqb("<lh>")) {//left hold
