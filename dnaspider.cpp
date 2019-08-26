@@ -220,9 +220,7 @@ void scanDb(); void conn() {//<connect:>
 						Sleep(150);
 				}
 
-				re = ">" + tail; strand.clear(); scanDb(); re.clear();
-				clearAllKeys();
-				strand.clear();
+				re = ">" + tail; strand.clear(); scanDb(); re.clear();				
 				tail = re1;
 				f.close();
 				i = tail.length();
@@ -301,7 +299,7 @@ void loadSe() {
 }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { cout << "<se>  Load " << settings << " | db.txt example: <se:<se>\n"; }  cout << "<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  " << CommaSleep << " milliseconds sleep\n<xy:0,0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>\n\n";
+	cout << "API\n"; if (!StockInterfaceControls) { cout << "<se>  Load " << settings << " | db.txt example: <se:<se>\n"; }  cout << "<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  " << CommaSleep << " milliseconds sleep\n<xy:0,0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<''>  Ignore right. Example: <''>ignored\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>\n\n";
 	if (showIntro) cout << "API's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\nExample: test-<enter>\nSave example to db.txt then clear strand by toggling Ctrl, Backspace, Pause, or Esc + Comma. Inside a text area, press T E S T to run (strand: test)\n";
 	cout << endl;
 }
@@ -495,7 +493,9 @@ void scanDb() {
 						else printq();
 						break;
 					case'\'':
-						if (qqb("<'")) rei(); //<'comments>
+						if (qq.find(">") != string::npos && qqb("<''"))	return; //<''ignore>...
+						else if (qq.find(">") != string::npos && qqb("<'")) rei(); //<'comments>
+						else printq();
 						break;
 					case'a':
 						if (qqb("<alt>")) { kbHold(VK_LMENU); rei(); }
@@ -680,8 +680,10 @@ void scanDb() {
 				}
 				//GetAsyncKeyState(VkKeyScan(ctail[0])); //clear
 			}
-			clearAllKeys();
-			strand.clear();
+			if (strand > "" || re > "") {
+				clearAllKeys();
+				strand.clear();
+			}
 			if (speed > 0)speed = 0;
 			break;
 		}
