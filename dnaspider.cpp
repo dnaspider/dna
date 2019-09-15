@@ -41,6 +41,7 @@ bool ignoreLCtrl = true;
 bool ignoreRCtrl = true;
 bool ignoreEnter = true;
 bool ignoreCaps = true;
+//bool ignorePrintScreen = false; string PrintScreen_Key = "?";
 bool strandLengthMode = false;
 int strandLength = 3;
 bool qScanOnly = false;
@@ -490,6 +491,11 @@ void scanDb() {
 						break;
 					case',':
 						if (qqb("<,>") || qqb("<,*")) kbPress("<,*", VK_F7);//sleep150ms, vk_dud
+						else if (qqb("<,")) { //<,#>
+							string s = check_if_num(qq.substr(2, qq.find('>') - 2));
+							Sleep(stoi(s));
+							rei();
+						}
 						else printq();
 						break;
 					case'\'':
@@ -839,6 +845,7 @@ int main() {
 			}
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; }
 		}
+		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
 #pragma region "a-z"
 		if (!ignoreAZ) {
