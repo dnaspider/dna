@@ -493,7 +493,7 @@ void scanDb() {
 						if (qqb("<,>") || qqb("<,*")) kbPress("<,*", VK_F7);//sleep150ms, vk_dud
 						else if (qqb("<,")) { //<,#>
 							string s = check_if_num(qq.substr(2, qq.find('>') - 2));
-							Sleep(stoi(s));
+							if (s > "" && stoi(s) > 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
 							rei();
 						}
 						else printq();
