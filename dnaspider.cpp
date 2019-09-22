@@ -71,6 +71,7 @@ bool clear_after_stock = true; //<se, <db
 bool SlightPauseInBetweenConnects = true;
 string OutsTemplate = "strand: ";
 bool EscCommaAutoBs = true;
+string code = "";
 #pragma endregion
 
 #pragma region "global sub"
@@ -135,6 +136,7 @@ void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 void prints() { if (showStrand) cout << OutsTemplate << strand << '\n'; }
 
 bool qqb(string s) {
+	code = s;
 	if (qq.substr(0, s.length()) == s) return true; else return false;
 }
 
@@ -196,6 +198,13 @@ void clearAllKeys() {
 	if (!ignoreMenuKey) GetAsyncKeyState(VK_APPS); //menu
 }
 
+void printDb() {
+	cout << database << "\n";
+	ifstream f(database); string cell;
+	SetConsoleOutputCP(CP_UTF8); while (getline(f, cell)) { cout << cell << endl; }
+	f.close(); cout << endl;
+}
+
 void scanDb(); void conn() {//<connect:>	
 	bool con = false; string qqs = qq.substr(0, qq.find(">") + 1);
 	if (qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
@@ -232,6 +241,31 @@ void scanDb(); void conn() {//<connect:>
 	else printq();
 }
 
+void kbPress1(string n, short key) {
+	if (n[n.length() - 1] == ':' || n[n.length() - 1] == '-') { conn(); return; }
+	if (n[0] == ' ') n = check_if_num(n.substr(1, n.length()));
+	if (n[0] == '-') { printq(); return; }
+	n = check_if_num(n); if (n > "") {
+		INPUT ip[2]; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
+		if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
+		ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
+		for (int j = 0; j < stoi(n); j++) {
+			if (code == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+			else if (code == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+			SendInput(2, ip, sizeof(ip[0]));
+			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "Pause", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
+			if (speed > 0 && stoi(n) != j + 1) Sleep(speed);
+		}
+		if (n != "0") rei(); else printq();
+	}
+	else printq();
+}
+
+void kbpress2(string n, short s) {
+	n = qq.substr(code.length(), qq.find('>') - code.length());
+	kbPress1(n, s);
+}
+
 void out(string ai) { re = ">" + ai; strand.clear(); scanDb(); re.clear(); }
 
 void calc() {
@@ -244,22 +278,22 @@ void calc() {
 }
 
 void loadSe() {
-	ifstream f(settings); string cell;	while (getline(f, cell)) {
+ifstream f(settings); string cell;	while (getline(f, cell)) {
 		string se = cell.substr(0, cell.find(":") + 1);
 		string v = (cell.substr(cell.find(":") + 1));
-		if (se == "Database:") { database = (v.length() > 0) ? v.substr(1) : v; continue; }
 		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
-		if (se == "StrandLengthMode:") { strandLengthMode = stoi(v); continue; }
-		if (se == "StrandLength:") { strandLength = stoi(v); continue; }
-		if (se == "CtrlScanOnlyMode:") { qScanOnly = stoi(v); continue; }
-		if (se == "CtrlKey:") { cKey = stoi(v); continue; }
-		if (se == "Frequency:") { frequency = stoi(v); continue; }
-		if (se == "RepeatKey:") { reKey = stoi(v); continue; }
+		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
 		if (se == "ShowStrand:") { showStrand = stoi(v); continue; }
 		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
 		if (se == "OutsTemplate:") { OutsTemplate = (v.length() > 0) ? v.substr(1) : v; continue; }
-		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
-		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }
+		if (se == "Database:") { database = (v.length() > 0) ? v.substr(1) : v; continue; }
+		if (se == "CtrlScanOnlyMode:") { qScanOnly = stoi(v); continue; }
+		if (se == "CtrlKey:") { cKey = stoi(v); continue; }
+		if (se == "StrandLengthMode:") { strandLengthMode = stoi(v); continue; }
+		if (se == "StrandLength:") { strandLength = stoi(v); continue; }
+		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
+		if (se == "RepeatKey:") { reKey = stoi(v); continue; }
+		if (se == "Frequency:") { frequency = stoi(v); continue; }
 		if (se == "Ignore_A-Z:") { ignoreAZ = stoi(v); continue; }
 		if (se == "Ignore_0-9:") { ignore09 = stoi(v); continue; }
 		if (se == "Ignore_Space:") { ignoreSpace = stoi(v); continue; }
@@ -291,17 +325,17 @@ void loadSe() {
 		if (se == "Ignore_NumPad:") { ignoreNumPad = stoi(v); continue; }
 		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
 		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
-		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
 		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
 		if (se == "EscCommaAutoBs:") { EscCommaAutoBs = stoi(v); continue; }
 		if (se == "CommaSleep:") { CommaSleep = stoi(v); continue; }
 		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
+		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }
 	}f.close();
-}
+ }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { cout << "<se>  Load " << settings << " | db.txt example: <se:<se>\n"; }  cout << "<ms:>  Milliseconds sleep. Example: <ms:1500> or <sleep:1500>\n<,>  " << CommaSleep << " milliseconds sleep\n<xy:0,0>  Move pointer\n<x:><y:>  Current position +/- value. Example: <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. Example: <app:Calculator>\n<App:>  Continue if app in foreground\n<'>  Comments. Example: <'Like so>\n<''>  Ignore right. Example: <''>ignored\n<yesno:>  Verify message. Example: <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. Example: <a:9201>\n<speed:>  Output. Example: <speed:150>\n<+:><-:><*:></:><%:>  Calc. Example: <+:1>, <+:-1>\n<+>  Clone. Example: <*:7><+>\n\n";
-	if (showIntro) cout << "API's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\nExample: test-<enter>\nSave example to db.txt then clear strand by toggling Ctrl, Backspace, Pause, or Esc + Comma. Inside a text area, press T E S T to run (strand: test)\n";
+	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Print database. " << database << " | db.txt e.g., <d><db>\n<se>  Print, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left right click hold release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n";
+	if (showIntro) cout << "\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling Ctrl, Backspace, Pause, or Esc + Comma. Inside a text area, press T E S T to run (strand: test)\n";
 	cout << endl;
 }
 
@@ -384,6 +418,15 @@ void printSe() {
 		cout << "Exit_EscX: " << enableEscX << endl;
 		cout << endl;
 	}
+}
+
+void toggle_visibility() {
+	(bool)IsWindowVisible(GetConsoleWindow()) == 1 ?
+		ShowWindow(GetConsoleWindow(), SW_HIDE)
+		:
+		ShowWindow(GetConsoleWindow(), SW_SHOW);
+	Sleep(150);
+	strand.clear();
 }
 
 void scanDb() {
@@ -507,6 +550,7 @@ void scanDb() {
 						if (qqb("<alt>")) { kbHold(VK_LMENU); rei(); }
 						else if (qqb("<alt*")) kbPress("<alt*", VK_LMENU);
 						else if (qqb("<alt->")) { kbRelease(VK_LMENU); rei(); }
+						else if (qqb("<alt")) kbpress2(code, VK_LMENU);
 						else if (qqb("<a:")) { kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
 							for (int w = 0; w < 25; w++) {
@@ -527,9 +571,10 @@ void scanDb() {
 							else { if (showOuts) { cout << "fail: <App:" << qp << ">" << endl; } i = tail.length(); break; }
 						}
 						else conn();
-						break;
-					case'b':
+						break;					
+					case'b':						
 						if (qqb("<bs>") || qqb("<bs*")) kbPress("<bs*", VK_BACK);
+						else if (qqb("<bs")) kbpress2(code, VK_BACK);
 						else if (qqb("<beep>")) { cout << "\a" << endl; rei(); }
 						else conn();
 						break;
@@ -537,44 +582,66 @@ void scanDb() {
 						if (qqb("<ctrl>")) { kbHold(VK_CONTROL); rei(); }
 						else if (qqb("<ctrl*")) kbPress("<ctrl*", VK_CONTROL);
 						else if (qqb("<ctrl->")) { kbRelease(VK_CONTROL); rei(); }
+						else if (qqb("<ctrl")) kbpress2(code, VK_CONTROL); 
 						else conn();
 						break;
 					case'd':
-						if (qqb("<down>") || qqb("<down*")) kbPress("<down*", VK_DOWN);
+						if (qqb("<db>")) { printDb(); rei(); }
+						else if (qqb("<down>") || qqb("<down*")) kbPress("<down*", VK_DOWN);
+						else if (qqb("<down")) kbpress2(code, VK_DOWN); 
 						else if (qqb("<delete>") || qqb("<delete*")) kbPress("<delete*", VK_DELETE);
+						else if (qqb("<delete")) kbpress2(code, VK_DELETE);
 						else conn();
 						break;
 					case'e':
 						if (qqb("<enter>") || qqb("<enter*")) kbPress("<enter*", VK_RETURN);
+						else if (qqb("<enter")) kbpress2(code, VK_RETURN);
 						else if (qqb("<end>") || qqb("<end*")) kbPress("<end*", VK_END);
+						else if (qqb("<end")) kbpress2(code, VK_END);
 						else if (qqb("<esc>") || qqb("<esc*")) kbPress("<esc*", VK_ESCAPE);
+						else if (qqb("<esc")) kbpress2(code, VK_ESCAPE);
 						else conn();
 						break;
 					case'f':
 						if (qqb("<f1>") || qqb("<f1*")) kbPress("<f1*", VK_F1);
+						else if (qqb("<f1")) kbpress2(code, VK_F1);
 						else if (qqb("<f2>") || qqb("<f2*")) kbPress("<f2*", VK_F2);
+						else if (qqb("<f2")) kbpress2(code, VK_F2);
 						else if (qqb("<f3>") || qqb("<f3*")) kbPress("<f3*", VK_F3);
+						else if (qqb("<f3")) kbpress2(code, VK_F3);
 						else if (qqb("<f4>") || qqb("<f4*")) kbPress("<f4*", VK_F4);
+						else if (qqb("<f4")) kbpress2(code, VK_F4);
 						else if (qqb("<f5>") || qqb("<f5*")) kbPress("<f5*", VK_F5);
+						else if (qqb("<f5")) kbpress2(code, VK_F5);
 						else if (qqb("<f6>") || qqb("<f6*")) kbPress("<f6*", VK_F6);
+						else if (qqb("<f6")) kbpress2(code, VK_F6);
 						else if (qqb("<f7>") || qqb("<f7*")) kbPress("<f7*", VK_F7);
+						else if (qqb("<f7")) kbpress2(code, VK_F7);
 						else if (qqb("<f8>") || qqb("<f8*")) kbPress("<f8*", VK_F8);
+						else if (qqb("<f8")) kbpress2(code, VK_F8);
 						else if (qqb("<f9>") || qqb("<f9*")) kbPress("<f9*", VK_F9);
+						else if (qqb("<f9")) kbpress2(code, VK_F9);
 						else if (qqb("<f10>") || qqb("<f10*")) kbPress("<f10*", VK_F10);
+						else if (qqb("<f10")) kbpress2(code, VK_F10);
 						else if (qqb("<f11>") || qqb("<f11*")) kbPress("<f11*", VK_F11);
+						else if (qqb("<f11")) kbpress2(code, VK_F11);
 						else if (qqb("<f12>") || qqb("<f12*")) kbPress("<f12*", VK_F12);
+						else if (qqb("<f12")) kbpress2(code, VK_F12);
 						else conn();
 						break;
 					case'h':
 						if (qqb("<home>") || qqb("<home*")) kbPress("<home*", VK_HOME);
+						else if (qqb("<home")) kbpress2(code, VK_HOME);
 						else conn();
 						break;
 					case'i':
 						if (qqb("<ins>") || qqb("<ins*")) kbPress("<ins*", VK_INSERT);
+						else if (qqb("<ins")) kbpress2(code, VK_INSERT);
 						else conn();
 						break;
 					case'l':
 						if (qqb("<lc>") || qqb("<lc*")) kbPress("<lc*", VK_F7); //left click
+						else if (qqb("<lc")) kbpress2(code, VK_F7);
 						else if (qqb("<lh>")) {//left hold
 							mouseEvent(MOUSEEVENTF_LEFTDOWN);
 							rei();
@@ -584,18 +651,23 @@ void scanDb() {
 							rei();
 						}
 						else if (qqb("<left>") || qqb("<left*")) kbPress("<left*", VK_LEFT);
+						else if (qqb("<left")) kbpress2(code, VK_LEFT);
 						else conn();
 						break;
 					case'm':
 						if (qqb("<ms:")) if (check_if_num(qp) != "") { Sleep(stoi(qp));	rei(); }
 						else printq();
 						else if (qqb("<menu>") || qqb("<menu*")) kbPress("<menu*", VK_APPS);
+						else if (qqb("<menu")) kbpress2(code, VK_APPS);
 						else conn();
 						break;
 					case'p':
 						if (qqb("<ps>") || qqb("<ps*")) kbPress("<ps*", VK_SNAPSHOT);
+						else if (qqb("<ps")) kbpress2(code, VK_SNAPSHOT);
 						else if (qqb("<pu>") || qqb("<pu*")) kbPress("<pu*", VK_PRIOR);//pgup
+						else if (qqb("<pu")) kbpress2(code, VK_PRIOR);
 						else if (qqb("<pd>") || qqb("<pd*")) kbPress("<pd*", VK_NEXT);//pgdn
+						else if (qqb("<pd")) kbpress2(code, VK_NEXT);
 						else conn();
 						break;
 					case'r':
@@ -613,6 +685,7 @@ void scanDb() {
 							rei();
 						}
 						else if (qqb("<right>") || qqb("<right*")) kbPress("<right*", VK_RIGHT);
+						else if (qqb("<right")) kbpress2(code, VK_RIGHT);
 						else conn();
 						break;
 					case's':
@@ -620,25 +693,34 @@ void scanDb() {
 						else if (qqb("<shift>")) { kbHold(VK_LSHIFT); rei(); }
 						else if (qqb("<shift*")) kbPress("<shift*", VK_LSHIFT);
 						else if (qqb("<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
+						else if (qqb("<shift")) kbpress2(code, VK_LSHIFT);
 						else if (qqb("<sleep:")) if (check_if_num(qp) != "") { Sleep(stoi(qp)); rei(); }
 						else printq();
 						else if (qqb("<space>") || qqb("<space*")) kbPress("<space*", VK_SPACE);
+						else if (qqb("<space")) kbpress2(code, VK_SPACE);
 						else if (qqb("<speed:")) if (check_if_num(qp) != "") { speed = stoi(qp); rei(); }
 						else printq();
 						else conn();
 						break;
 					case't':
 						if (qqb("<tab>") || qqb("<tab*")) kbPress("<tab*", VK_TAB);
+						else if (qqb("<tab")) kbpress2(code, VK_TAB);
 						else conn();
 						break;
 					case'u':
 						if (qqb("<up>") || qqb("<up*")) kbPress("<up*", VK_UP);
+						else if (qqb("<up")) kbpress2(code, VK_UP);
+						else conn();
+						break;
+					case 'v':
+						if (qqb("<v>")) { toggle_visibility(); rei(); }
 						else conn();
 						break;
 					case'w':
 						if (qqb("<win>")) { kbHold(VK_LWIN); rei(); }
 						else if (qqb("<win*")) kbPress("<win*", VK_LWIN);
 						else if (qqb("<win->")) { kbRelease(VK_LWIN); rei(); }
+						else if (qqb("<win")) kbpress2(code, VK_LWIN);
 						else conn();
 						break;
 					case'x':
@@ -697,13 +779,6 @@ void scanDb() {
 	f.close();
 }
 
-void printDb() {
-	cout << database << "\n";
-	ifstream f(database); string cell;
-	SetConsoleOutputCP(CP_UTF8); while (getline(f, cell)) { cout << cell << endl; }
-	f.close(); cout << endl;
-}
-
 void printXy() {
 	POINT pt; GetCursorPos(&pt);
 	if (strand == "x") { if (showOuts) cout << "xy: " << pt.x << "," << pt.y << endl; }
@@ -717,15 +792,15 @@ void printInterfaceCtrls() {
 		string se = qScanOnly ? "<se" : "se"; cout << se << ":  Settings (Press " << (qScanOnly ? c+" S E" : "S E") << " to load " << settings << ")\n";
 		if (qScanOnly)se = "<db"; else se = "db"; cout << se << ":  Database" << endl;
 	}
-	(StockInterfaceControls) ? cout << "<xy" : cout << "Esc + P"; cout << ":  <xy:>" << endl;
 	cout << "Esc:  Stop" << endl;
-	cout << "Esc + H:  Toggle visibility" << endl;
 	if (enableEscX) cout << "Esc + X:  Exit" << endl;
-	cout << "Esc + Comma:  <" << endl;
+	cout << "Esc + H:  Toggle visibility" << endl;
 	cout << c << ":  Toggle <" << endl;
-	(reKey == 145) ? c = "Scroll Lock" : c = "repeatKey: " + reKey; cout << c << " or Esc + Equal: Repeat" << endl;
+	cout << "Esc + Comma:  Toggle <" << endl;
 	cout << "Pause Break:  Clear strand | Pause/Resume" << endl;
 	if (StockInterfaceControls) { cout << "<odb:  Open database: " << database << endl;	cout << "<ose:  Open settings: " << settings << endl; }
+	(StockInterfaceControls) ? cout << "<xy" : cout << "Esc + P"; cout << ":  <xy:>" << endl;
+	(reKey == 145) ? c = "Scroll Lock" : c = "repeatKey: " + reKey; cout << c << " or Esc + Equal:  Repeat" << endl;
 	cout << endl;
 }
 
@@ -775,7 +850,7 @@ int main() {
 	if (CreateDirectory("c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma or pause/break key\nPress keys independently. e.g., right ctrl, release right ctrl, h"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nCommaSleep: 150\nStockInterfaceControls: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma or pause/break key\nPress keys independently. E.g., right ctrl, release right ctrl, h"; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nEscCommaAutoBs: 1\nCommaSleep: 150\nStockInterfaceControls: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>");  showOuts = true; re = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -843,7 +918,12 @@ int main() {
 				}
 				else { if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }strand.clear(); strand = "<"; prints(); }
 			}
-			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if ((bool)IsWindowVisible(GetConsoleWindow()) == true) { ShowWindow(GetConsoleWindow(), SW_HIDE); Sleep(150); strand.clear(); } else { ShowWindow(GetConsoleWindow(), SW_SHOW); Sleep(150); strand.clear(); } if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; continue; }
+			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } 
+			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { 
+				toggle_visibility();
+				if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; 
+				continue; 
+			}
 		}
 		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
