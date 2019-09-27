@@ -278,7 +278,7 @@ void calc() {
 }
 
 void loadSe() {
-ifstream f(settings); string cell;	while (getline(f, cell)) {
+	ifstream f(settings); string cell;	while (getline(f, cell)) {
 		string se = cell.substr(0, cell.find(":") + 1);
 		string v = (cell.substr(cell.find(":") + 1));
 		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
@@ -571,8 +571,8 @@ void scanDb() {
 							else { if (showOuts) { cout << "fail: <App:" << qp << ">" << endl; } i = tail.length(); break; }
 						}
 						else conn();
-						break;					
-					case'b':						
+						break;
+					case'b':
 						if (qqb("<bs>") || qqb("<bs*")) kbPress("<bs*", VK_BACK);
 						else if (qqb("<bs")) kbpress2(code, VK_BACK);
 						else if (qqb("<beep>")) { cout << "\a" << endl; rei(); }
