@@ -136,8 +136,7 @@ void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 void prints() { if (showStrand) cout << OutsTemplate << strand << '\n'; }
 
 bool qqb(string s) {
-	code = s;
-	if (qq.substr(0, s.length()) == s) return true; else return false;
+	if (qq.substr(0, s.length()) == s) {code = s; return true;} else return false;
 }
 
 void kbPress(string code, short key) {
