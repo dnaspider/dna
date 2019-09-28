@@ -262,6 +262,7 @@ void kbPress1(string n, short key) {
 
 void kbpress2(string n, short s) {
 	n = qq.substr(code.length(), qq.find('>') - code.length());
+	if (tail.substr(tail.length() - code.length() - n.length()) == code + n) { printq(); return; }//missing >
 	kbPress1(n, s);
 }
 
