@@ -151,12 +151,12 @@ void kbPress(string code, short key) {
 	for (int j = 0; j < stoi(star_num); j++) {
 		if (code == "<,*") {
 			Sleep(CommaSleep);
-			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "Pause", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
+			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
 		}
 		else if (code == "<lc*") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
 		else if (code == "<rc*") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
 		else SendInput(2, ip, sizeof(ip[0]));
-		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "Pause", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
+		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
 		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
 	}
 	if (star_num != "0") rei(); else printq();
@@ -252,7 +252,7 @@ void kbPress1(string n, short key) {
 			if (code == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
 			else if (code == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
 			SendInput(2, ip, sizeof(ip[0]));
-			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "Pause", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
+			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
 			if (speed > 0 && stoi(n) != j + 1) Sleep(speed);
 		}
 		if (n != "0") rei(); else printq();
@@ -469,7 +469,7 @@ void scanDb() {
 
 			for (i = 0; i < tail.length(); i++) {
 				if (speed > 0) { Sleep(speed); }
-				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { break; }if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "Pause", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); break; } }
+				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { break; }if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); break; } }
 
 				string ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { cout << "ctail: " << ctail << endl; }
@@ -741,7 +741,7 @@ void scanDb() {
 						break;
 					case 'y':
 						if (qqb("<yesno:")) {
-							int m = MessageBoxA(0, qp.c_str(), "Verify", MB_YESNO);
+							int m = MessageBoxA(0, qp.c_str(), "dnaspider", MB_YESNO);
 							if (m == IDYES) { rei(); continue; }
 							else { i = tail.length(); break; }
 						}
@@ -847,7 +847,7 @@ void key(string k) {
 #pragma endregion
 
 int main() {
-	cout << "@dnaspider\n\n";
+	//cout << "@dnaspider\n\n";
 	if (CreateDirectory("c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); GetAsyncKeyState(VK_ESCAPE); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
