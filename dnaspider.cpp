@@ -217,18 +217,7 @@ void scanDb(); void conn() {//<connect:>
 				string re1 = tail;
 				string qqc = qq.substr(0, qq.find(">"));
 				tail = qq.replace(qq.find(qqc + ">"), qqc.length() + 1, cell.substr(cell.substr(0, qqc.length()).length(), cell.length()));
-
-				if (SlightPauseInBetweenConnects) {
-					if (tail.find("<,*") != std::string::npos ||
-						tail.find("<,>") != std::string::npos ||
-						tail.find("<ms:") != std::string::npos ||
-						tail.find("<sleep:") != std::string::npos ||
-						tail.find("<speed:") != std::string::npos)
-						;
-					else
-						Sleep(150);
-				}
-
+				if (SlightPauseInBetweenConnects) Sleep(150);
 				re = ">" + tail; strand.clear(); scanDb(); re.clear();				
 				tail = re1;
 				f.close();
