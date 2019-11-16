@@ -1,5 +1,4 @@
-<a href="https://github.com/dnaspider/dna/releases" title="Release">dnaspider.exe</a>
-<br>Programmable keyboard software for Windows 10 (32/64-bit). 
+# `🕷`<em>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Download open source dnaspider.exe &#13;Programmable keyboard software for Windows 10")</em><br><br><sup><sup>Programmable keyboard software </sup></sup><br><em>for Windows 10 (32/64-bit).</em>
 
 <span title="Next level sh*t">Syntax</span>
 <br><strong><span title="Settings&#013;=se.txt==========&#013;StrandLengthMode: 1&#013;StrandLength: 3&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#013;&#013;Database&#013;=db.txt==========&#013;hello&#013;===============&#13;&#013;Run&#013;Press h e l in a text area&#13;&#13;Program&#13;=dnaspider.exe=====&#013;strand: h&#013;strand: he&#013;strand: hel&#013;===============">`hello`</span>
