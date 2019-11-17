@@ -20,7 +20,7 @@ Is a program which builds a strand from keyboard keys you press...
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
 <br>`t-hi<connect:>`
 <br>`<connect:><shift><left2><shift->`
-<br>`test:<bs3>hi<connect:>`
+<br>`test:<bs4>hi<connect:>`
 <br><sup><sup>===============</sup></sup>
 <br>The `-` ties it together now. Press `t` in a text area to run. Notice the `-` sign auto backspaces the `t`.
 <br>Say if you want both to work, make the following changes.
