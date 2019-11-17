@@ -7,7 +7,7 @@ Is a program which builds a strand from keyboard keys you press...
 <br><span title="The [t] key on the keyboard was pressed">`strand: test`</span>
 <br><span title="The input sequence [test] was found in the &#13;beginning of one of the lines in db.txt.&#13;Running trailing output...">`strand: *found*`</span>
 <br><sup><sup>===============</sup></sup>
-<br>This input strand can be tied to an output (<a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">API</a>). Output simulates keyboard and mouse as if was robot you. 
+<br>This input strand can be tied to an output (<a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">API</a>). Output simulates keyboard and mouse as instructed. 
 <br>The output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says "press backspace four times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift". 
 <br>With both an input and output you can save it in c:/dna/db.txt and test it out in a text area.
 <br>The whole code looks like this:
@@ -28,8 +28,8 @@ Is a program which builds a strand from keyboard keys you press...
 <br><span title="CloseCtrlMode: True">`CloseCtrlMode: 1`</span>
 <br><sup><sup>===============</sup></sup>
 <br>Save se.txt and press `right ctrl` `s` `e` to update the settings.
- <br>Now to run, <strong title="Toggle right ctrl, backspace, or pause">clear strand</strong> then press `right ctrl` or `escape+comma` after the input (`t` `right ctrl` or `t` `e` `s` `t` `right ctrl`).
-
+<br>Now to run, press `right ctrl` or `escape+comma` after the input (`t` `right ctrl` or `t` `e` `s` `t` `right ctrl`).
+<br>Tip: <strong title="Toggle right ctrl, backspace, or pause">Clear</strong> then input the strand to run.
 
 <span title="Next level sh*t">Syntax</span>
 <br><strong><span title="Settings&#013;=se.txt==========&#013;StrandLengthMode: 1&#013;StrandLength: 3&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#013;&#013;Database&#013;=db.txt==========&#013;hello&#013;===============&#13;&#013;Run&#013;Press h e l in a text area&#13;&#13;Program&#13;=dnaspider.exe=====&#013;strand: h&#013;strand: he&#013;strand: hel&#013;===============">`hello`</span>
