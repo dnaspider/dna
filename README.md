@@ -8,11 +8,11 @@ Is a program which builds a strand from keyboard keys you press...
 <br><span title="The input sequence [test] was found in the &#13;beginning of one of the lines in db.txt.&#13;Running trailing output...">`strand: *found*`</span>
 <br><sup><sup>===============</sup></sup>
 <br>This input strand can be tied to an output (<a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">API</a>). Output simulates keyboard and mouse as if was robot you. 
-<br>The output code looks like this `<bs3>hi<shift><left2><shift->` which pretty much says "press backspace three times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift". 
+<br>The output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says "press backspace four times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift". 
 <br>With both an input and output you can save it in c:/dna/db.txt and test it out in a text area.
 <br>The whole code looks like this:
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
-<br>`test:<bs3>hi<shift><left2><shift->`
+<br>`test:<bs4>hi<shift><left2><shift->`
 <br><sup><sup>===============</sup></sup>
 <br>The `:` ties it together. You can also use `-` `>` <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever:>`</span> or <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever->`</span> to tie it together.
 <br>After running the code once you can press `Scroll Lock` or `Escape + Equal` to repeat the output.
