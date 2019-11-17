@@ -593,7 +593,13 @@ void scanDb() {
 						else conn();
 						break;
 					case'f':
-						if (qqb("<f1>") || qqb("<f1*")) kbPress("<f1*", VK_F1);
+						if (qqb("<f10>") || qqb("<f10*")) kbPress("<f10*", VK_F10);
+						else if (qqb("<f10")) kbpress2(code, VK_F10);
+						else if (qqb("<f11>") || qqb("<f11*")) kbPress("<f11*", VK_F11);
+						else if (qqb("<f11")) kbpress2(code, VK_F11);
+						else if (qqb("<f12>") || qqb("<f12*")) kbPress("<f12*", VK_F12);
+						else if (qqb("<f12")) kbpress2(code, VK_F12);
+						else if (qqb("<f1>") || qqb("<f1*")) kbPress("<f1*", VK_F1);
 						else if (qqb("<f1")) kbpress2(code, VK_F1);
 						else if (qqb("<f2>") || qqb("<f2*")) kbPress("<f2*", VK_F2);
 						else if (qqb("<f2")) kbpress2(code, VK_F2);
@@ -611,12 +617,6 @@ void scanDb() {
 						else if (qqb("<f8")) kbpress2(code, VK_F8);
 						else if (qqb("<f9>") || qqb("<f9*")) kbPress("<f9*", VK_F9);
 						else if (qqb("<f9")) kbpress2(code, VK_F9);
-						else if (qqb("<f10>") || qqb("<f10*")) kbPress("<f10*", VK_F10);
-						else if (qqb("<f10")) kbpress2(code, VK_F10);
-						else if (qqb("<f11>") || qqb("<f11*")) kbPress("<f11*", VK_F11);
-						else if (qqb("<f11")) kbpress2(code, VK_F11);
-						else if (qqb("<f12>") || qqb("<f12*")) kbPress("<f12*", VK_F12);
-						else if (qqb("<f12")) kbpress2(code, VK_F12);
 						else conn();
 						break;
 					case'h':
