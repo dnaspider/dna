@@ -1,4 +1,4 @@
-# `🕷`<em>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Download open source dnaspider.exe &#13;Programmable keyboard software for Windows 10")</em><br><br><sup><sup>Programmable keyboard software </sup></sup><br><em>for Windows 10 (32/64-bit).</em>
+# `🕷`<em>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Download open source dnaspider.exe &#13;Programmable keyboard software for Windows 10")</em><br><br><sup><sup><a href="https://github.com/dnaspider/dna/wiki/Introduction" title="Introduction">Programmable keyboard software</a> </sup></sup><br><em>for Windows 10 (32/64-bit).</em>
 Is a program which builds a strand from keyboard keys you press... 
 <br><sub><sub>==dnaspider.exe====</sub></sub>
 <br><span title="The [t] key on the keyboard was pressed">`strand: t`</span>
@@ -15,7 +15,7 @@ Is a program which builds a strand from keyboard keys you press...
 <br>`test:<bs4>hi<shift><left2><shift->`
 <br><sup><sup>===============</sup></sup>
 <br>The `:` ties it together. You can also use `-` `>` <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever:>`</span> or <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever->`</span> to tie it together.
-<br>After running the code once you can press `Scroll Lock` or `Escape + Equal` to repeat the output.
+<br>After running the code once you can press `Scroll Lock` or `Escape + Equal` to repeat the output.<br>
 <br>Lets adjust the code a bit.
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
 <br>`t-hi<connect:>`
