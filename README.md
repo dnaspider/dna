@@ -13,8 +13,7 @@ dnaspider.exe builds a strand from keyboard keys you press...
 <br><span title="The [t] key on the keyboard was pressed">`strand: test`</span>
 <br><span title="The input sequence [test] was found in the &#13;beginning of one of the lines in db.txt.&#13;Running trailing output...">`strand: *found*`</span>
 <br><sup><sup>===============</sup></sup>
-
-This input strand is what the program looks for in the beginning of one of the lines in db.txt. If found it executes the trailing <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a> which simulates keyboard and mouse functionality as instructed. 
+<br>This input strand is what the program looks for in the beginning of one of the lines in db.txt. If found it executes the trailing <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a> which simulates keyboard and mouse functionality as instructed. 
 
 In the following example the output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says "press backspace four times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift".
 
@@ -22,8 +21,7 @@ The whole code looks like this and c:\dna\db.txt is where you'll be building you
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
 <br>`test:<bs4>hi<shift><left2><shift->`
 <br><sup><sup>===============</sup></sup>
-
-The `:` does nothing but ties it together. You can also use <span title="test-">`-`</span> <span title="test>">`>`</span> <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever:>`</span> or <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever->`</span> to tie it together.
+<br>The `:` does nothing but ties it together. You can also use <span title="test-">`-`</span> <span title="test>">`>`</span> <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever:>`</span> or <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever->`</span> to tie it together.
 
 Input strand and trailing output must be saved in c:/dna/db.txt for the program to execute/run.
 
@@ -32,21 +30,18 @@ In order to run, have a clear strand first by toggle right-ctrl, backspace, or p
 After running the code once you can press `Scroll Lock` or `Escape + Equal` to repeat the output.
 
 Lets adjust the code a bit and save.
-
-<sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
+<br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
 <br>`t-hi<connect:>`
 <br>`<connect:><shift><left2><shift->`
 <br>`test:<bs4>hi<connect:>`
 <br><sup><sup>===============</sup></sup>
-
-The `-` ties it together now. Press `t` in a text area to run. Notice the `-` sign auto backspaces the `t`.
+<br>The `-` ties it together now. Press `t` in a text area to run. Notice the `-` sign auto backspaces the `t`.
 
 Say if you want both to work, make the following changes.
 <br><sub><sub><span title="Settings: c:\dna\se.txt">==se.txt=========</span></sub></sub>
 <br><span title="CloseCtrlMode: True">`CloseCtrlMode: 1`</span>
 <br><sup><sup>===============</sup></sup>
-
-Save se.txt and press `right ctrl` `s` `e` to update the settings.
+<br>Save se.txt and press `right ctrl` `s` `e` to update the settings.
 <br>Now to run, press `right ctrl` or `escape+comma` after the input (`t` `right ctrl` or `t` `e` `s` `t` `right ctrl`).
 
 <h3 title="Next level sh*t">Syntax</h3>
