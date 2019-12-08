@@ -25,7 +25,7 @@ The whole code looks like this and c:\dna\db.txt is where you'll be building you
 
 Input strand and trailing output must be saved in c:/dna/db.txt for the program to execute/run.
 
-In order to run, have a clear strand first by toggle right-ctrl, backspace, or pause then simply inputing the strand `t` `e` `s` `t` in a text area for the effect.
+In order to run, have a clear strand first by toggle right-ctrl, backspace, or pause then simply inputting the strand `t` `e` `s` `t` in a text area for the effect.
 
 After running the code once you can press `Scroll Lock` or `Escape + Equal` to repeat the output.
 
