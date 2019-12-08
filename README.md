@@ -1,8 +1,7 @@
 # `🕷`<em>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Download open source dnaspider.exe &#13;Programmable keyboard software for Windows 10")</em><br><br><sup><sup><a href="https://github.com/dnaspider/dna/wiki/Introduction" title="Introduction">Programmable keyboard software</a> </sup></sup><br><em>for Windows 10 (32/64-bit).</em>
 Hello friend, and thank you for your interest in dnaspider.exe.
 
-🥁 Introducing dnaspider.exe. Programmable keyboard software for executing simple keyboard and mouse functionality that suits your needs. With the help of dnaspider.exe, you will have the ability to execute your own custom work flow to accelerate through daily tasks like a pro.
-
+🥁 Introducing dnaspider.exe. Programmable keyboard software for executing simple keyboard and mouse functionality to your liking. Use this functionality to accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality.
 <h3>How it works ⚙</h3>
 
 dnaspider.exe builds a strand from keyboard keys you press... 
@@ -13,7 +12,7 @@ dnaspider.exe builds a strand from keyboard keys you press...
 <br><span title="The [t] key on the keyboard was pressed">`strand: test`</span>
 <br><span title="The input sequence [test] was found in the &#13;beginning of one of the lines in db.txt.&#13;Running trailing output...">`strand: *found*`</span>
 <br><sup><sup>===============</sup></sup>
-<br>This input strand is what the program looks for in the beginning of one of the lines in db.txt. If found, it executes the trailing <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a> which simulates keyboard and mouse functionality as instructed. 
+<br>This [input strand](https://github.com/dnaspider/dna/wiki/Input-map "View input strand map") is the text that dnaspider.exe  looks for in the beginning of each line in <span title="Database">db.txt</span>. If found, the program executes the trailing text. We'll call this trailing text the <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a>. The output is the code we'll write which simulates keyboard and mouse functionality as instructed. 
 
 In the following example the output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says "press backspace four times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift".
 
