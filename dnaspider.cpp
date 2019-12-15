@@ -854,7 +854,7 @@ int main() {
 	if (GetAsyncKeyState(VK_ESCAPE))cKey = VK_ESCAPE;
 	printIntro();
 	for (;; Sleep(frequency)) {
-		if ((GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && FindWindowA(0, "se.txt - Notepad") || FindWindowA(0, "se.txt - Visual Studio Code")) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND hotreload = GetForegroundWindow(); if (np == hotreload || vsc == hotreload) { loadSe(); strand.clear(); } }//lctrl+s hot reload
+		if ((GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && FindWindowA(0, "se.txt - Notepad") || FindWindowA(0, "se.txt - Visual Studio Code")) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND hotreload = GetForegroundWindow(); if (np == hotreload || vsc == hotreload) { loadSe(); strand.clear(); continue; } }//lctrl+s hot reload
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
