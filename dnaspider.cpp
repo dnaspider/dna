@@ -268,7 +268,7 @@ void calc() {
 }
 
 void loadSe() {
-	ifstream f(settings); string cell;	while (getline(f, cell)) {
+	ifstream f(settings); string cell;	while (getline(f, cell)) {//try	{
 		string se = cell.substr(0, cell.find(":") + 1);
 		string v = (cell.substr(cell.find(":") + 1));
 		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
@@ -319,7 +319,7 @@ void loadSe() {
 		if (se == "EscCommaAutoBs:") { EscCommaAutoBs = stoi(v); continue; }
 		if (se == "CommaSleep:") { CommaSleep = stoi(v); continue; }
 		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
-		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }
+		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }	//}catch (const std::exception&){};
 	}f.close();
  }
 
@@ -347,8 +347,9 @@ void printStockCtrls() {
 			cout << "<d b:  Change Database: " << database << endl;
 		}
 		cout << "Hold RCtrl LCtrl or Esc on startup:  Change < key" << endl;
-		cout << "Hold O on startup:  ShowStrand, ShowOuts: 0" << endl;
-		//cout << "Hold Q on startup:  Ctrl scan only: true" << endl;
+		cout << "Hold O on startup:  ShowStrand, ShowOuts: 1" << endl;
+		//cout << "Hold Q on startup:  CtrlScanOnlyMode: 1" << endl;
+		//cout << "Hold S on startup:  ShowStrand: 1" << endl;
 		cout << endl;
 	}
 }
@@ -852,7 +853,9 @@ int main() {
 	if (GetAsyncKeyState(VK_LCONTROL))cKey = VK_LCONTROL;
 	if (GetAsyncKeyState(VK_ESCAPE))cKey = VK_ESCAPE;
 	printIntro();
+	HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code");
 	for (;; Sleep(frequency)) {
+		if ((GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (np || vsc)) { HWND hotreload = GetForegroundWindow(); if (np == hotreload || vsc == hotreload)loadSe(); }//lctrl+s hot reload
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
