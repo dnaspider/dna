@@ -36,13 +36,13 @@ Lets adjust the code a bit and save.
 <br><sup><sup>===============</sup></sup>
 <br>The `-` ties it together now. Press `t` in a text area to run. Notice the `-` sign auto backspaces the `t`.
 
-Say if you want both to work, make the following changes in c:/dna/se.txt using Notepad or VS Code.
+Say if you want both to work, make the following changes in c:/dna/se.txt using <span title="Notepad.exe">Notepad</span> or <span title="Visual Studio Code &#13;Code.exe">VSCode</span>.
 <br><sub><sub><span title="Settings: c:\dna\se.txt">==se.txt=========</span></sub></sub>
 <br><span title="CloseCtrlMode: True">`CloseCtrlMode: 1`</span>
 <br><sup><sup>===============</sup></sup>
 <br>Press `ctrl + s` to save se.txt.
 
-If using an editor other than Notepad or VS Code, press `right_ctrl` `s` `e` to update the settings or restart the program.
+If using an editor other than <span title="Notepad.exe">Notepad</span> or <span title="Visual Studio Code &#13;Code.exe">VSCode</span>, press `right_ctrl` `s` `e` or restart the program to update the settings.
 
 Now to run, press `right_ctrl` or `escape + comma` after the input (`t` `right_ctrl` or `t` `e` `s` `t` `right_ctrl`).
 <h3>Syntax</h3>
