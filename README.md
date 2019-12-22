@@ -12,21 +12,21 @@ dnaspider.exe builds a strand from keyboard keys you press...
 <br><span title="The [t] key on the keyboard was pressed">`strand: test`</span>
 <br><span title="The input sequence [test] was found in the &#13;beginning of one of the lines in db.txt.&#13;Running trailing output...">`strand: *found*`</span>
 <br><sup><sup>===============</sup></sup>
-<br>This [input strand](https://github.com/dnaspider/dna/wiki/Input-map "View input strand map") is the text that dnaspider.exe  looks for in the beginning of each line in <span title="Database">db.txt</span>. If found, the program executes the trailing text. We'll call this trailing text the <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a>. The output is the code we'll write which simulates keyboard and mouse functionality as instructed. 
+<br>This [input strand](https://github.com/dnaspider/dna/wiki/Input-map "View input strand map") is the text that dnaspider.exe  looks for in the beginning of each line in <span title="Database">db.txt</span>. If found, the program executes the trailing text. We'll call this trailing text the <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a> which is the code we'll write which simulates keyboard and mouse functionality as instructed. 
 
-In the following example the output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says "press backspace four times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift".
+In the following example the output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says "programmatically press backspace four times, press h, press i, press (hold) shift, press left arrow twice (to select hi), release shift".
 
-The whole code looks like this and c:\dna\db.txt is where you'll be building your algos:
+The whole code looks like this and c:\dna\db.txt is the database where we'll be building and storing our algos:
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
 <br>`test:<bs4>hi<shift><left2><shift->`
 <br><sup><sup>===============</sup></sup>
-<br>The `:` does nothing but ties it together. You can also use <span title="test-">`-`</span> <span title="test>">`>`</span> <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever:>`</span> or <span title="Press: right ctrl, w, h, a, t, e, v, e, r">`<whatever->`</span> to tie it together.
+<br>The `:` ties the input and output together (<span title="strand:api">input:output</span>). We can also use <span title="test-">`-`</span> <span title="test>">`>`</span> <span title="Press: right_ctrl, w, h, a, t, e, v, e, r">`<whatever:>`</span> or <span title="Press: right_ctrl, w, h, a, t, e, v, e, r">`<whatever->`</span> to tie it together.
 
-Input strand and trailing output must be saved in c:/dna/db.txt for the program to execute/run.
+Input strand and trailing output must be saved in <em title="Change se.txt > Database: c:/dna/db.txt for a different location or file name.&#13;e.g., Database: C:\Users\USER_NAME\OneDrive\dna\database.htm">c:/dna/db.txt</em> for the program to execute/run.
 
-In order to run, have a clear strand first by toggle `right-ctrl` `backspace` or `pause` then simply input the strand `t` `e` `s` `t` in a text area for the effect.
+In order to run, have a clear strand first by toggle `right_ctrl` `backspace` or `pause/break` then simply input the strand `t` `e` `s` `t` in a text area for the effect.
 
-After running the code once you can press `Scroll Lock` or `Escape + Equal` to repeat the output.
+After running the code once you can press `scroll lock` or `escape + equal` to repeat the output.
 
 Lets adjust the code a bit and save.
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
@@ -36,14 +36,16 @@ Lets adjust the code a bit and save.
 <br><sup><sup>===============</sup></sup>
 <br>The `-` ties it together now. Press `t` in a text area to run. Notice the `-` sign auto backspaces the `t`.
 
-Say if you want both to work, make the following changes.
+Say if you want both to work, make the following changes in c:/dna/se.txt using Notepad or VS Code.
 <br><sub><sub><span title="Settings: c:\dna\se.txt">==se.txt=========</span></sub></sub>
 <br><span title="CloseCtrlMode: True">`CloseCtrlMode: 1`</span>
 <br><sup><sup>===============</sup></sup>
-<br>Save se.txt and press `right ctrl` `s` `e` to update the settings.
-<br>Now to run, press `right ctrl` or `escape+comma` after the input (`t` `right ctrl` or `t` `e` `s` `t` `right ctrl`).
+<br>Press `ctrl + s` to save se.txt.
 
-<h3 title="Next level sh*t">Syntax</h3>
+If using an editor other than Notepad or VS Code, press `right_ctrl` `s` `e` to update the settings or restart the program.
+
+Now to run, press `right_ctrl` or `escape + comma` after the input (`t` `right_ctrl` or `t` `e` `s` `t` `right_ctrl`).
+<h3>Syntax</h3>
 
 <strong><span title="Settings&#013;=se.txt==========&#013;StrandLengthMode: 1&#013;StrandLength: 3&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#013;&#013;Database&#013;=db.txt==========&#013;hello&#013;===============&#13;&#013;Run&#013;Press h e l in a text area&#13;&#13;Program&#13;=dnaspider.exe=====&#013;strand: h&#013;strand: he&#013;strand: hel&#013;===============">`hello`</span>
  <span title="=se.txt==========&#013;StrandLengthMode: 0&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#13;&#13;=db.txt==========&#13;h:ello&#13;===============&#13;&#13;Run&#13;Clear strand then press h&#13;&#13;To clear strand, toggle right&#13;ctrl, pause, or backspace&#13;&#13;=dnaspider.exe=====&#013;strand: h&#013;===============">`h:ello`</span>
@@ -67,6 +69,6 @@ Get the latest release.
 
 View dnaspider in action.
 
-<h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj -> Open with -> Visual Studio&#13;&#13;Solution Explorer -> Source Files -> dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;Ctrl + Shift + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">Source</a></h3>
+<h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;Ctrl + Shift + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">Source</a></h3>
 
-Open project to view, edit, and build.
+Open project file <em>dnaspider.vcxproj</em> in Visual Studio to view, edit, and build.
