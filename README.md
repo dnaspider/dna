@@ -1,7 +1,7 @@
 # `🕷`<em>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Download open source dnaspider.exe &#13;Programmable keyboard software for Windows 10")</em><br><br><sup><sup><a href="https://github.com/dnaspider/dna/wiki/Introduction" title="Introduction">Programmable keyboard software</a> </sup></sup><br><em>for Windows 10 (32/64-bit).</em>
 Hello friend, and thank you for your interest in dnaspider.exe.
 
-🥁 Introducing dnaspider.exe. Programmable keyboard software for executing simple keyboard and mouse functionality to your liking. Use this functionality to accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality.
+🥁 Introducing dnaspider.exe. Programmable keyboard software for executing simple keyboard and mouse functionality to your liking. Use this functionality to accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality seamlessly.
 <h3>How it works ⚙</h3>
 
 dnaspider.exe builds a strand from keyboard keys you press... 
