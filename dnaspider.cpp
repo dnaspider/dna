@@ -6,7 +6,7 @@
 #include <windows.h>
 using namespace std;
 
-#pragma region "global var"
+#pragma region global_var
 bool StockInterfaceControls = true;
 int CommaSleep = 150;
 //bool ignoreMediaKeys = false;
@@ -74,7 +74,7 @@ bool EscCommaAutoBs = true;
 string code = "";
 #pragma endregion
 
-#pragma region "global sub"
+#pragma region global_sub
 string check_if_num(string s) {
 	if (s > "") {
 		for (size_t t = 0; t < s.length(); t++) {//!0-9
@@ -836,8 +836,8 @@ void key(string k) {
 
 #pragma endregion
 
-int main() {
-	//cout << "@dnaspider\n\n";
+int main() {//cout << "@dnaspider\n\n";
+#pragma region initial_startup
 	if (CreateDirectory("c:/dna", NULL)) {
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
@@ -846,13 +846,14 @@ int main() {
 	else { ; }
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
-	if (GetAsyncKeyState(81)) { qScanOnly = true; }//q
-	if (GetAsyncKeyState(83)) { showStrand = true; }//s
+	if (GetAsyncKeyState(81)) qScanOnly = true; //q
+	if (GetAsyncKeyState(83)) showStrand = true; //s
 	if (GetAsyncKeyState(79)) { showOuts = true; showStrand = true; }//o
-	if (GetAsyncKeyState(VK_RCONTROL))cKey = VK_RCONTROL;
-	if (GetAsyncKeyState(VK_LCONTROL))cKey = VK_LCONTROL;
-	if (GetAsyncKeyState(VK_ESCAPE))cKey = VK_ESCAPE;
+	if (GetAsyncKeyState(VK_RCONTROL)) cKey = VK_RCONTROL;
+	if (GetAsyncKeyState(VK_LCONTROL)) cKey = VK_LCONTROL;
+	if (GetAsyncKeyState(VK_ESCAPE)) cKey = VK_ESCAPE;
 	printIntro();
+#pragma endregion
 	for (;; Sleep(frequency)) {
 		if ((GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && FindWindowA(0, "se.txt - Notepad") || FindWindowA(0, "se.txt - Visual Studio Code")) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND hotreload = GetForegroundWindow(); if (np == hotreload || vsc == hotreload) { loadSe(); strand.clear(); continue; } }//lctrl+s hot reload
 		if (GetAsyncKeyState(VK_BACK)) {
@@ -918,7 +919,7 @@ int main() {
 		}
 		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
-#pragma region "a-z"
+#pragma region a-z
 		if (!ignoreAZ) {
 			if (GetAsyncKeyState(0x41)) { key("a"); continue; }
 			if (GetAsyncKeyState(0x42)) { key("b"); continue; }
@@ -948,7 +949,7 @@ int main() {
 			if (GetAsyncKeyState(0x5A)) { key("z"); continue; }
 		}
 #pragma endregion
-#pragma region "0-9"
+#pragma region 0-9
 		if (!ignore09) {
 			if (GetAsyncKeyState(0x30)) { key("0"); continue; }
 			if (GetAsyncKeyState(0x31)) { key("1"); continue; }
@@ -962,7 +963,7 @@ int main() {
 			if (GetAsyncKeyState(0x39)) { key("9"); continue; }
 		}
 #pragma endregion
-#pragma region "F1-F12"
+#pragma region F1-F12
 		if (!ignoreF1s) {
 			if (GetAsyncKeyState(0x70)) { key("!"); continue; } //VK_F1
 			if (GetAsyncKeyState(0x71)) { key("@"); continue; }
@@ -978,7 +979,7 @@ int main() {
 			if (GetAsyncKeyState(0x7B)) { key("+"); continue; }
 		}
 #pragma endregion
-#pragma region "_"
+#pragma region _
 		if (!ignoreArrows) {
 			if (GetAsyncKeyState(VK_LEFT)) { key("L"); continue; }
 			if (GetAsyncKeyState(VK_UP)) { key("U"); continue; }
