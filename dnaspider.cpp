@@ -919,7 +919,7 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
-#pragma region a-z
+#pragma region input_strand
 		if (!ignoreAZ) {
 			if (GetAsyncKeyState(0x41)) { key("a"); continue; }
 			if (GetAsyncKeyState(0x42)) { key("b"); continue; }
@@ -948,8 +948,6 @@ int main() {//cout << "@dnaspider\n\n";
 			if (GetAsyncKeyState(0x59)) { key("y"); continue; }
 			if (GetAsyncKeyState(0x5A)) { key("z"); continue; }
 		}
-#pragma endregion
-#pragma region 0-9
 		if (!ignore09) {
 			if (GetAsyncKeyState(0x30)) { key("0"); continue; }
 			if (GetAsyncKeyState(0x31)) { key("1"); continue; }
@@ -962,8 +960,6 @@ int main() {//cout << "@dnaspider\n\n";
 			if (GetAsyncKeyState(0x38)) { key("8"); continue; }
 			if (GetAsyncKeyState(0x39)) { key("9"); continue; }
 		}
-#pragma endregion
-#pragma region F1-F12
 		if (!ignoreF1s) {
 			if (GetAsyncKeyState(0x70)) { key("!"); continue; } //VK_F1
 			if (GetAsyncKeyState(0x71)) { key("@"); continue; }
@@ -978,8 +974,6 @@ int main() {//cout << "@dnaspider\n\n";
 			if (GetAsyncKeyState(0x7A)) { key("_"); continue; }
 			if (GetAsyncKeyState(0x7B)) { key("+"); continue; }
 		}
-#pragma endregion
-#pragma region _
 		if (!ignoreArrows) {
 			if (GetAsyncKeyState(VK_LEFT)) { key("L"); continue; }
 			if (GetAsyncKeyState(VK_UP)) { key("U"); continue; }
@@ -1007,7 +1001,16 @@ int main() {//cout << "@dnaspider\n\n";
 		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(","); continue; }
 		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key("."); continue; }
 		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key("/"); continue; }
-
+		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key("?"); continue; }
+		/*if (!ignoreMediaKeys) {
+			if (GetAsyncKeyState(VK_INSERT)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_DELETE)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_HOME)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_END)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_PRIOR)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_NEXT)) { key("?"); continue; }
+		}
+		if (GetAsyncKeyState(JOY_BUTTON1)) { key("?"); continue; }*/
 		if (!ignoreNumPad) {
 			if (GetAsyncKeyState(VK_NUMPAD0)) { key("Z"); continue; }
 			if (GetAsyncKeyState(VK_NUMPAD1)) { key("Q"); continue; }
@@ -1027,16 +1030,6 @@ int main() {//cout << "@dnaspider\n\n";
 			if (GetAsyncKeyState(VK_DECIMAL)) { key("\""); continue; }
 			if (GetAsyncKeyState(VK_RETURN)) { key(":"); continue; }
 		}
-		/*if (!ignoreMediaKeys) {
-			if (GetAsyncKeyState(VK_INSERT)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_DELETE)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_HOME)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_END)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_PRIOR)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_NEXT)) { key("?"); continue; }
-		}*/
-		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key("?"); continue; }
-		//if (GetAsyncKeyState(JOY_BUTTON1)) { key("?"); continue; }
 #pragma endregion
 	}
 }
