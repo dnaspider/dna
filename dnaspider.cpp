@@ -857,7 +857,7 @@ int main() {//cout << "@dnaspider\n\n";
 	printIntro();
 #pragma endregion
 	for (;; Sleep(frequency)) {
-		if ((GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && FindWindowA(0, "se.txt - Notepad") && GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") && GetForegroundWindow()) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND hotreload = GetForegroundWindow(); if (np == hotreload || vsc == hotreload) { loadSe(); strand.clear(); continue; } }//lctrl+s hot reload
+		if ((GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND hotreload = GetForegroundWindow(); if (np == hotreload || vsc == hotreload) { loadSe(); strand.clear(); continue; } }//lctrl+s hot reload
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
