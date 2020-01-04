@@ -320,10 +320,10 @@ void loadSe() {
 		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
 		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
 		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
-		if (se == "EscCommaAutoBs:") { EscCommaAutoBs = stoi(v); continue; }
 		if (se == "CommaSleep:") { CommaSleep = stoi(v); continue; }
 		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
 		if (se == "AutoBs_EscH:") { EscHAutoBs = stoi(v); continue; }
+		if (se == "AutoBs_EscComma:") { EscCommaAutoBs = stoi(v); continue; }
 		if (se == "SeHotReload_CtrlS:") { SeHotReload_CtrlS = stoi(v); continue; }
 		if (se == "SeDbClearStrand_CtrlS:") { SeDbClearStrand_CtrlS = stoi(v); continue; }
 		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }	//}catch (const std::exception&){cout << "Error in " << settings << "!\n";};
@@ -411,10 +411,10 @@ void printSe() {
 		cout << "StartHidden: " << startHidden << endl;
 		cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 		cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
-		cout << "EscCommaAutoBs: " << EscCommaAutoBs << endl;
 		cout << "CommaSleep: " << CommaSleep << endl;
 		cout << "StockInterfaceControls: " << StockInterfaceControls << endl;
 		cout << "AutoBs_EscH: " << EscHAutoBs << endl;
+		cout << "AutoBs_EscComma: " << EscCommaAutoBs << endl;
 		cout << "SeHotReload_CtrlS: " << SeHotReload_CtrlS << endl;
 		cout << "SeDbClearStrand_CtrlS: " << SeDbClearStrand_CtrlS << endl;
 		cout << "Exit_EscX: " << enableEscX << endl;
@@ -914,10 +914,10 @@ int main() {//cout << "@dnaspider\n\n";
 				out("<bs>");
 				out(t);
 			}
-			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {
-				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_OEM_COMMA); GetAsyncKeyState(VK_OEM_COMMA); if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } clearAllKeys(); //,
+			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
+				if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } //clearAllKeys(); 
 				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) {
-					if (strand == "<")continue; strand.append(">"); prints(); scanDb(); if (strand > "") { strand.clear(); }
+					if (strand == "<")continue; strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb(); if (strand > "") { strand.clear(); }
 				}
 				else { if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }strand.clear(); strand = "<"; prints(); }
 			}
