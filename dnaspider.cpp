@@ -921,7 +921,7 @@ int main() {//cout << "@dnaspider\n\n";
 				}
 				else { if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }strand.clear(); strand = "<"; prints(); }
 			}
-			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } 
+			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if (EscHAutoBs) { kbPress("<bs>", VK_BACK); }//esc + h
 				GetAsyncKeyState(VK_ESCAPE);toggle_visibility(); 
 				if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; 
