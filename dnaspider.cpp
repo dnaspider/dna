@@ -682,7 +682,7 @@ void scanDb() {
 						else conn();
 						break;
 					case's':
-						if (!StockInterfaceControls && qqb("<se>")) { printSe(); rei(); }
+						if (qqb("<se>")) { printSe(); rei(); }
 						else if (qqb("<shift>")) { kbHold(VK_LSHIFT); rei(); }
 						else if (qqb("<shift*")) kbPress("<shift*", VK_LSHIFT);
 						else if (qqb("<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
