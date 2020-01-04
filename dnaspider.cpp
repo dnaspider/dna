@@ -866,7 +866,7 @@ int main() {//cout << "@dnaspider\n\n";
 	printIntro();
 #pragma endregion
 	for (;; Sleep(frequency)) {
-		if ((SeHotReload_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) strand.clear(); else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
+		if ((SeHotReload_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); continue; } else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
 		if ((SeDbClearStrand_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "db.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "db.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); strand.clear(); continue; }//clear
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
