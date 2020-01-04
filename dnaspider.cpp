@@ -897,7 +897,6 @@ int main() {//cout << "@dnaspider\n\n";
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				POINT pt; GetCursorPos(&pt);
 				string to_string(long v); out("<bs>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">");
-
 			}
 			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
