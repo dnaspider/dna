@@ -74,6 +74,7 @@ bool EscCommaAutoBs = true;
 string code = "";
 bool EscHAutoBs = true;
 bool SeHotReload_CtrlS=1;
+bool SeDbClearStrand_CtrlS=1;
 #pragma endregion
 
 #pragma region global_sub
@@ -324,6 +325,7 @@ void loadSe() {
 		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
 		if (se == "AutoBs_EscH:") { EscHAutoBs = stoi(v); continue; }
 		if (se == "SeHotReload_CtrlS:") { SeHotReload_CtrlS = stoi(v); continue; }
+		if (se == "SeDbClearStrand_CtrlS:") { SeDbClearStrand_CtrlS = stoi(v); continue; }
 		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }	//}catch (const std::exception&){cout << "Error in " << settings << "!\n";};
 	}
 	f.close();
@@ -414,6 +416,7 @@ void printSe() {
 		cout << "StockInterfaceControls: " << StockInterfaceControls << endl;
 		cout << "AutoBs_EscH: " << EscHAutoBs << endl;
 		cout << "SeHotReload_CtrlS: " << SeHotReload_CtrlS << endl;
+		cout << "SeDbClearStrand_CtrlS: " << SeDbClearStrand_CtrlS << endl;
 		cout << "Exit_EscX: " << enableEscX << endl;
 		cout << endl;
 	}
@@ -864,6 +867,7 @@ int main() {//cout << "@dnaspider\n\n";
 #pragma endregion
 	for (;; Sleep(frequency)) {
 		if ((SeHotReload_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) strand.clear(); else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
+		if ((SeDbClearStrand_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "db.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "db.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); strand.clear(); continue; }//clear
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
