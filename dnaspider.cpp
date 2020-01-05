@@ -275,21 +275,30 @@ void loadSe() {
 	string cell; while (getline(f, cell)) {//try {
 		string se = cell.substr(0, cell.find(":") + 1);
 		string v = (cell.substr(cell.find(":") + 1));
-		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
-		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
 		if (se == "ShowStrand:") { showStrand = stoi(v); continue; }
-		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
 		if (se == "OutsTemplate:") { OutsTemplate = (v.length() > 0) ? v.substr(1) : v; continue; }
 		if (se == "Database:") { database = (v.length() > 0) ? v.substr(1) : v; continue; }
+		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
 		if (se == "CtrlScanOnlyMode:") { qScanOnly = stoi(v); continue; }
-		if (se == "CtrlKey:") { cKey = stoi(v); continue; }
 		if (se == "StrandLengthMode:") { strandLengthMode = stoi(v); continue; }
 		if (se == "StrandLength:") { strandLength = stoi(v); continue; }
-		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
-		if (se == "RepeatKey:") { reKey = stoi(v); continue; }
-		if (se == "Frequency:") { frequency = stoi(v); continue; }
 		if (se == "Ignore_A-Z:") { ignoreAZ = stoi(v); continue; }
 		if (se == "Ignore_0-9:") { ignore09 = stoi(v); continue; }
+		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
+		if (se == "CtrlKey:") { cKey = stoi(v); continue; }
+		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
+		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
+		if (se == "Frequency:") { frequency = stoi(v); continue; }
+		if (se == "RepeatKey:") { reKey = stoi(v); continue; }
+		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
+		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
+		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
+		if (se == "CommaSleep:") { CommaSleep = stoi(v); continue; }
+		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
+		if (se == "AutoBs_EscH:") { EscHAutoBs = stoi(v); continue; }
+		if (se == "AutoBs_EscComma:") { EscCommaAutoBs = stoi(v); continue; }
+		if (se == "SeHotReload_CtrlS:") { SeHotReload_CtrlS = stoi(v); continue; }
+		if (se == "SeDbClearStrand_CtrlS:") { SeDbClearStrand_CtrlS = stoi(v); continue; }
 		if (se == "Ignore_Space:") { ignoreSpace = stoi(v); continue; }
 		if (se == "Ignore_F1-F12:") { ignoreF1s = stoi(v); continue; }
 		if (se == "Ignore_Arrows:") { ignoreArrows = stoi(v); continue; }
@@ -317,15 +326,6 @@ void loadSe() {
 		if (se == "Ignore_Menu:") { ignoreMenuKey = stoi(v); continue; }
 		//if (se == "Ignore_MediaKeys:") { ignoreMediaKeys = stoi(v); continue; }
 		if (se == "Ignore_NumPad:") { ignoreNumPad = stoi(v); continue; }
-		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
-		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
-		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
-		if (se == "CommaSleep:") { CommaSleep = stoi(v); continue; }
-		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
-		if (se == "AutoBs_EscH:") { EscHAutoBs = stoi(v); continue; }
-		if (se == "AutoBs_EscComma:") { EscCommaAutoBs = stoi(v); continue; }
-		if (se == "SeHotReload_CtrlS:") { SeHotReload_CtrlS = stoi(v); continue; }
-		if (se == "SeDbClearStrand_CtrlS:") { SeDbClearStrand_CtrlS = stoi(v); continue; }
 		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }	//}catch (const std::exception&){cout << "Error in " << settings << "!\n";};
 	}
 	f.close();
