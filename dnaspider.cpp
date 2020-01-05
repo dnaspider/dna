@@ -7,7 +7,7 @@
 using namespace std;
 
 #pragma region global_var
-bool StockInterfaceControls = true;
+bool StockInterfaceControls = false;
 int CommaSleep = 150;
 //bool ignoreMediaKeys = false;
 bool enableEscX = true;
@@ -27,7 +27,7 @@ bool ignorePeriod = true;
 bool ignoreForwardslash = true;
 bool startHidden = false;
 bool ignoreAZ = false;
-bool ignore09 = false;
+bool ignore09 = true;
 bool ignoreSpace = false;
 bool ignoreArrows = true;
 bool ignoreF1s = true;//f1-f12
@@ -50,13 +50,13 @@ string settings = R"(C:\dna\se.txt)";
 int frequency = 150; //>> ms response -> vk_
 int speed = 0; //<< 
 short reKey = VK_SCROLL; //repeat
-short cKey = VK_CONTROL; // < 
+short cKey = VK_RCONTROL; //< 163 
 string strand = ""; //>> supply
 string tail = ""; //strand:tail
 string re = "";//repeat clone
 bool showStrand = true; //cout <<
-bool showOuts = true; //cout << 
-bool showIntro = true;
+bool showOuts = false; //cout << 
+bool showIntro = false;
 bool showSettings = false;
 string star_num; //*#
 string qq; //<x>
@@ -68,7 +68,7 @@ bool shft = false;
 size_t i = 0;
 bool close_ctrl_mode = true; //x>, x:, x- 
 bool clear_after_stock = true; //<se, <db
-bool SlightPauseInBetweenConnects = true;
+bool SlightPauseInBetweenConnects = false;
 string OutsTemplate = "strand: ";
 bool EscCommaAutoBs = true;
 string code = "";
@@ -850,9 +850,10 @@ void key(string k) {
 int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	if (CreateDirectory("c:/dna", NULL)) {
+		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;//minimalist se.txt
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or pause/break key.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nCloseCtrlMode: 0\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or pause/break key.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
