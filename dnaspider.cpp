@@ -449,6 +449,7 @@ void scanDb() {
 	}
 	ifstream f(database); //if (!f) { cout << "Error: " << database << " not found!\n"; return; }
 	string cell; while (getline(f, cell)) { //cout << cell << endl;
+		if (cell.substr(0, 4) == "<'''") break; //ignore db...
 		if (re > "" || (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + ":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + "-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + ":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + "->") || cell.substr(0, strand.length() + 1) == strand + ">" || cell.substr(0, strand.length() + 1) == strand + ":" || cell.substr(0, strand.length() + 1) == strand + "-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != "<")) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io
 
 			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == ">") strand = strand.substr(0, strand.length() - 1);
