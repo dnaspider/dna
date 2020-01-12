@@ -336,7 +336,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (Esc+P to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left, right, click, hold, release\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n";
+	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (Esc + P to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<lc><rc><lh><rh><lr><rr>  Left, right, click, hold, release\n<ls><rs>  Left, right scroll\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n";
 	if (showIntro) cout << "\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling Ctrl, Backspace, or Pause. Inside a text area, press T E S T to run (strand: test)\n";
 	cout << endl;
 }
@@ -862,7 +862,7 @@ int main() {//cout << "@dnaspider\n\n";
 		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;//minimalist se.txt
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or pause/break key.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or shift + pause/break.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -912,17 +912,17 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(reKey)) { out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
 		if (GetAsyncKeyState(VK_PAUSE)) { if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)){strand.clear();continue;} if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }
 		if (GetAsyncKeyState(VK_ESCAPE)) {
-			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); }
+			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); continue; }
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				POINT pt; GetCursorPos(&pt);
-				string to_string(long v); out("<bs>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">");
+				string to_string(long v); kb(VK_BACK); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); continue;
 			}
 			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				string t = tail;
-				out("<bs>");
-				out(t);
+				kb(VK_BACK);
+				out(t); continue;
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
 				if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } //clearAllKeys(); 
@@ -1018,7 +1018,7 @@ int main() {//cout << "@dnaspider\n\n";
 		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { key("]"); continue; }
 		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { key("\\"); continue; }
 		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { key(";"); continue; }
-		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key(","); continue; }
+		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key("'"); continue; }
 		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(","); continue; }
 		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key("."); continue; }
 		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key("/"); continue; }
