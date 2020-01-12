@@ -122,6 +122,8 @@ void kbRelease(short key) {
 void mouseEvent(short key) {
 	INPUT ip; ip.type = INPUT_MOUSE; ip.mi.time = 0;
 	ip.mi.dwFlags = key;
+	if (key == MOUSEEVENTF_HWHEEL) ip.mi.mouseData = 150;//hscrollwheel
+	if (key == MOUSEEVENTF_HWHEEL && code.substr(0,3)=="<ls") ip.mi.mouseData = -150;
 	SendInput(1, &ip, sizeof(ip));
 }
 
@@ -158,6 +160,7 @@ void kbPress(string code, short key) {
 		}
 		else if (code == "<lc*") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
 		else if (code == "<rc*") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+		else if (code == "<ls*" || code == "<rs*") mouseEvent(MOUSEEVENTF_HWHEEL);
 		else SendInput(2, ip, sizeof(ip[0]));
 		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
 		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
@@ -243,7 +246,8 @@ void kbPress1(string n, short key) {
 		for (int j = 0; j < stoi(n); j++) {
 			if (code == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
 			else if (code == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-			SendInput(2, ip, sizeof(ip[0]));
+			else if (code == "<ls" || code == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+			else SendInput(2, ip, sizeof(ip[0]));
 			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { if (speed > 0) { speed = 0; }return; } if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m == IDYES) { GetAsyncKeyState(VK_PAUSE); } else { if (speed > 0) { speed = 0; }i = tail.length(); return; } }//stop
 			if (speed > 0 && stoi(n) != j + 1) Sleep(speed);
 		}
@@ -654,6 +658,8 @@ void scanDb() {
 						}
 						else if (qqb("<left>") || qqb("<left*")) kbPress("<left*", VK_LEFT);
 						else if (qqb("<left")) kbpress2(code, VK_LEFT);
+						else if (qqb("<ls>") || qqb("<ls*")) { kbPress("<ls*", VK_F7); }//hscroll+
+						else if (qqb("<ls")) { kbpress2(code, VK_F7); }
 						else conn();
 						break;
 					case'm':
@@ -688,6 +694,8 @@ void scanDb() {
 						}
 						else if (qqb("<right>") || qqb("<right*")) kbPress("<right*", VK_RIGHT);
 						else if (qqb("<right")) kbpress2(code, VK_RIGHT);
+						else if (qqb("<rs>") || qqb("<rs*")) { kbPress("<rs*", VK_F7); }//hscroll-
+						else if (qqb("<rs")) { kbpress2(code, VK_F7); }
 						else conn();
 						break;
 					case's':
