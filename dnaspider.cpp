@@ -927,7 +927,6 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(reKey)) { out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
 		if (GetAsyncKeyState(VK_PAUSE)) { if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)){strand.clear();continue;} if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }
 		if (GetAsyncKeyState(VK_ESCAPE)) {
-			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); continue; }
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				POINT pt; GetCursorPos(&pt);
@@ -940,18 +939,27 @@ int main() {//cout << "@dnaspider\n\n";
 				out(t); continue;
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
-				if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } //clearAllKeys(); 
-				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() > 1 || strand.length() > 0 && close_ctrl_mode) {
-					if (strand == "<")continue; strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb(); if (strand > "") { strand.clear(); }
+				if (EscCommaAutoBs) { kb(VK_BACK);  GetAsyncKeyState(VK_BACK); }
+				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() >= 1) {
+					if (strand == "<")continue;
+					strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb(); 
+					if (strand > "")strand.clear();
+					clearAllKeys(); continue;
 				}
-				else { if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }strand.clear(); strand = "<"; prints(); }
+				else { 
+					if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; } 
+					clearAllKeys(); strand = "<"; prints(); continue;
+				}
 			}
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
-			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) { if (EscHAutoBs) { kbPress("<bs>", VK_BACK); }//esc + h
-				GetAsyncKeyState(VK_ESCAPE);toggle_visibility(); 
+			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
+				if (EscHAutoBs) kb(VK_BACK);
+				GetAsyncKeyState(VK_ESCAPE); toggle_visibility(); 
 				if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; 
 				continue; 
 			}
+			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); }
+			continue;
 		}
 		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
 		if (qScanOnly && strand.substr(0, 1) != "<") continue;
