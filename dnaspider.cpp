@@ -175,6 +175,7 @@ void clearAllKeys() {
 	for (int i = 48; i < 58; i++) { GetAsyncKeyState(i); }
 	GetAsyncKeyState(cKey);
 	GetAsyncKeyState(reKey);
+	GetAsyncKeyState(VK_BACK);
 	GetAsyncKeyState(VK_ESCAPE);
 	GetAsyncKeyState(VK_PAUSE);
 	GetAsyncKeyState(VK_SPACE);
