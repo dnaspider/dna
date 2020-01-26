@@ -555,7 +555,7 @@ void scanDb() {
 						else printq();
 						break;
 					case'\'':
-						if (qq.find(">") != string::npos && qqb("<''"))	return; //<''ignore>...
+						if (qq.find(">") != string::npos && qqb("<''")) { i = tail.length(); break; }//<''ignore>...
 						else if (qq.find(">") != string::npos && qqb("<'")) rei(); //<'comments>
 						else printq();
 						break;
