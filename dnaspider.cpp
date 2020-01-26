@@ -931,7 +931,11 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
-		if (GetAsyncKeyState(VK_PAUSE)) { if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)){strand.clear();continue;} if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); continue; }
+		if (GetAsyncKeyState(VK_PAUSE)) { 
+			if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) { strand.clear(); if (ignoreEsc) kb(VK_ESCAPE); prints(); continue; }
+			if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); 
+			continue; 
+		}
 		if (GetAsyncKeyState(VK_ESCAPE)) {
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
