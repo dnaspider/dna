@@ -566,13 +566,18 @@ void scanDb() {
 						else if (qqb("<alt")) kbpress2(code, VK_LMENU);
 						else if (qqb("<a:")) { kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
-							for (int w = 0; w < 25; w++) {
-								if (w >= 24) { if (showOuts) { cout << "app: " << qp << " not found\n"; strand.clear(); } f.close(); return; }
-								DWORD pid; HWND h = FindWindowA(0, qp.c_str());	GetWindowThreadProcessId(h, &pid);
-								if (h) { if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); } SetForegroundWindow(h); break; }
-								if (GetAsyncKeyState(VK_ESCAPE)) { f.close(); return; }
+							DWORD pid; HWND h; auto size{0}, length{24};
+							for (size; size < length; size++) {
+								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } break; }
+								h = FindWindowA(0, qp.c_str()); GetWindowThreadProcessId(h, &pid);
+								if (h) {
+									if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
+									SetForegroundWindow(h);
+									break; 
+								}
 								Sleep(333);
-							}//Sleep(150);
+							}
+							if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { i = tail.length(); break; }
 							rei();
 						}
 						else conn();
