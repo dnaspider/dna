@@ -568,7 +568,7 @@ void scanDb() {
 						else if (qqb("<app:")) {//app activate
 							DWORD pid; HWND h; auto size{0}, length{24};
 							for (; size < length; size++) {
-								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } break; }
+								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
 								h = FindWindowA(0, qp.c_str()); GetWindowThreadProcessId(h, &pid);
 								if (h) {
 									if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
