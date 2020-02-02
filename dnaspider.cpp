@@ -72,7 +72,8 @@ bool SlightPauseInBetweenConnects = false;
 string OutsTemplate = "strand: ";
 bool EscCommaAutoBs = true;
 bool EscEqualAutoBs = true;
-string code = "";
+string code = ""; //<enter>...
+string codes = ""; //tail re
 bool EscHAutoBs = true;
 bool SeHotReload_CtrlS=1;
 bool SeDbClearStrand_CtrlS=1;
@@ -466,32 +467,27 @@ void scanDb() {
 			}
 
 #pragma region set_tail
-			if (strandLengthMode) {
-				tail = cell.substr(strand.length(), cell.length() - strand.length());
-			}
-			else { 
-				tail = cell.substr(strand.length() + 1, cell.length() - strand.length() + 1);
-				if (re > "") tail = re;
-			}
-			if (cell.substr(0, 1) != "<") {
-				if (re == "") {
-					code = ">" + strand;
-					if (tail[0] == '>') tail = tail.substr(1, tail.length());//trim >
-				}
-			}
-			if (cell.substr(0, strand.length() + 1) == strand + "-") {//<bs> strand.length()
-				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); }GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
-				if (strandLengthMode && tail[0] == '-' && tail[1] == '>') tail = tail.substr(2, tail.length());//trim ->
-				if (strandLengthMode && tail[0] == '-') tail = tail.substr(1, tail.length());//trim -
-				code = "-" + tail;
-			}
- 			if (tail.substr(0, 1) == ":" || tail.substr(0, 1) == ">") {
+			tail = re > "" ? re : cell.substr(strand.length(), cell.length() - strand.length());
+			switch (tail[0]) {
+			case ':':
 				tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
-				if (strand[0]=='<') code = ":" + strand.substr(1,strand.length()-1) + tail;
-				tail = cell.substr(strand.length() + 1, cell.length() - 1);//trim : >
-				if (tail[0] == '>') tail = tail.substr(1, tail.length());//trim if <-> <:>
+				codes = tail;
+				break;
+			case '>':
+				tail = tail.substr(1, tail.length());
+				codes = strand[0] == '<' ? strand.substr(1, strand.length()) + tail : strand + tail;
+				break;
+			case '-':
+				tail = tail.substr(1, tail.length());
+				if (tail[0] == '>') tail = tail.substr(1, tail.length());
+				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); }GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+				codes = tail;
+				break;
+			default:
+				codes = cell;
 			}
+
 			if (showOuts) cout << "found: " << cell << "\ntail: " << tail << endl;
 #pragma endregion
 			
@@ -820,8 +816,7 @@ void scanDb() {
 			}
 			if (strand > "" || re > "") {
 				clearAllKeys();
-				if (re == "" && code[0] == ':')	tail = code.substr(1, code.length());//<:
-				if (re == "" && code[0] == '>')	tail = code.substr(1, code.length() - 1) + tail;
+				if (re == "") tail = codes;
 				strand.clear();
 			}
 			if (speed > 0)speed = 0;
