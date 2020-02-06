@@ -966,12 +966,18 @@ int main() {//cout << "@dnaspider\n\n";
 				if (EscCommaAutoBs) { kb(VK_BACK);  GetAsyncKeyState(VK_BACK); }
 				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() >= 1) {
 					if (strand == "<")continue;
-					strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb(); 
+					strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb();
 					if (strand > "")strand.clear();
 					clearAllKeys(); continue;
 				}
 				else { 
-					if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; } 
+					if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }
+					if (strand.substr(0, 1) != "<" && close_ctrl_mode && strand.length() > 0) {
+						strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb();
+						if (strand > "") { strand.clear(); prints(); continue; }
+						if (strand == "") prints();
+						continue;
+					}
 					clearAllKeys(); strand = "<"; prints(); continue;
 				}
 			}
