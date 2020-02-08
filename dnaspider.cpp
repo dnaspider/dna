@@ -223,6 +223,7 @@ void scanDb(); void conn() {//<connect:>
 	}
 	if (con) {
 		ifstream f(database); string cell; while (getline(f, cell)) {
+			if (cell.substr(0, 4) == "<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
 				string re1 = tail;
 				string qqc = qq.substr(0, qq.find(">"));
