@@ -464,7 +464,7 @@ void scanDb() {
 			
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string to_string(long v); cell = "><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; }
+				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string to_string(long v); cell = "><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"; re = cell; }
 			}
 
 #pragma region set_tail
@@ -955,7 +955,7 @@ int main() {//cout << "@dnaspider\n\n";
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				POINT pt; GetCursorPos(&pt);
-				string to_string(long v); kb(VK_BACK); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); continue;
+				string to_string(long v); kb(VK_BACK); out("<shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); continue;
 			}
 			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
