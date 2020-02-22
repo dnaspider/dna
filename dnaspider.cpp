@@ -75,7 +75,7 @@ bool EscEqualAutoBs = true;
 string code = ""; //<enter>...
 string codes = ""; //tail re
 bool EscHAutoBs = true;
-bool AutoBs_Repeat = 0;
+bool AutoBs_RepeatKey = 0;
 bool SeHotReload_CtrlS=1;
 bool SeDbClearStrand_CtrlS=1;
 bool assume = 0;
@@ -304,7 +304,7 @@ void loadSe() {
 		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
 		if (se == "Frequency:") { frequency = stoi(v); continue; }
 		if (se == "RepeatKey:") { reKey = stoi(v); continue; }
-		if (se == "AutoBs_Repeat:") { AutoBs_Repeat = stoi(v); continue; }
+		if (se == "AutoBs_RepeatKey:") { AutoBs_RepeatKey = stoi(v); continue; }
 		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
 		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
 		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
@@ -432,7 +432,7 @@ void printSe() {
 		cout << "AutoBs_EscH: " << EscHAutoBs << endl;
 		cout << "AutoBs_EscComma: " << EscCommaAutoBs << endl;
 		cout << "AutoBs_EscEqual: " << EscEqualAutoBs << endl;
-		cout << "AutoBs_Repeat: " << AutoBs_Repeat << endl;
+		cout << "AutoBs_RepeatKey: " << AutoBs_RepeatKey << endl;
 		cout << "SeHotReload_CtrlS: " << SeHotReload_CtrlS << endl;
 		cout << "SeDbClearStrand_CtrlS: " << SeDbClearStrand_CtrlS << endl;
 		cout << "Assume: " << assume << endl;
@@ -960,7 +960,7 @@ int main() {//cout << "@dnaspider\n\n";
 		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;//minimalist se.txt
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or shift + pause/break.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_Repeat: 0\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or shift + pause/break.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
@@ -1007,7 +1007,7 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			prints(); continue;
 		}
-		if (GetAsyncKeyState(reKey)) { if (AutoBs_Repeat) { kb(VK_BACK); } out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
+		if (GetAsyncKeyState(reKey)) { if (AutoBs_RepeatKey) { kb(VK_BACK); } out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
 		if (GetAsyncKeyState(VK_PAUSE)) { 
 			if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) { strand.clear(); if (ignoreEsc) kb(VK_ESCAPE); prints(); continue; }
 			if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); 
