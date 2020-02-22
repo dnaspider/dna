@@ -1007,7 +1007,12 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			prints(); continue;
 		}
-		if (GetAsyncKeyState(reKey)) { if (AutoBs_RepeatKey) { kb(VK_BACK); } out(tail); kbRelease(reKey); GetAsyncKeyState(reKey); continue; }//repeat
+		if (GetAsyncKeyState(reKey)) { //repeat
+			if (AutoBs_RepeatKey) kb(VK_BACK);
+			out(tail);
+			kbRelease(reKey); GetAsyncKeyState(reKey);
+			continue;
+		}
 		if (GetAsyncKeyState(VK_PAUSE)) { 
 			if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) { strand.clear(); if (ignoreEsc) kb(VK_ESCAPE); prints(); continue; }
 			if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); 
