@@ -484,7 +484,7 @@ void scanDb() {
 			
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); ; string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = cell; cout << "<xy:" + xy + ">\n"; }
+				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = ""; cout << "<xy:" + xy + ">\n"; }
 				else if (re.substr(0, 21) == "><shift>,<shift->rgb:") { getRGB(); if (showStrand) { cout << "<" << tail.substr(16, tail.length()) << endl; } }
 			}
 
@@ -503,7 +503,7 @@ void scanDb() {
 			case '-':
 				tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
-				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); }GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 				codes = tail;
 				break;
 			default:
@@ -1021,9 +1021,7 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_ESCAPE)) {
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-				POINT pt; GetCursorPos(&pt);
-				if (showStrand) cout << "<xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">\n";
-				kb(VK_BACK); re = "<shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">";
+				kb(VK_BACK); GetAsyncKeyState(VK_BACK); re = "><shift>,<shift->xy:";
 				scanDb(); continue;
 			}
 			GetAsyncKeyState(82); if (GetAsyncKeyState(82)) {//esc + r: <rgb:>
