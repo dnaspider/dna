@@ -1026,7 +1026,7 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			GetAsyncKeyState(82); if (GetAsyncKeyState(82)) {//esc + r: <rgb:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-				kb(VK_BACK);
+				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
 				getRGB();
 				out(tail); continue;
 			}
