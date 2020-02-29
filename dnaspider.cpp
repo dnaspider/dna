@@ -484,7 +484,7 @@ void scanDb() {
 			
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = ""; cout << "<xy:" + xy + ">\n"; }
+				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = ""; if (showStrand) { cout << "<xy:" + xy + ">\n"; } }
 				else if (re.substr(0, 21) == "><shift>,<shift->rgb:") { getRGB(); if (showStrand) { cout << "<" << tail.substr(16, tail.length()) << endl; } }
 			}
 
