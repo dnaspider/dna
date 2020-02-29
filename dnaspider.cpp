@@ -886,7 +886,7 @@ void scanDb() {
 		}
 	}
 	f.close();
-	if (strand > "" && close_ctrl_mode) { tail = strand.substr(1, strand.length() - 2); }//dbless repeat
+	if (strand > "" && close_ctrl_mode && strand[0]=='<') { tail = strand.substr(1, strand.length() - 2); }//dbless repeat
 }
 
 void printXy() {
