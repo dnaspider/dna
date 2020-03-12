@@ -565,7 +565,7 @@ void scanDb() {
 						break;
 					case'/':
 						if (qqb("</:")) {//divide
-							if (check_if_num(qp) == "") { printq(); continue; }
+							if (check_if_num(qp) == "" || stoi(qp) <= 0) { printq(); continue; }
 							ic /= stoi(qp);
 							calc();
 							break;
