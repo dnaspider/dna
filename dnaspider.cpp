@@ -284,7 +284,7 @@ void calc() {
 }
 
 void loadSe() {
-	ifstream f(settings); //if (!f) { cout << "Error: " << settings << " not found!\n"; return; }
+	ifstream f(settings); if (!f) { cout << settings << " not found!\n"; return; }
 	string cell; while (getline(f, cell)) {//try {
 		string se = cell.substr(0, cell.find(":") + 1);
 		string v = (cell.substr(cell.find(":") + 1));
@@ -475,7 +475,7 @@ void scanDb() {
 		}
 
 	}
-	ifstream f(database); //if (!f) { cout << "Error: " << database << " not found!\n"; return; }
+	ifstream f(database); if (!f) { cout << database << " not found!\n"; return; }
 	string cell; while (getline(f, cell)) { //cout << cell << endl;
 		if (cell.substr(0, 4) == "<'''") break; //ignore db...
 		if (re > "" || (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + ":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + "-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + ":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + "->") || cell.substr(0, strand.length() + 1) == strand + ">" || cell.substr(0, strand.length() + 1) == strand + ":" || cell.substr(0, strand.length() + 1) == strand + "-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != "<") || close_ctrl_mode && strandLengthMode && strand.substr(0, 1) != "<" && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
