@@ -348,7 +348,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (Esc + P to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<rp:>  Set. E.g., <rp:0,0>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  Left, right, middle -> click, hold, release\n<ls><rs>  Left, right scroll\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms:333>  Continue if rgb (Esc + R to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n";
+	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (Esc + P to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<rp:>  Set. E.g., <rp:0,0>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  Left, right, middle -> click, hold, release\n<ls><rs>  Left, right scroll\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms:333>  Continue if rgb (Esc + R to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<Rgb:>  Continue if rgb in <rp:> location.";
 	if (showIntro) cout << "\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling Right_Ctrl, Backspace, or Shit + Pause_Break. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -736,6 +736,7 @@ void scanDb() {
 						else if (qqb("<pd")) kbpress2(code, VK_NEXT);
 						else conn();
 						break;
+					case'R':
 					case'r':
 						if (qqb("<rp>")) {//return pointer
 							SetCursorPos(qxc, qyc);
@@ -757,7 +758,7 @@ void scanDb() {
 						else if (qqb("<right")) kbpress2(code, VK_RIGHT);
 						else if (qqb("<rs>") || qqb("<rs*")) { kbPress("<rs*", VK_F7); }//hscroll-
 						else if (qqb("<rs")) { kbpress2(code, VK_F7); }
-						else if (qqb("<rgb:")) { //<rgb:r,g,b,x,ms>
+						else if (qqb("<rgb:") || qqb("<Rgb:")) { //<rgb:r,g,b,x,ms>
 							string rgb, r, g, b, x = "1", h = "333", ms = h;							
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",")+1);
@@ -780,7 +781,7 @@ void scanDb() {
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
-							color = GetPixel(hDC, pt.x, pt.y);
+							color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<Rgb> get xy from <rp:> or current
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								rei();//cout << "rgb\n";
 							}
@@ -789,7 +790,7 @@ void scanDb() {
 								for (; size < length; size++) {
 									if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <rgb:" << qp << ">\n"; } i = tail.length(); break; }
 									GetCursorPos(&pt);
-									color = GetPixel(hDC, pt.x, pt.y);
+									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<Rgb> get xy from <rp:> or current
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
 									Sleep(stoi(ms));
 								}
