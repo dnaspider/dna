@@ -745,8 +745,7 @@ void scanDb() {
 							qxc = stoi(qx); qyc = stoi(qy); rei();
 						}
 						else if (qqb("<rand:")) {//<rand:0,1>
-							int r=rand();
-							if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
+							int r=rand(); if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
 								r = qx == "0" ?
 									rand() % (stoi(qy) + 1)
 									:
@@ -755,7 +754,7 @@ void scanDb() {
 							string t = tail;
 							out(to_string(r));
 							tail = t;
-							i = tail.length();
+							i = qq.find(">");
 						}
 						else if (qqb("<rc>") || qqb("<rc*")) kbPress("<rc*", VK_F7);
 						else if (qqb("<rh>")) {//right hold
