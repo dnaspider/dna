@@ -737,7 +737,14 @@ void scanDb() {
 						break;
 					case'R':
 					case'r':
-						if (qqb("<rand:")) {//<rand:0,1>
+						if (qqb("<rp>") || qqb("<Rp>")) {//return pointer
+							SetCursorPos(qxc, qyc);
+							rei();
+						}
+						else if (qqb("<rp:")) {//set return pointer
+							qxc = stoi(qx); qyc = stoi(qy); rei();
+						}
+						else if (qqb("<rand:")) {//<rand:0,1>
 							int r=rand();
 							if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
 								r = qx == "0" ?
@@ -749,13 +756,6 @@ void scanDb() {
 							out(to_string(r));
 							tail = t;
 							i = tail.length();
-						}
-						else if (qqb("<rp>") || qqb("<Rp>")) {//return pointer
-							SetCursorPos(qxc, qyc);
-							rei();
-						}
-						else if (qqb("<rp:")) {//set return pointer
-							qxc = stoi(qx); qyc = stoi(qy); rei();
 						}
 						else if (qqb("<rc>") || qqb("<rc*")) kbPress("<rc*", VK_F7);
 						else if (qqb("<rh>")) {//right hold
