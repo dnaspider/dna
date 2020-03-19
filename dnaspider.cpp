@@ -276,7 +276,6 @@ void out(string ai) { re = ">" + ai; strand.clear(); scanDb(); re.clear(); }
 
 void calc() {
 	string t = tail;
-	rei();
 	qq = to_string(ic) + qq.substr(qq.find(">") + 1, qq.length());
 	out(qq);
 	tail = t;
