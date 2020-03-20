@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <windows.h>
+#include <ctime>
 using namespace std;
 
 #pragma region global_var
@@ -744,17 +745,40 @@ void scanDb() {
 						else if (qqb("<rp:")) {//set return pointer
 							qxc = stoi(qx); qyc = stoi(qy); rei();
 						}
-						else if (qqb("<rand:")) {//<rand:0,1>
-							int r=rand(); if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
-								r = qx == "0" ?
-									rand() % (stoi(qy) + 1)
-									:
-									(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
-							}
+						else if (qqb("<rand:") || qqb("<rand>") || qqb("<Rand>") || qqb("<Rand:")) {//<rand:0,1>
+							int r = rand();
+							char s = (qq[5] + qq[1]);
 							string t = tail;
-							out(to_string(r));
-							tail = t;
-							i = qq.find(">");
+							switch (s) {
+							case -84://':r': <rand:> #
+								if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
+									r = qx == "0" ?
+										rand() % (stoi(qy) + 1) :
+										(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
+								}
+								out(to_string(r));
+								tail = t;
+								i = qq.find(">");
+								break;
+							case -112://'>R': <Rand> A-Z
+								r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');
+								cout << (char)r;
+								i = qq.find(">");
+								break;
+							case -80://'>r': <rand> a-z
+								r = (char)((rand() % ('z' + 1 - 'a')) + 'a');
+								cout << (char)r;
+								i = qq.find(">");
+								break;
+							case -116://':R': <Rand:> A-Za-z
+								r = rand() % 2;
+								r = r == 1 ?
+									(char)((rand() % ('z' + 1 - 'a')) + 'a') :
+									(char)((rand() % ('Z' + 1 - 'A')) + 'A');
+								cout << (char)r;
+								i = qq.find(">");
+								break;
+							}
 						}
 						else if (qqb("<rc>") || qqb("<rc*")) kbPress("<rc*", VK_F7);
 						else if (qqb("<rh>")) {//right hold
@@ -988,6 +1012,7 @@ int main() {//cout << "@dnaspider\n\n";
 	if (GetAsyncKeyState(VK_LCONTROL)) cKey = VK_LCONTROL;
 	if (GetAsyncKeyState(VK_ESCAPE)) cKey = VK_ESCAPE;
 	printIntro();
+	srand((unsigned)time(NULL));
 #pragma endregion
 	for (;; Sleep(frequency)) {
 		if ((SeHotReload_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); continue; } else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
