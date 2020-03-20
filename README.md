@@ -71,4 +71,4 @@ View dnaspider in action.
 
 <h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;Ctrl + Shift + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">Source</a></h3>
 
-Open project file <em>dnaspider.vcxproj</em> in Visual Studio to view, edit, and build.
+Open project file <em>dnaspider.vcxproj</em> in Visual Studio to view, tweak, and build.
