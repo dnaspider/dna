@@ -348,7 +348,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (Esc + P to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp><Rp>  Return pointer\n<rp:>  Set rp x y. E.g., <rp:0,0><Rp>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  Left, right, middle -> click, hold, release\n<ls><rs>  Left, right scroll\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms:333>  Continue if rgb in xy (Esc + R to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<Rgb:>  Continue if Rgb in rp location. db.txt e.g., test-><rp:0,0><Rgb:255,255,255>1\n<rand:>  Print random int. E.g. <rand:0,1>";
+	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (Esc + P to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp><Rp>  Return pointer\n<rp:>  Set rp x y. E.g., <rp:0,0><Rp>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  Left, right, middle -> click, hold, release\n<ls><rs>  Left, right scroll\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press Menu key\n<ins>  Press Insert\n<ps>  Press Print Screen\n<pu><pd>  Press Page Up, Page Down\n<f1>  Press F1 (F1-F12)\n<app:>  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  Alt codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms:333>  Continue if rgb in xy (Esc + R to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<Rgb:>  Continue if Rgb in rp location. db.txt e.g., test-><rp:0,0><Rgb:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>";
 	if (showIntro) cout << "\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling Right_Ctrl, Backspace, or Shit + Pause_Break. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -761,23 +761,71 @@ void scanDb() {
 								i = qq.find(">");
 								break;
 							case -112://'>R': <Rand> A-Z
-								r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');
-								cout << (char)r;
-								i = qq.find(">");
-								break;
+								r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
+								goto outr;
 							case -80://'>r': <rand> a-z
-								r = (char)((rand() % ('z' + 1 - 'a')) + 'a');
-								cout << (char)r;
-								i = qq.find(">");
-								break;
+								r = (char)((rand() % ('z' + 1 - 'a')) + 'a');//cout << (char)r;
+								goto outr;
 							case -116://':R': <Rand:> A-Za-z
 								r = rand() % 2;
 								r = r == 1 ?
 									(char)((rand() % ('z' + 1 - 'a')) + 'a') :
-									(char)((rand() % ('Z' + 1 - 'A')) + 'A');
-								cout << (char)r;
-								i = qq.find(">");
-								break;
+									(char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
+							outr:
+								switch (r) {
+								case 65: out("A"); tail = t; i = qq.find(">"); break;
+								case 66: out("B"); tail = t; i = qq.find(">"); break;
+								case 67: out("C"); tail = t; i = qq.find(">"); break;
+								case 68: out("D"); tail = t; i = qq.find(">"); break;
+								case 69: out("E"); tail = t; i = qq.find(">"); break;
+								case 70: out("F"); tail = t; i = qq.find(">"); break;
+								case 71: out("G"); tail = t; i = qq.find(">"); break;
+								case 72: out("H"); tail = t; i = qq.find(">"); break;
+								case 73: out("I"); tail = t; i = qq.find(">"); break;
+								case 74: out("J"); tail = t; i = qq.find(">"); break;
+								case 75: out("K"); tail = t; i = qq.find(">"); break;
+								case 76: out("L"); tail = t; i = qq.find(">"); break;
+								case 77: out("M"); tail = t; i = qq.find(">"); break;
+								case 78: out("N"); tail = t; i = qq.find(">"); break;
+								case 79: out("O"); tail = t; i = qq.find(">"); break;
+								case 80: out("P"); tail = t; i = qq.find(">"); break;
+								case 81: out("Q"); tail = t; i = qq.find(">"); break;
+								case 82: out("R"); tail = t; i = qq.find(">"); break;
+								case 83: out("S"); tail = t; i = qq.find(">"); break;
+								case 84: out("T"); tail = t; i = qq.find(">"); break;
+								case 85: out("U"); tail = t; i = qq.find(">"); break;
+								case 86: out("V"); tail = t; i = qq.find(">"); break;
+								case 87: out("W"); tail = t; i = qq.find(">"); break;
+								case 88: out("X"); tail = t; i = qq.find(">"); break;
+								case 89: out("Y"); tail = t; i = qq.find(">"); break;
+								case 90: out("Z"); tail = t; i = qq.find(">"); break;
+								case 97: out("a"); tail = t; i = qq.find(">"); break;
+								case 98: out("b"); tail = t; i = qq.find(">"); break;
+								case 99: out("c"); tail = t; i = qq.find(">"); break;
+								case 100: out("d"); tail = t; i = qq.find(">"); break;
+								case 101: out("e"); tail = t; i = qq.find(">"); break;
+								case 102: out("f"); tail = t; i = qq.find(">"); break;
+								case 103: out("g"); tail = t; i = qq.find(">"); break;
+								case 104: out("h"); tail = t; i = qq.find(">"); break;
+								case 105: out("i"); tail = t; i = qq.find(">"); break;
+								case 106: out("j"); tail = t; i = qq.find(">"); break;
+								case 107: out("k"); tail = t; i = qq.find(">"); break;
+								case 108: out("l"); tail = t; i = qq.find(">"); break;
+								case 109: out("m"); tail = t; i = qq.find(">"); break;
+								case 110: out("n"); tail = t; i = qq.find(">"); break;
+								case 111: out("o"); tail = t; i = qq.find(">"); break;
+								case 112: out("p"); tail = t; i = qq.find(">"); break;
+								case 113: out("q"); tail = t; i = qq.find(">"); break;
+								case 114: out("r"); tail = t; i = qq.find(">"); break;
+								case 115: out("s"); tail = t; i = qq.find(">"); break;
+								case 116: out("t"); tail = t; i = qq.find(">"); break;
+								case 117: out("u"); tail = t; i = qq.find(">"); break;
+								case 118: out("v"); tail = t; i = qq.find(">"); break;
+								case 119: out("w"); tail = t; i = qq.find(">"); break;
+								case 120: out("x"); tail = t; i = qq.find(">"); break;
+								case 121: out("y"); tail = t; i = qq.find(">"); break;
+								case 122: out("z"); tail = t; i = qq.find(">"); break;
+								}
 							}
 						}
 						else if (qqb("<rc>") || qqb("<rc*")) kbPress("<rc*", VK_F7);
