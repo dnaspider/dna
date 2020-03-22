@@ -1071,7 +1071,6 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			if (pause_resume)continue;
 			if (strand.substr(0, 1) == "<") {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(">") != std::string::npos) strand.clear();
