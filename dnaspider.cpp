@@ -233,10 +233,8 @@ void scanDb(); void conn() {//<connect:>
 				string qqc = qq.substr(0, qq.find(">"));
 				tail = qq.replace(qq.find(qqc + ">"), qqc.length() + 1, cell.substr(cell.substr(0, qqc.length()).length() + 1, cell.length()));
 				if (SlightPauseInBetweenConnects) Sleep(150);
-				re = ">" + tail; strand.clear(); scanDb(); re.clear();				
-				tail = re1;
-				f.close();
-				i = tail.length();
+				re = tail; strand.clear(); f.close(); 
+				i = -1;
 				return;
 			}
 		}f.close(); printq();
@@ -514,7 +512,8 @@ void scanDb() {
 #pragma endregion
 			
 			if (tail.find("<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
-
+			
+			f.close();
 			for (i = 0; i < tail.length(); i++) {
 				if (speed > 0) { Sleep(speed); }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { break; }if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
