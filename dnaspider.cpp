@@ -234,7 +234,7 @@ void scanDb(); void conn() {//<connect:>
 				string qqc = qq.substr(0, qq.find(">"));
 				tail = qq.replace(qq.find(qqc + ">"), qqc.length() + 1, cell.substr(cell.substr(0, qqc.length()).length() + 1, cell.length()));
 				if (SlightPauseInBetweenConnects) Sleep(150);
-				re = tail; strand.clear(); f.close(); 
+				strand.clear(); f.close(); 
 				i = -1;
 				return;
 			}
