@@ -8,6 +8,7 @@
 using namespace std;
 
 #pragma region global_var
+bool pause_resume = 0;
 bool StockInterfaceControls = false;
 int CommaSleep = 150;
 //bool ignoreMediaKeys = false;
@@ -516,7 +517,8 @@ void scanDb() {
 			f.close();
 			for (i = 0; i < tail.length(); i++) {
 				if (speed > 0) { Sleep(speed); }
-				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { break; }if (GetAsyncKeyState(VK_PAUSE)) { int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+				if (pause_resume) { --i; Sleep(frequency); continue; }
 
 				string ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { cout << "ctail: " << ctail << endl; }
@@ -1069,6 +1071,7 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
+			if (pause_resume)continue;
 			if (strand.substr(0, 1) == "<") {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(">") != std::string::npos) strand.clear();
