@@ -214,7 +214,7 @@ void scanDb(); void conn() {//<connect:>
 				strand.clear(); f.close(); 
 				i = -1;
 				if (speed > 0) sleep = 0;
-				strand += " ";//re
+				strand += " ";//codes
 				return;
 			}
 		}f.close(); printq();
@@ -241,7 +241,6 @@ void kbPress(string s, short key) {
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
 	if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
-
 	for (int j = 0; j < stoi(star_num); ++j) {
 		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 		if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
@@ -969,8 +968,8 @@ void scanDb() {
 				//GetAsyncKeyState(VkKeyScan(ctail[0])); //clear
 			}
 			if (strand > "" || re > "") {
-				if (strand != " ") clearAllKeys();
 				if (re == "" || strandLengthMode) tail = codes;
+				clearAllKeys();
 				strand.clear();
 			}
 			if (speed > 0)speed = 0;
