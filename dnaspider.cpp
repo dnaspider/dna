@@ -85,23 +85,18 @@ bool assume = 0;
 #pragma endregion
 
 #pragma region global_sub
-string rem_ws(string n) {
-	int w = 0; string m; while (w < (int)n.length()) {
-		if (n[w] == ' ') { ++w; continue; }
-		m += n[w]; ++w;
-	}
-	return m;
-}
-
 string check_if_num(string s) {
 	if (assume) return s;
-	if (s > "") {
-		for (size_t t = 0; t < s.length(); t++) {//!0-9
+	string m; if (s > "") {
+		for (size_t t = 0; t < s.length(); ++t) {//!0-9
+			//if (s[0] == ' ') { if (s[t] == ' ') { if (qq.substr(0, 5) == "<RGB:" || qq.substr(0, 5) == "<rgb:") {} else { if (m > "") { s = ""; return s; } } continue; } m += s[t]; }//rem ws
+			if (s[0] == ' ') { if (s[t] == ' ') { if (m > "") { s = ""; return s; } continue; } m += s[t]; }//rem ws
 			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1)continue; //-+
-			if ((s[t] >= 48 && s[t] <= 57) == false) { s = ""; return s; }
+			if (!(s[t] >= 48 && s[t] <= 57)) { s = ""; return s; }
 		}
 	}
 	else s = "";
+	if (s[0] == ' ') m = s;
 	return s;
 }
 
@@ -220,6 +215,7 @@ void scanDb(); void conn() {//<connect:>
 				strand.clear(); f.close(); 
 				i = -1;
 				if (speed > 0) sleep = 0;
+				strand += " ";//re
 				return;
 			}
 		}f.close(); printq();
@@ -230,12 +226,11 @@ void scanDb(); void conn() {//<connect:>
 void kbPress(string s, short key) {
 	string n = s;
 	if (qq.find(">") == std::string::npos) { printq(); return; }
-	if (qq[n.length()]=='>') star_num = "1";
+	if (qq[n.length()] == '>') star_num = "1";
 	else {
 		if (qq.substr(qq.find(">") - 1, 1) == ":" || qq.substr(qq.find(">") - 1, 1) == "-") { conn(); return; }
 		n = qq.substr(n.length(), qq.find(">") - n.length());
 		if (n > "") {
-			n = rem_ws(n); 
 			n = check_if_num(n);
 			if (n == "") { printq(); return; }
 			star_num = n;
@@ -251,12 +246,25 @@ void kbPress(string s, short key) {
 		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 		if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
 		if (pause_resume) { --j; Sleep(frequency); continue; }
-		if (s == "<,*") Sleep(CommaSleep);//if (s + qq[3] != "<,*>") { Sleep(CommaSleep); break; } else { printq(); strand += " "; return; }
-		else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
-		else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-		else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
-		else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
-		else SendInput(2, ip, sizeof(ip[0]));
+		//if (s == "<,*") Sleep(CommaSleep);
+		//else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+		//else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+		//else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
+		//else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+		//else SendInput(2, ip, sizeof(ip[0]));
+		switch (s[2]) {
+		case '*': Sleep(CommaSleep); break; //<,* //if (s + qq[3] != "<,*>") { Sleep(CommaSleep); break; } else { printq(); strand += " "; return; }
+		case 'c':
+			if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+			else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+			else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
+			break;
+		case 's':
+			if (s == "<bs" || s == "<esc" || s == "<ps") SendInput(2, ip, sizeof(ip[0]));
+			else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+			break;
+		default: SendInput(2, ip, sizeof(ip[0])); break;
+		}
 		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
 	}
 	rei();
@@ -501,7 +509,7 @@ void scanDb() {
 			if (tail.find("<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close();
 			for (i = 0; i < tail.length(); ++i) {
-				if (speed > 0){ if (sleep) { Sleep(speed); sleep = 0; } sleep = 1; }
+				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 
@@ -524,7 +532,6 @@ void scanDb() {
 							break;
 						}
 						else if (qqb("<+:")) {//calc +
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic += stoi(qp);
 							calc();
@@ -534,7 +541,6 @@ void scanDb() {
 						break;
 					case'-':
 						if (qqb("<-:")) {//-
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic -= stoi(qp);
 							calc();
@@ -544,7 +550,6 @@ void scanDb() {
 						break;
 					case'*':
 						if (qqb("<*:")) {//*
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic *= stoi(qp);
 							calc();
@@ -554,7 +559,6 @@ void scanDb() {
 						break;
 					case'/':
 						if (qqb("</:")) {//divide
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) == "" || stoi(qp) <= 0) { printq(); continue; }
 							ic /= stoi(qp);
 							calc();
@@ -564,7 +568,6 @@ void scanDb() {
 						break;
 					case'%':
 						if (qqb("<%:")) {//%
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) == "") { printq(); continue; }
 							ic %= stoi(qp);
 							calc();
@@ -577,7 +580,6 @@ void scanDb() {
 						else if (qqb("<,")) { //<,#>
 							string s = qq.substr(2, qq.find('>') - 2);
 							if (s == "") s = to_string(CommaSleep);
-							s = rem_ws(s);
 							s = check_if_num(s);
 							if (s=="") { printq(); break; }
 							if (s > "" && stoi(s) >= 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
@@ -594,7 +596,7 @@ void scanDb() {
 						if (qqb("<alt>")) { kbHold(VK_LMENU); rei(); }
 						else if (qqb("<alt->")) { kbRelease(VK_LMENU); rei(); }
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
-						else if (qqb("<a:")) { /*qp = rem_ws(qp);*/ kb1(qp); rei(); }//alt codes
+						else if (qqb("<a:")) { kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
 							DWORD pid; HWND h; auto size{0}, length{24};
 							for (; size < length; size++) {
@@ -737,7 +739,6 @@ void scanDb() {
 							string t = tail;
 							switch (s) {
 							case -84://':r': <rand:> #
-								//qx = rem_ws(qx); qy = rem_ws(qy); 
 								if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
 									r = qx == "0" ?
 										rand() % (stoi(qy) + 1) :
@@ -827,7 +828,7 @@ void scanDb() {
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string rgb, r, g, b, x = "1", h = "333", ms = h;							
+							string r, g, b, x = "1", h = "333", ms = h; //rgb, 							
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",")+1);
 							g = b.substr(0, b.find(","));
@@ -843,8 +844,8 @@ void scanDb() {
 								}
 							}
 
-							rgb = r + g + b + x + ms;
-							if (check_if_num(rgb) == "") { printq(); break;	}
+							//rgb = r + g + b + x + ms;
+							//if (check_if_num(rgb) == "") { printq(); break; }
 
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
@@ -873,9 +874,9 @@ void scanDb() {
 						else if (qqb("<shift>")) { kbHold(VK_LSHIFT); rei(); }
 						else if (qqb("<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
 						else if (qqb("<shift")) kbPress("<shift", VK_LSHIFT);
-						else if (qqb("<sleep:")) { qp = rem_ws(qp); if (check_if_num(qp) != "") { Sleep(stoi(qp)); rei(); } else printq(); }
+						else if (qqb("<sleep:")) if (check_if_num(qp) != "") { Sleep(stoi(qp)); rei(); } else printq();
 						else if (qqb("<space")) kbPress("<space", VK_SPACE);
-						else if (qqb("<speed:")) { qp = rem_ws(qp); if (check_if_num(qp) != "") { speed = stoi(qp); rei(); } else printq(); }
+						else if (qqb("<speed:")) if (check_if_num(qp) != "") { speed = stoi(qp); rei(); sleep = 0; } else printq();
 						else conn();
 						break;
 					case't':
@@ -928,7 +929,6 @@ void scanDb() {
 						}
 						else if (qqb("<y:")) {//y + or - 1px
 							if (qp == "") { conn(); break; }
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) != "") {
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos((int)(pt.x), stoi(qp) + (int)(pt.y));
@@ -952,9 +952,8 @@ void scanDb() {
 				//GetAsyncKeyState(VkKeyScan(ctail[0])); //clear
 			}
 			if (strand > "" || re > "") {
-				clearAllKeys();
-				if (re == "") tail = codes;
-				if (strandLengthMode) tail = codes;
+				if (strand != " ") clearAllKeys();
+				if (re == "" || strandLengthMode) tail = codes;
 				strand.clear();
 			}
 			if (speed > 0)speed = 0;
@@ -968,7 +967,7 @@ void scanDb() {
 void printXy() {
 	POINT pt; GetCursorPos(&pt);
 	if (strand == "x") { if (showOuts) cout << "xy: " << pt.x << "," << pt.y << endl; }
-	else { ; out("<bs*2>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); }
+	else { out("<bs*2>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); }
 }
 
 void printInterfaceCtrls() {
@@ -1099,8 +1098,9 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_ESCAPE)) {
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-				kb(VK_BACK); GetAsyncKeyState(VK_BACK); re = "><shift>,<shift->xy:";
-				scanDb(); continue;
+				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
+				re = "<shift>,<shift->xy:";
+				out(re); continue;
 			}
 			GetAsyncKeyState(82); if (GetAsyncKeyState(82)) {//esc + r: <rgb:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
