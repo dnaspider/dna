@@ -89,8 +89,7 @@ string check_if_num(string s) {
 	if (assume) return s;
 	string m; if (s > "") {
 		for (size_t t = 0; t < s.length(); ++t) {//!0-9
-			//if (s[0] == ' ') { if (s[t] == ' ') { if (qq.substr(0, 5) == "<RGB:" || qq.substr(0, 5) == "<rgb:") {} else { if (m > "") { s = ""; return s; } } continue; } m += s[t]; }//rem ws
-			if (s[0] == ' ') { if (s[t] == ' ') { if (m > "") { s = ""; return s; } continue; } m += s[t]; }//rem ws
+			if (s[0] == ' ') { if (s[t] == ' ') { if (m > "" || s.length() == 1) { s = ""; return s; } continue; } m += s[t]; }//rem ws
 			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1)continue; //-+
 			if (!(s[t] >= 48 && s[t] <= 57)) { s = ""; return s; }
 		}
@@ -231,6 +230,7 @@ void kbPress(string s, short key) {
 		if (qq.substr(qq.find(">") - 1, 1) == ":" || qq.substr(qq.find(">") - 1, 1) == "-") { conn(); return; }
 		n = qq.substr(n.length(), qq.find(">") - n.length());
 		if (n > "") {
+			//if (n[0] == '*') n = n.substr(1, n.length()); //case: <f1*
 			n = check_if_num(n);
 			if (n == "") { printq(); return; }
 			star_num = n;
@@ -246,25 +246,25 @@ void kbPress(string s, short key) {
 		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 		if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
 		if (pause_resume) { --j; Sleep(frequency); continue; }
-		//if (s == "<,*") Sleep(CommaSleep);
-		//else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
-		//else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-		//else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
-		//else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
-		//else SendInput(2, ip, sizeof(ip[0]));
-		switch (s[2]) {
-		case '*': Sleep(CommaSleep); break; //<,* //if (s + qq[3] != "<,*>") { Sleep(CommaSleep); break; } else { printq(); strand += " "; return; }
-		case 'c':
-			if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
-			else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-			else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
-			break;
-		case 's':
-			if (s == "<bs" || s == "<esc" || s == "<ps") SendInput(2, ip, sizeof(ip[0]));
-			else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
-			break;
-		default: SendInput(2, ip, sizeof(ip[0])); break;
-		}
+		if (s == "<,*") Sleep(CommaSleep);
+		else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+		else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+		else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
+		else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+		else SendInput(2, ip, sizeof(ip[0]));
+		//switch (s[2]) {
+		//case '*': Sleep(CommaSleep); break;
+		//case 'c':
+		//	if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+		//	else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+		//	else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
+		//	break;
+		//case 's':
+		//	if (s == "<bs" || s == "<esc" || s == "<ps") SendInput(2, ip, sizeof(ip[0]));
+		//	else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+		//	break;
+		//default: SendInput(2, ip, sizeof(ip[0]));
+		//}
 		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
 	}
 	rei();
@@ -662,24 +662,46 @@ void scanDb() {
 						break;
 						//{
 						//	int s = 0;
-						//	for (int i = 2; i <= qq.length(); ++i) {
+						//	for (size_t i = 2; i <= qq.length(); ++i) {
 						//		s += qq[i];
 						//		if (qq[i] == '*' || qq[i] == ' ' || qq[i] == '>')
 						//			break;
 						//	}
 						//	switch (s) {
-						//	case 81: kbPress("<f1", VK_F1); break;	//1 + " " = 81
+						//	case 111://1 + >
+						//	case 91: //1 + *
+						//	case 81: //1 + " " = 81
+						//		if (qqb("<f11")) kbPress("<f11", VK_F11);
+						//		else if (qqb("<f12")) kbPress("<f12", VK_F12);
+						//		else kbPress("<f1", VK_F1); 
+						//		break;	
+						//	case 112: 
+						//	case 92:
 						//	case 82: kbPress("<f2", VK_F2); break;
-						//	case 83: kbPress("<f3" , VK_F3); break;
+						//	case 113:
+						//	case 93:
+						//	case 83: kbPress("<f3", VK_F3); break;
+						//	case 114:
+						//	case 94:
 						//	case 84: kbPress("<f4", VK_F4); break;
+						//	case 115: 
+						//	case 95: 
 						//	case 85: kbPress("<f5", VK_F5); break;
+						//	case 116:
+						//	case 96:
 						//	case 86: kbPress("<f6", VK_F6); break;
+						//	case 117:
+						//	case 97:
 						//	case 87: kbPress("<f7", VK_F7); break;
+						//	case 118:
+						//	case 98:
 						//	case 88: kbPress("<f8", VK_F8); break;
+						//	case 119:
+						//	case 99:
 						//	case 89: kbPress("<f9", VK_F9); break;
-						//	case 129: kbPress("<f10", VK_F10); break;
-						//	case 130: kbPress("<f11", VK_F11); break;
-						//	case 131: kbPress("<f12", VK_F12); break;
+						//	case 110:
+						//	case 90:
+						//	case 129: kbPress("<f10", VK_F10); break;							
 						//	default: conn();
 						//	}
 						//}
@@ -828,12 +850,11 @@ void scanDb() {
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string r, g, b, x = "1", h = "333", ms = h; //rgb, 							
+							string r, g, b, x = "1", h = "333", ms = h;							
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",")+1);
 							g = b.substr(0, b.find(","));
 							b = b.substr(b.find(",") + 1);
-							
 							if (b.find(",") != string::npos) {//x,ms
 								x = b; b = b.substr(0, b.find(","));
 								x = x.substr(x.find(",") + 1);
@@ -843,10 +864,6 @@ void scanDb() {
 									ms = ms.substr(ms.find(",") + 1); if (ms == "")ms = h;
 								}
 							}
-
-							//rgb = r + g + b + x + ms;
-							//if (check_if_num(rgb) == "") { printq(); break; }
-
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
