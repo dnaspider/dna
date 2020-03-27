@@ -478,8 +478,8 @@ void scanDb() {
 			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == ">") strand = strand.substr(0, strand.length() - 1);
 			if (re > "") {
 				cell = re;
-				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = ""; if (showStrand) { cout << "<xy:" + xy + ">\n"; } }
-				else if (re.substr(0, 21) == "><shift>,<shift->rgb:") { getRGB(); if (showStrand) { cout << "<" << tail.substr(16, tail.length()) << endl; } }
+				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = cell; if (showStrand) { cout << OutsTemplate << "<xy:" + xy + ">\n"; } }
+				else if (re.substr(0, 21) == "><shift>,<shift->rgb:") { getRGB(); if (showStrand) { cout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
 			}
 #pragma region set_tail
 			tail = re > "" ? re : cell.substr(strand.length(), cell.length() - strand.length());
@@ -1067,8 +1067,8 @@ int main() {//cout << "@dnaspider\n\n";
 	srand((unsigned)time(NULL));
 #pragma endregion
 	for (;; Sleep(frequency)) {
-		if ((SeHotReload_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); HWND np = FindWindowA(0, "se.txt - Notepad"); HWND vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); continue; } else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
-		if ((SeDbClearStrand_CtrlS) && (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83)) && (FindWindowA(0, "db.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "db.txt - Visual Studio Code") == GetForegroundWindow())) { Sleep(150); strand.clear(); continue; }//clear
+		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowA(0, "se.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "se.txt - Visual Studio Code") == GetForegroundWindow())) { HWND np = FindWindowA(0, "se.txt - Notepad"), vsc = FindWindowA(0, "se.txt - Visual Studio Code"); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
+		if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowA(0, "db.txt - Notepad") == GetForegroundWindow() || FindWindowA(0, "db.txt - Visual Studio Code") == GetForegroundWindow())) { strand.clear(); if (showStrand) { prints(); } continue; }//clear
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
