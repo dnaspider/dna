@@ -214,7 +214,7 @@ void scanDb(); void conn() {//<connect:>
 				strand.clear(); f.close(); 
 				i = -1;
 				if (speed > 0) sleep = 0;
-				strand += " ";//codes
+				re = " ";//codes
 				return;
 			}
 		}f.close(); printq();
@@ -968,7 +968,7 @@ void scanDb() {
 				//GetAsyncKeyState(VkKeyScan(ctail[0])); //clear
 			}
 			if (strand > "" || re > "") {
-				if (re == "" || strandLengthMode) tail = codes;
+				if (re == "" || re == " " || strandLengthMode) { re = ""; tail = codes; }
 				clearAllKeys();
 				strand.clear();
 			}
