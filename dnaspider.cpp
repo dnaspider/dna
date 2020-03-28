@@ -230,7 +230,7 @@ void kbPress(string s, short key) {
 		if (qq.substr(qq.find(">") - 1, 1) == ":" || qq.substr(qq.find(">") - 1, 1) == "-") { conn(); return; }
 		n = qq.substr(n.length(), qq.find(">") - n.length());
 		if (n > "") {
-			//if (n[0] == '*') n = n.substr(1, n.length()); //case: <f1*
+			if (n[0] == '*') n = n.substr(1, n.length()); //case: <f1*
 			n = check_if_num(n);
 			if (n == "") { printq(); return; }
 			star_num = n;
