@@ -333,7 +333,7 @@ void loadSe() {
 			case 1098://AutoBs_EscH: //Ignore_F1-F12:
 				{	if (v == "1" || v == "0") {
 						if (se == "AutoBs_EscH:") EscHAutoBs = stoi(v);
-						else if (se == "Ignore_F1 - F12:") ignoreF1s = stoi(v);
+						else if (se == "Ignore_F1-F12:") ignoreF1s = stoi(v);
 					}
 					else er();
 				} break;
