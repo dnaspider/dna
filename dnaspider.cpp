@@ -286,7 +286,7 @@ void loadSe() {
 		string v = (cell.substr(cell.find(":") + 1));
 		if (v[0] == ' ') v = v.substr(1, v.length());
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		auto er = [e, se, v]() { "Error in " + settings + " [" << se << " " << v << "]" << endl; };
+		auto er = [se, v]() { "Error in " + settings + " [" << se << " " << v << "]" << endl; };
 		switch (x) {
 			case 680://Assume:
 				{ if (v == "1" || v == "0") assume = stoi(v); else er(); } break;
