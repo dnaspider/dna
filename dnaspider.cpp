@@ -281,64 +281,124 @@ void calc() {
 
 void loadSe() {
 	ifstream f(settings); if (!f) { cout << settings << " not found!\n"; return; }
-	string cell; while (getline(f, cell)) {//try {
+	string cell; while (getline(f, cell)) {
 		string se = cell.substr(0, cell.find(":") + 1);
 		string v = (cell.substr(cell.find(":") + 1));
-		if (se == "Assume:") { assume = stoi(v); continue; }
-		if (se == "ShowStrand:") { showStrand = stoi(v); continue; }
-		if (se == "OutsTemplate:") { OutsTemplate = (v.length() > 0) ? v.substr(1) : v; continue; }
-		if (se == "Database:") { database = (v.length() > 0) ? v.substr(1) : v; continue; }
-		if (se == "CloseCtrlMode:") { close_ctrl_mode = stoi(v); continue; }
-		if (se == "CtrlScanOnlyMode:") { qScanOnly = stoi(v); continue; }
-		if (se == "StrandLengthMode:") { strandLengthMode = stoi(v); continue; }
-		if (se == "StrandLength:") { strandLength = stoi(v); continue; }
-		if (se == "Ignore_A-Z:") { ignoreAZ = stoi(v); continue; }
-		if (se == "Ignore_0-9:") { ignore09 = stoi(v); continue; }
-		if (se == "StartHidden:") { startHidden = stoi(v); continue; }
-		if (se == "CtrlKey:") { cKey = stoi(v); continue; }
-		if (se == "ShowIntro:") { showIntro = stoi(v); continue; }
-		if (se == "ShowSettings:") { showSettings = stoi(v); continue; }
-		if (se == "Frequency:") { frequency = stoi(v); continue; }
-		if (se == "RepeatKey:") { reKey = stoi(v); continue; }
-		if (se == "AutoBs_RepeatKey:") { AutoBs_RepeatKey = stoi(v); continue; }
-		if (se == "ShowOuts:") { showOuts = stoi(v); continue; }
-		if (se == "ClearStrandAfterStockCtrls:") { clear_after_stock = stoi(v); continue; }
-		if (se == "SlightPauseInBetweenConnects:") { SlightPauseInBetweenConnects = stoi(v); continue; }
-		if (se == "CommaSleep:") { CommaSleep = stoi(v); continue; }
-		if (se == "StockInterfaceControls:") { StockInterfaceControls = stoi(v); continue; }
-		if (se == "AutoBs_EscH:") { EscHAutoBs = stoi(v); continue; }
-		if (se == "AutoBs_EscComma:") { EscCommaAutoBs = stoi(v); continue; }
-		if (se == "AutoBs_EscEqual:") { EscEqualAutoBs = stoi(v); continue; }
-		if (se == "SeHotReload_CtrlS:") { SeHotReload_CtrlS = stoi(v); continue; }
-		if (se == "SeDbClearStrand_CtrlS:") { SeDbClearStrand_CtrlS = stoi(v); continue; }
-		if (se == "Ignore_Space:") { ignoreSpace = stoi(v); continue; }
-		if (se == "Ignore_F1-F12:") { ignoreF1s = stoi(v); continue; }
-		if (se == "Ignore_Arrows:") { ignoreArrows = stoi(v); continue; }
-		if (se == "Ignore_Esc:") { ignoreEsc = stoi(v); continue; }
-		if (se == "Ignore_Tab:") { ignoreTab = stoi(v); continue; }
-		if (se == "Ignore_Enter:") { ignoreEnter = stoi(v); continue; }
-		if (se == "Ignore_Caps:") { ignoreCaps = stoi(v); continue; }
-		if (se == "Ignore_LShift:") { ignoreLShift = stoi(v); continue; }
-		if (se == "Ignore_RShift:") { ignoreRShift = stoi(v); continue; }
-		if (se == "Ignore_LAlt:") { ignoreLAlt = stoi(v); continue; }
-		if (se == "Ignore_RAlt:") { ignoreRAlt = stoi(v); continue; }
-		if (se == "Ignore_LCtrl:") { ignoreLCtrl = stoi(v); continue; }
-		if (se == "Ignore_RCtrl:") { ignoreRCtrl = stoi(v); continue; }
-		if (se == "Ignore_GraveAccent:") { ignoreGraveAccent = stoi(v); continue; }
-		if (se == "Ignore_Minus:") { ignoreMinus = stoi(v); continue; }
-		if (se == "Ignore_Equal:") { ignoreEqual = stoi(v); continue; }
-		if (se == "Ignore_LBracket:") { ignoreLBracket = stoi(v); continue; }
-		if (se == "Ignore_RBracket:") { ignoreRBracket = stoi(v); continue; }
-		if (se == "Ignore_Backslash:") { ignoreBackslash = stoi(v); continue; }
-		if (se == "Ignore_Semicolon:") { ignoreSemicolon = stoi(v); continue; }
-		if (se == "Ignore_Quote:") { ignoreQuote = stoi(v); continue; }
-		if (se == "Ignore_Comma:") { ignoreComma = stoi(v); continue; }
-		if (se == "Ignore_Period:") { ignorePeriod = stoi(v); continue; }
-		if (se == "Ignore_Forwardslash:") { ignoreForwardslash = stoi(v); continue; }
-		if (se == "Ignore_Menu:") { ignoreMenuKey = stoi(v); continue; }
-		//if (se == "Ignore_MediaKeys:") { ignoreMediaKeys = stoi(v); continue; }
-		if (se == "Ignore_NumPad:") { ignoreNumPad = stoi(v); continue; }
-		if (se == "Exit_EscX:") { enableEscX = stoi(v); continue; }	//}catch (const std::exception&){cout << "Error in " << settings << "!\n";};
+		if (v[0] == ' ') v = v.substr(1, v.length());
+		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
+		auto er = [e, se, v]() { "Error in " + settings + " [" << se << " " << v << "]" << endl; };
+		switch (x) {
+			case 680://Assume:
+				{ if (v == "1" || v == "0") assume = stoi(v); else er(); } break;
+			case 1095://ShowStrand:
+				{ if (v == "1" || v == "0") showStrand = stoi(v); else er(); } break;
+			case 847://Database:
+				{ if (v.length() > 0) database = v.substr(0); else er(); } break;
+			case 1313://OutsTemplate:
+				OutsTemplate = v.substr(0); break;
+			case 1354://CloseCtrlMode:
+				{ if (v == "1" || v == "0") close_ctrl_mode = stoi(v); else er(); } break;
+			case 1659://CtrlScanOnlyMode:
+				{ if (v == "1" || v == "0") qScanOnly = stoi(v); else er(); } break;
+			case 1677://StrandLengthMode:
+				{ if (v=="1" || v == "0") strandLengthMode = stoi(v); else er(); } break;
+			case 1288://StrandLength:
+				{ if (check_if_num(v) != "") strandLength = stoi(v); else er(); } break;
+			case 956://Ignore_A-Z:
+				{ if (v == "1" || v == "0") ignoreAZ = stoi(v); else er(); } break;
+			case 915://Ignore_0-9:
+				{ if (v == "1" || v == "0") ignore09 = stoi(v); else er(); } break;
+			case 1172://StartHidden:
+				{ if (v == "1" || v == "0") startHidden = stoi(v); else er(); } break;
+			case 760://CtrlKey:
+				{ if (check_if_num(v) > "") cKey = stoi(v); else er(); } break;
+			case 999://ShowIntro:
+				{ if (v == "1" || v == "0") showIntro = stoi(v); else er(); } break;
+			case 1324://ShowSettings:
+				{ if (v == "1" || v == "0") showSettings = stoi(v); else er(); } break;
+			case 1004://Frequency:
+				{ if (check_if_num(v) != "") frequency = stoi(v); else er(); } break;
+			case 964://RepeatKey:
+				{ if (check_if_num(v) != "") reKey = stoi(v); else er(); } break;
+			case 1649://AutoBs_RepeatKey:
+				{ if (v == "1" || v == "0") AutoBs_RepeatKey = stoi(v); else er(); } break;
+			case 902://ShowOuts:
+				{ if (v == "1" || v == "0") showOuts = stoi(v); else er(); } break;
+			case 2699://ClearStrandAfterStockCtrls:
+				{ if (v == "1" || v == "0") clear_after_stock = stoi(v); else er(); } break;
+			case 2913://SlightPauseInBetweenConnects:
+				{ if (v == "1" || v == "0") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
+			case 2339://StockInterfaceControls:
+				{ if (v == "1" || v == "0") StockInterfaceControls = stoi(v); else er(); } break;
+			case 1098://AutoBs_EscH: //Ignore_F1-F12:
+				{	if (v == "1" || v == "0") {
+						if (se == "AutoBs_EscH:") EscHAutoBs = stoi(v);
+						else if (se == "Ignore_F1 - F12:") ignoreF1s = stoi(v);
+					}
+					else er();
+				} break;
+			case 1519://AutoBs_EscComma:
+				{ if (v == "1" || v == "0") EscCommaAutoBs = stoi(v); else er(); } break;
+			case 1530://AutoBs_EscEqual:
+				{ if (v == "1" || v == "0") EscEqualAutoBs = stoi(v); else er(); } break;
+			case 1723://SeHotReload_CtrlS:
+				{ if (v == "1" || v == "0") SeHotReload_CtrlS = stoi(v); else er(); } break;
+			case 2098://SeDbClearStrand_CtrlS:
+				{ if (v == "1" || v == "0") SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
+			case 1257://Ignore_Space:
+				{ if (v == "1" || v == "0") ignoreSpace = stoi(v); else er(); } break;
+			case 1403://Ignore_Arrows:
+				{ if (v == "1" || v == "0") ignoreArrows = stoi(v); else er(); } break;
+			case 1048://Ignore_Esc:
+				{ if (v == "1" || v == "0") ignoreEsc = stoi(v); else er(); } break;
+			case 1044://Ignore_Tab:
+				{ if (v == "1" || v == "0") ignoreTab = stoi(v); else er(); } break;
+			case 1275://Ignore_Enter:
+				{ if (v == "1" || v == "0") ignoreEnter = stoi(v); else er(); } break;
+			case 1156://Ignore_Caps:
+				{ if (v == "1" || v == "0") ignoreCaps = stoi(v); else er(); } break;
+			case 1351://Ignore_LShift:
+				{ if (v == "1" || v == "0") ignoreLShift = stoi(v); else er(); } break;
+			case 1357://Ignore_RShift:
+				{ if (v == "1" || v == "0") ignoreRShift = stoi(v); else er(); } break;
+			case 1130://Ignore_LAlt:
+				{ if (v == "1" || v == "0") ignoreLAlt = stoi(v); else er(); } break;
+			case 1136://Ignore_RAlt:
+				{ if (v == "1" || v == "0") ignoreRAlt = stoi(v); else er(); } break;
+			case 1246://Ignore_LCtrl:
+				{ if (v == "1" || v == "0") ignoreLCtrl = stoi(v); else er(); } break;
+			case 1252://Ignore_RCtrl:
+				{ if (v == "1" || v == "0") ignoreRCtrl = stoi(v); else er(); } break;
+			case 1856://Ignore_GraveAccent:
+				{ if (v == "1" || v == "0") ignoreGraveAccent = stoi(v); else er(); } break;
+			case 1289://Ignore_Minus:
+				{ if (v == "1" || v == "0") ignoreMinus = stoi(v); else er(); } break;
+			case 1269://Ignore_Equal:
+				{ if (v == "1" || v == "0") ignoreEqual = stoi(v); else er(); } break;
+			case 1541://Ignore_LBracket:
+				{ if (v == "1" || v == "0") ignoreLBracket = stoi(v); else er(); } break;
+			case 1547://Ignore_RBracket:
+				{ if (v == "1" || v == "0") ignoreRBracket = stoi(v); else er(); } break;
+			case 1673://Ignore_Backslash:
+				{ if (v == "1" || v == "0") ignoreBackslash = stoi(v); else er(); } break;
+			case 1702://Ignore_Semicolon:
+				{ if (v == "1" || v == "0") ignoreSemicolon = stoi(v); else er(); } break;
+			case 1291://Ignore_Quote:
+				{ if (v == "1" || v == "0") ignoreQuote = stoi(v); else er(); } break;
+			case 1258://Ignore_Comma:
+				{ if (v == "1" || v == "0") ignoreComma = stoi(v); else er(); } break;
+			case 1376://Ignore_Period:
+				{ if (v == "1" || v == "0") ignorePeriod = stoi(v); else er(); } break;
+			case 2029://Ignore_Forwardslash:
+				{ if (v == "1" || v == "0") ignoreForwardslash = stoi(v); else er(); } break;
+			case 1170://Ignore_Menu:
+				{ if (v == "1" || v == "0") ignoreMenuKey = stoi(v); else er(); } break;
+			case 1346://Ignore_NumPad:
+				{ if (v == "1" || v == "0") ignoreNumPad = stoi(v); else er(); } break;
+			case 934://Exit_EscX:
+				{ if (v == "1" || v == "0") enableEscX = stoi(v); else er(); } break;
+			//case 1657://Ignore_MediaKeys:
+		}
 	}
 	f.close();
  }
@@ -595,9 +655,10 @@ void scanDb() {
 						if (qqb("<alt>")) { kbHold(VK_LMENU); rei(); }
 						else if (qqb("<alt->")) { kbRelease(VK_LMENU); rei(); }
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
-						else if (qqb("<a:")) { kb1(qp); rei(); }//alt codes
+						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
 							DWORD pid; HWND h; auto size{0}, length{24};
+							if (qp[0] == ' ') qp = qp.substr(1, qp.length());
 							for (; size < length; size++) {
 								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
 								h = FindWindowA(0, qp.c_str()); GetWindowThreadProcessId(h, &pid);
@@ -615,6 +676,7 @@ void scanDb() {
 						break;
 					case 'A':
 						if (qqb("<App:")) {//if app in foreground
+							if (qp[0] == ' ') qp = qp.substr(1, qp.length());
 							HWND h = GetForegroundWindow();	HWND h1 = FindWindowA(0, qp.c_str());
 							if (h == h1) { rei(); continue; }
 							else { if (showOuts) { cout << "fail: <App:" << qp << ">" << endl; } i = tail.length(); break; }
@@ -927,7 +989,6 @@ void scanDb() {
 						}
 						else if (qqb("<x:")) {//x + or - 1px
 							if (qp == "") { conn(); break; }
-							//qp = rem_ws(qp);
 							if (check_if_num(qp) != "") {
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
@@ -999,9 +1060,10 @@ void printInterfaceCtrls() {
 	cout << c << ":  Toggle <" << endl;
 	cout << "Esc + Comma:  Toggle <" << endl;
 	cout << "Pause Break:  Clear strand | Pause/Resume" << endl;
+	cout << "Shift + Pause Break:  Clear strand" << endl;
 	if (StockInterfaceControls) { cout << "<odb:  Open database: " << database << endl;	cout << "<ose:  Open settings: " << settings << endl; }
 	(StockInterfaceControls) ? cout << "<xy or Esc + P" : cout << "Esc + P"; cout << ":  <xy:>" << endl;
-	cout << "Esc + R:  <rgb:>";
+	cout << "Esc + R:  <rgb:>" << endl;
 	(reKey == 145) ? c = "Scroll Lock" : c = "repeatKey: " + reKey; cout << c << " or Esc + Equal:  Repeat" << endl;
 	cout << endl;
 }
@@ -1052,7 +1114,7 @@ int main() {//cout << "@dnaspider\n\n";
 		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;//minimalist se.txt
 		cout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h:ello\n<h->Hello\n<i:><bs><h->!\n\nGetting Started:\nPress h (strand: h), ctrl h (strand: <h), or ctrl i (strand: <i) in a text area to run.\n\nTip:\nClear strand first by toggling ctrl, backspace, esc + comma, or shift + pause/break.\nPress keys independently (right ctrl, release right ctrl, h)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
+		showOuts = false; ofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e:>!\n\nGetting Started:\nPress H (strand: h),\nCTRL E (strand: < e), or\nCTRL X (strand: < x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nCTRL, BACKSPACE, or \nSHIFT + PAUSE_BREAK.\n\nPress keys independently\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0"; fs.close(); out("<win>r<win-><app:run>" + settings + "<enter><ms:1500><win>r<win-><app:run>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
 	}
 	else { ; }
 	loadSe();
