@@ -657,17 +657,27 @@ void scanDb() {
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
-							DWORD pid; HWND h; auto size{0}, length{24};
-							if (qp[0] == ' ') qp = qp.substr(1, qp.length());
-							for (; size < length; size++) {
+							DWORD pid; HWND h; 
+							string a = qp, x = "1", m = "333", ms = m;//<app:a,x,ms>
+							a = a.substr(0, a.find(","));
+							if (a[0] == ' ') a = a.substr(1, a.length());
+							if (qp.find(",") != string::npos) {
+								x = qp.substr(qp.find(",") + 1);
+								if (x.find(",") != string::npos) {
+									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") ms = m;
+									x = x.substr(0, x.find(",")); if (check_if_num(x) == "") x = "1";
+								}
+							}//cout << a << " " << x << " " << ms << endl; return;
+							auto size{ 0 }, length{ stoi(x) };
+							for (; size < length; size++) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl; return;
 								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
-								h = FindWindowA(0, qp.c_str()); GetWindowThreadProcessId(h, &pid);
+								h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 								if (h) {
 									if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
 									SetForegroundWindow(h);
 									break; 
 								}
-								Sleep(333);
+								Sleep(stoi(ms));
 							}
 							if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { i = tail.length(); break; }
 							rei();
@@ -911,7 +921,7 @@ void scanDb() {
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string r, g, b, x = "1", h = "333", ms = h;							
+							string r, g, b, x = "1", m = "333", ms = m;
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",")+1);
 							g = b.substr(0, b.find(","));
@@ -921,9 +931,10 @@ void scanDb() {
 								x = x.substr(x.find(",") + 1);
 								if (x.find(",") != string::npos) {
 									ms = x;
-									x = x.substr(0, x.find(",")); if (x == "")x = "1";
-									ms = ms.substr(ms.find(",") + 1); if (ms == "")ms = h;
+									x = x.substr(0, x.find(",")); 
+									ms = ms.substr(ms.find(",") + 1); if (check_if_num(ms) == "")ms = m;
 								}
+								if (check_if_num(x) == "")x = "1";
 							}
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
