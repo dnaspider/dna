@@ -676,7 +676,7 @@ void scanDb() {
 							}//cout << a << " " << x << " " << ms << endl;
 							auto size{ 0 }, length{ stoi(x) };
 							for (; size < length; size++) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl; return;
-								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
+								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "Fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
 								h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 								if (h) {
 									if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
@@ -939,7 +939,7 @@ void scanDb() {
 									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") ms = m;
 									x = x.substr(0, x.find(",")); 
 								}
-								if (check_if_num(x) == "")x = d;
+								if (check_if_num(x) == "") x = d;
 							}//cout << r << " " << g << " " << b << " " << x << " " << ms << endl;
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
@@ -951,7 +951,7 @@ void scanDb() {
 							else {
 								auto size{ 0 }, length{stoi(x)};
 								for (; size < length; size++) {
-									if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <rgb:" << qp << ">\n"; } i = tail.length(); break; }
+									if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "Fail: <rgb:" << qp << ">\n"; } i = tail.length(); break; }
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
