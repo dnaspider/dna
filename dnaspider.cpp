@@ -927,7 +927,7 @@ void scanDb() {
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string r, g, b, x = "1", m = "333", ms = m;
+							string r, g, b, d = "1", x = d, m = "333", ms = m;
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",")+1);
 							g = b.substr(0, b.find(","));
@@ -936,12 +936,11 @@ void scanDb() {
 								x = b; b = b.substr(0, b.find(","));
 								x = x.substr(x.find(",") + 1);
 								if (x.find(",") != string::npos) {
-									ms = x;
-									x = x.substr(0, x.find(","));
-									ms = ms.substr(ms.find(",") + 1); if (check_if_num(ms) == "")ms = m;
+									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") ms = m;
+									x = x.substr(0, x.find(",")); 
 								}
-								if (check_if_num(x) == "")x = "1";
-							}
+								if (check_if_num(x) == "")x = d;
+							}//cout << r << " " << g << " " << b << " " << x << " " << ms << endl;
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
