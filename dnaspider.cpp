@@ -85,17 +85,22 @@ bool assume = 0;
 #pragma endregion
 
 #pragma region global_sub
-string check_if_num(string s) {
+string check_if_num(string &s) {
 	if (assume) return s;
-	string m; if (s > "") {
+	if (s > "") {
 		for (size_t t = 0; t < s.length(); ++t) {//!0-9
-			if (s[0] == ' ') { if (s[t] == ' ') { if (m > "" || s.length() == 1) { s = ""; return s; } continue; } m += s[t]; }//rem ws
-			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1)continue; //-+
+			if (s[0] == ' ') {
+				if (s.length() == 1) {
+					s = ""; return s;
+				}
+				s = s.substr(1, s.length()); --t;
+				continue;
+			}//rem ws
+			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1) continue; //-+
 			if (!(s[t] >= 48 && s[t] <= 57)) { s = ""; return s; }
 		}
 	}
 	else s = "";
-	if (s[0] == ' ') m = s;
 	return s;
 }
 
@@ -286,7 +291,7 @@ void loadSe() {
 		string v = (cell.substr(cell.find(":") + 1));
 		if (v[0] == ' ') v = v.substr(1, v.length());
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		auto er = [se, v]() { cout << "Error in " + settings + " [" << se << " " << v << "]" << endl; };
+		auto er = [se, v]() { cout << "Error in " << settings << " [" << se << " " << v << "]" << endl; };
 		switch (x) {
 			case 680://Assume:
 				{ if (v == "1" || v == "0") assume = stoi(v); else er(); } break;
@@ -657,7 +662,7 @@ void scanDb() {
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
-							DWORD pid; HWND h; 
+							DWORD pid; HWND h;
 							string a = qp, x = "1", m = "333", ms = m;//<app:a,x,ms>
 							a = a.substr(0, a.find(","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
@@ -931,7 +936,7 @@ void scanDb() {
 								x = x.substr(x.find(",") + 1);
 								if (x.find(",") != string::npos) {
 									ms = x;
-									x = x.substr(0, x.find(",")); 
+									x = x.substr(0, x.find(","));
 									ms = ms.substr(ms.find(",") + 1); if (check_if_num(ms) == "")ms = m;
 								}
 								if (check_if_num(x) == "")x = "1";
