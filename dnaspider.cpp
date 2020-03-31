@@ -662,17 +662,18 @@ void scanDb() {
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:")) {//app activate
-							DWORD pid; HWND h;
-							string a = qp, x = "1", m = "333", ms = m;//<app:a,x,ms>
+							DWORD pid; HWND h; 
+							string a = qp, d = "1", x = d, m = "333", ms = m;//<app:a,x,ms>
 							a = a.substr(0, a.find(","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
 							if (qp.find(",") != string::npos) {
 								x = qp.substr(qp.find(",") + 1);
 								if (x.find(",") != string::npos) {
 									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") ms = m;
-									x = x.substr(0, x.find(",")); if (check_if_num(x) == "") x = "1";
+									x = x.substr(0, x.find(","));
 								}
-							}//cout << a << " " << x << " " << ms << endl; return;
+								if (check_if_num(x) == "") x = d;
+							}//cout << a << " " << x << " " << ms << endl;
 							auto size{ 0 }, length{ stoi(x) };
 							for (; size < length; size++) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl; return;
 								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
