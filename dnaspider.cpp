@@ -277,11 +277,10 @@ void kbPress(string s, short key) {
 void out(string ai) { re = ">" + ai; strand.clear(); scanDb(); re.clear(); }
 
 void calc() {
-	string t = tail;
 	qq = to_string(ic) + qq.substr(qq.find(">") + 1, qq.length());
-	out(qq);
-	tail = t;
-	i = tail.length();
+	i = -1;
+	re = " ";
+	tail = qq;
 }
 
 void loadSe() {
@@ -567,7 +566,6 @@ void scanDb() {
 			default:
 				codes = cell;
 			}
-
 			if (showOuts) cout << "found: " << cell << "\ntail: " << tail << endl;
 #pragma endregion
 			if (tail.find("<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
