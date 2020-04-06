@@ -650,7 +650,7 @@ void scanDb() {
 						else printq();
 						break;
 					case'\'':
-						if (qq.find(">") != string::npos && qqb("<''")) { i = tail.length(); break; }//<''ignore>...
+						if (qq.find(">") != string::npos && qqb("<''")) i = tail.length();//<''ignore>...
 						else if (qq.find(">") != string::npos && qqb("<'")) rei(); //<'comments>
 						else printq();
 						break;
@@ -673,7 +673,7 @@ void scanDb() {
 								if (check_if_num(x) == "") x = d;
 							}//cout << a << " " << x << " " << ms << endl;
 							auto size{ 0 }, length{ stoi(x) };
-							for (; size < length; size++) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl; return;
+							for (; size < length; size++) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "Fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
 								h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 								if (h) {
@@ -693,7 +693,7 @@ void scanDb() {
 							if (qp[0] == ' ') qp = qp.substr(1, qp.length());
 							HWND h = GetForegroundWindow();	HWND h1 = FindWindowA(0, qp.c_str());
 							if (h == h1) { rei(); continue; }
-							else { if (showOuts) { cout << "fail: <App:" << qp << ">" << endl; } i = tail.length(); break; }
+							else { if (showOuts) { cout << "Fail: <App:" << qp << ">" << endl; } i = tail.length(); break; }
 						}
 						else conn();
 						break;
