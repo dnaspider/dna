@@ -97,7 +97,7 @@ string check_if_num(string &s) {
 				continue;
 			}//rem ws
 			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1) continue; //-+
-			if (!(s[t] >= 48 && s[t] <= 57)) { s = ""; return s; }
+			if (!(s[t] >= 48 && s[t] <= 57)) { if (showStrand) { cout << "NAN: " << s << endl; } s = ""; return s; }
 		}
 	}
 	else s = "";
@@ -644,7 +644,7 @@ void scanDb() {
 							if (s == "") s = to_string(CommaSleep);
 							s = check_if_num(s);
 							if (s == "") { printq(); break; }
-							if (s > "" && stoi(s) >= 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
+							if (stoi(s) >= 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
 							rei();
 						}
 						else printq();
@@ -667,14 +667,14 @@ void scanDb() {
 							if (qp.find(",") != string::npos) {
 								x = qp.substr(qp.find(",") + 1);
 								if (x.find(",") != string::npos) {
-									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") ms = m;
+									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") { printq(); break; }
 									x = x.substr(0, x.find(","));
 								}
-								if (check_if_num(x) == "") x = d;
+								if (check_if_num(x) == "") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << endl;
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h; HWND h1; DWORD pid;
-							auto f = []() { i = tail.length(); if (showOuts) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
+							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
 							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
@@ -692,7 +692,7 @@ void scanDb() {
 										break; 
 									}
 								}
-								Sleep(stoi(ms));
+								if (length > 1) Sleep(stoi(ms));
 							}
 							if (size >= length) { f(); break; }
 							rei();
@@ -929,19 +929,20 @@ void scanDb() {
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
 							string r, g, b, d = "1", x = d, m = "333", ms = m;
-							auto f = []() { i = tail.length(); if (showOuts) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
+							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
 							r = qp.substr(0, qp.find(","));
-							b = qp.substr(qp.find(",")+1);
+							b = qp.substr(qp.find(",") + 1);
 							g = b.substr(0, b.find(","));
 							b = b.substr(b.find(",") + 1);
+							if (check_if_num(r) == "" || check_if_num(g) == "" || check_if_num(b) == "") { printq(); break; }
 							if (b.find(",") != string::npos) {//x,ms
 								x = b; b = b.substr(0, b.find(","));
 								x = x.substr(x.find(",") + 1);
 								if (x.find(",") != string::npos) {
-									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") ms = m;
+									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") { printq(); break; }
 									x = x.substr(0, x.find(",")); 
 								}
-								if (check_if_num(x) == "") x = d;
+								if (check_if_num(x) == "") { printq(); break; }
 							}//cout << r << " " << g << " " << b << " " << x << " " << ms << endl;
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
@@ -960,7 +961,7 @@ void scanDb() {
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
-									Sleep(stoi(ms));
+									if (length > 1) Sleep(stoi(ms));
 								}
 								if (size >= length) { f(); break; }
 								rei();
