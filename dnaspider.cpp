@@ -929,6 +929,7 @@ void scanDb() {
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
 							string r, g, b, d = "1", x = d, m = "333", ms = m;
+							auto f = []() { i = tail.length(); if (showOuts) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",")+1);
 							g = b.substr(0, b.find(","));
@@ -951,13 +952,17 @@ void scanDb() {
 							}
 							else {
 								auto size{ 0 }, length{stoi(x)};
-								for (; size < length; size++) {
+								for (; size < length; ++size) {
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
+									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
+									if (pause_resume) { --size; Sleep(frequency); continue; }
+									if (size >= length) { f(); break; }
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
 									Sleep(stoi(ms));
 								}
-								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { i = tail.length(); break; }
+								if (size >= length) { f(); break; }
 								rei();
 							}
 						}
