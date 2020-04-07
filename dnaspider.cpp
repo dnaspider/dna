@@ -9,7 +9,7 @@ using namespace std;
 
 #pragma region global_var
 bool sleep = 1;
-bool esc_pressed;
+bool esc_pressed = 0;
 bool pause_resume = 0;
 bool StockInterfaceControls = false;
 int CommaSleep = 150;
@@ -643,7 +643,7 @@ void scanDb() {
 							string s = qq.substr(2, qq.find('>') - 2);
 							if (s == "") s = to_string(CommaSleep);
 							s = check_if_num(s);
-							if (s=="") { printq(); break; }
+							if (s == "") { printq(); break; }
 							if (s > "" && stoi(s) >= 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
 							rei();
 						}
@@ -655,12 +655,12 @@ void scanDb() {
 						else printq();
 						break;
 					case'a':
+					case 'A':
 						if (qqb("<alt>")) { kbHold(VK_LMENU); rei(); }
 						else if (qqb("<alt->")) { kbRelease(VK_LMENU); rei(); }
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
-						else if (qqb("<app:")) {//app activate
-							DWORD pid; HWND h; 
+						else if (qqb("<app:") || qqb("<App:")) {//app activate, if app in foreground
 							string a = qp, d = "1", x = d, m = "333", ms = m;//<app:a,x,ms>
 							a = a.substr(0, a.find(","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
@@ -673,27 +673,29 @@ void scanDb() {
 								if (check_if_num(x) == "") x = d;
 							}//cout << a << " " << x << " " << ms << endl;
 							auto size{ 0 }, length{ stoi(x) };
-							for (; size < length; size++) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
-								if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "Fail: <app:" << qp << ">\n"; } i = tail.length(); break; }
-								h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
-								if (h) {
-									if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
-									SetForegroundWindow(h);
-									break; 
+							HWND h; HWND h1; DWORD pid;
+							auto f = []() { i = tail.length(); if (showOuts) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
+							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
+								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
+								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
+								if (pause_resume) { --size; Sleep(frequency); continue; }
+								if (size >= length) { f(); break; }
+								if (qq[1] == 'A') {//App
+									h = GetForegroundWindow(); h1 = FindWindowA(0, a.c_str());
+									if (h == h1) break;
+								}
+								else if (qq[1] == 'a') {//'app
+									h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
+									if (h) {
+										if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
+										SetForegroundWindow(h);
+										break; 
+									}
 								}
 								Sleep(stoi(ms));
 							}
-							if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { i = tail.length(); break; }
+							if (size >= length) { f(); break; }
 							rei();
-						}
-						else conn();
-						break;
-					case 'A':
-						if (qqb("<App:")) {//if app in foreground
-							if (qp[0] == ' ') qp = qp.substr(1, qp.length());
-							HWND h = GetForegroundWindow();	HWND h1 = FindWindowA(0, qp.c_str());
-							if (h == h1) { rei(); continue; }
-							else { if (showOuts) { cout << "Fail: <App:" << qp << ">" << endl; } i = tail.length(); break; }
 						}
 						else conn();
 						break;
@@ -748,7 +750,8 @@ void scanDb() {
 						//	case 81: //1 + " " = 81
 						//		if (qqb("<f11")) kbPress("<f11", VK_F11);
 						//		else if (qqb("<f12")) kbPress("<f12", VK_F12);
-						//		else kbPress("<f1", VK_F1); 
+						//		else if kbPress("<f1", VK_F1);
+						//		else conn();
 						//		break;	
 						//	case 112: 
 						//	case 92:
@@ -949,7 +952,6 @@ void scanDb() {
 							else {
 								auto size{ 0 }, length{stoi(x)};
 								for (; size < length; size++) {
-									if (size >= length || GetAsyncKeyState(VK_ESCAPE)) { if (showOuts && size >= length) { cout << "Fail: <rgb:" << qp << ">\n"; } i = tail.length(); break; }
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
