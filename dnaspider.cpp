@@ -661,7 +661,7 @@ void scanDb() {
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:") || qqb("<App:")) {//app activate, if app in foreground
-							string a = qp, d = "1", x = d, m = "333", ms = m;//<app:a,x,ms>
+							string a = qp, x = "1", ms = "333";//<app:a,x,ms>
 							a = a.substr(0, a.find(","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
 							if (qp.find(",") != string::npos) {
@@ -928,7 +928,7 @@ void scanDb() {
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string r, g, b, d = "1", x = d, m = "333", ms = m;
+							string r, g, b, x = "1", ms = "333";
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",") + 1);
