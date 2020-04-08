@@ -651,7 +651,7 @@ void scanDb() {
 						break;
 					case'\'':
 						if (qq.find(">") != string::npos && qqb("<''")) i = tail.length();//<''ignore>...
-						else if (qq.find(">") != string::npos && qqb("<'")) rei(); //<'comments>
+						else if (qq.find(">") != string::npos && qqb("<'")) { if (showStrand) { string s = cell[strand.length() + 1] == '>' ? ">" : ""; cout << OutsTemplate << strand << cell[strand.length()] << s << " " << qq.substr(2, qq.find(">") - 2) << endl; } rei(); } //<'comments>
 						else printq();
 						break;
 					case'a':
