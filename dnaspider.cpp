@@ -560,7 +560,7 @@ void scanDb() {
 			case '-':
 				tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
-				for (size_t t = 0; t < strand.length(); t++) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+				for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == 63) || (!ignoreArrows) && (strand[t] == 76 || strand[t] == 85 || strand[t] == 82 || strand[t] == 68) || (!ignoreF1s) && (strand[t] == 33 || (strand[t] >= 35 && strand[t] <= 38) || (strand[t] >= 40 && strand[t] <= 43) || strand[t] == 64 || strand[t] == 94 || strand[t] == 95) || (!ignoreEsc && strand[t] == 126) || (!ignoreLShift && strand[t] == 83) || (!ignoreRShift && strand[t] == 72) || (!ignoreLAlt && strand[t] == 65) || (!ignoreRAlt && strand[t] == 77) || (!ignoreLCtrl && strand[t] == 67) || (!ignoreRCtrl && strand[t] == 79) || (!ignoreCaps && strand[t] == 80)) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 				codes = tail;
 				break;
 			default:
@@ -837,6 +837,7 @@ void scanDb() {
 							int r = rand();
 							char s = (qq[5] + qq[1]);
 							string t = tail;
+							size_t rei = i;
 							switch (s) {
 							case -84://':r': <rand:> #
 								if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
@@ -845,8 +846,7 @@ void scanDb() {
 										(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
 								}
 								out(to_string(r));
-								tail = t;
-								i = qq.find(">");
+								codes = t; tail = t; i = rei + qq.find(">");
 								break;
 							case -112://'>R': <Rand> A-Z
 								r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
@@ -861,59 +861,60 @@ void scanDb() {
 									(char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
 							outr:
 								switch (r) {
-								case 65: out("A"); tail = t; i = qq.find(">"); break;
-								case 66: out("B"); tail = t; i = qq.find(">"); break;
-								case 67: out("C"); tail = t; i = qq.find(">"); break;
-								case 68: out("D"); tail = t; i = qq.find(">"); break;
-								case 69: out("E"); tail = t; i = qq.find(">"); break;
-								case 70: out("F"); tail = t; i = qq.find(">"); break;
-								case 71: out("G"); tail = t; i = qq.find(">"); break;
-								case 72: out("H"); tail = t; i = qq.find(">"); break;
-								case 73: out("I"); tail = t; i = qq.find(">"); break;
-								case 74: out("J"); tail = t; i = qq.find(">"); break;
-								case 75: out("K"); tail = t; i = qq.find(">"); break;
-								case 76: out("L"); tail = t; i = qq.find(">"); break;
-								case 77: out("M"); tail = t; i = qq.find(">"); break;
-								case 78: out("N"); tail = t; i = qq.find(">"); break;
-								case 79: out("O"); tail = t; i = qq.find(">"); break;
-								case 80: out("P"); tail = t; i = qq.find(">"); break;
-								case 81: out("Q"); tail = t; i = qq.find(">"); break;
-								case 82: out("R"); tail = t; i = qq.find(">"); break;
-								case 83: out("S"); tail = t; i = qq.find(">"); break;
-								case 84: out("T"); tail = t; i = qq.find(">"); break;
-								case 85: out("U"); tail = t; i = qq.find(">"); break;
-								case 86: out("V"); tail = t; i = qq.find(">"); break;
-								case 87: out("W"); tail = t; i = qq.find(">"); break;
-								case 88: out("X"); tail = t; i = qq.find(">"); break;
-								case 89: out("Y"); tail = t; i = qq.find(">"); break;
-								case 90: out("Z"); tail = t; i = qq.find(">"); break;
-								case 97: out("a"); tail = t; i = qq.find(">"); break;
-								case 98: out("b"); tail = t; i = qq.find(">"); break;
-								case 99: out("c"); tail = t; i = qq.find(">"); break;
-								case 100: out("d"); tail = t; i = qq.find(">"); break;
-								case 101: out("e"); tail = t; i = qq.find(">"); break;
-								case 102: out("f"); tail = t; i = qq.find(">"); break;
-								case 103: out("g"); tail = t; i = qq.find(">"); break;
-								case 104: out("h"); tail = t; i = qq.find(">"); break;
-								case 105: out("i"); tail = t; i = qq.find(">"); break;
-								case 106: out("j"); tail = t; i = qq.find(">"); break;
-								case 107: out("k"); tail = t; i = qq.find(">"); break;
-								case 108: out("l"); tail = t; i = qq.find(">"); break;
-								case 109: out("m"); tail = t; i = qq.find(">"); break;
-								case 110: out("n"); tail = t; i = qq.find(">"); break;
-								case 111: out("o"); tail = t; i = qq.find(">"); break;
-								case 112: out("p"); tail = t; i = qq.find(">"); break;
-								case 113: out("q"); tail = t; i = qq.find(">"); break;
-								case 114: out("r"); tail = t; i = qq.find(">"); break;
-								case 115: out("s"); tail = t; i = qq.find(">"); break;
-								case 116: out("t"); tail = t; i = qq.find(">"); break;
-								case 117: out("u"); tail = t; i = qq.find(">"); break;
-								case 118: out("v"); tail = t; i = qq.find(">"); break;
-								case 119: out("w"); tail = t; i = qq.find(">"); break;
-								case 120: out("x"); tail = t; i = qq.find(">"); break;
-								case 121: out("y"); tail = t; i = qq.find(">"); break;
-								case 122: out("z"); tail = t; i = qq.find(">"); break;
+								case 65: out("A"); break;
+								case 66: out("B"); break;
+								case 67: out("C"); break;
+								case 68: out("D"); break;
+								case 69: out("E"); break;
+								case 70: out("F"); break;
+								case 71: out("G"); break;
+								case 72: out("H"); break;
+								case 73: out("I"); break;
+								case 74: out("J"); break;
+								case 75: out("K"); break;
+								case 76: out("L"); break;
+								case 77: out("M"); break;
+								case 78: out("N"); break;
+								case 79: out("O"); break;
+								case 80: out("P"); break;
+								case 81: out("Q"); break;
+								case 82: out("R"); break;
+								case 83: out("S"); break;
+								case 84: out("T"); break;
+								case 85: out("U"); break;
+								case 86: out("V"); break;
+								case 87: out("W"); break;
+								case 88: out("X"); break;
+								case 89: out("Y"); break;
+								case 90: out("Z"); break;
+								case 97: out("a"); break;
+								case 98: out("b"); break;
+								case 99: out("c"); break;
+								case 100: out("d"); break;
+								case 101: out("e"); break;
+								case 102: out("f"); break;
+								case 103: out("g"); break;
+								case 104: out("h"); break;
+								case 105: out("i"); break;
+								case 106: out("j"); break;
+								case 107: out("k"); break;
+								case 108: out("l"); break;
+								case 109: out("m"); break;
+								case 110: out("n"); break;
+								case 111: out("o"); break;
+								case 112: out("p"); break;
+								case 113: out("q"); break;
+								case 114: out("r"); break;
+								case 115: out("s"); break;
+								case 116: out("t"); break;
+								case 117: out("u"); break;
+								case 118: out("v"); break;
+								case 119: out("w"); break;
+								case 120: out("x"); break;
+								case 121: out("y"); break;
+								case 122: out("z"); break;
 								}
+								codes = t; tail = t; i = rei + qq.find(">");
 							}
 						}
 						else if (qqb("<rc")) kbPress("<rc", VK_F7);
