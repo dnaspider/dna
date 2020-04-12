@@ -673,7 +673,7 @@ void scanDb() {
 								if (check_if_num(x) == "") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << endl;
 							auto size{ 0 }, length{ stoi(x) };
-							HWND h; HWND h1; DWORD pid;
+							HWND h, h1; DWORD pid;
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
 							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
@@ -953,7 +953,7 @@ void scanDb() {
 								rei();//cout << "rgb\n";
 							}
 							else {
-								auto size{ 0 }, length{stoi(x)};
+								auto size{ 0 }, length{ stoi(x) };
 								for (; size < length; ++size) {
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
@@ -1004,8 +1004,7 @@ void scanDb() {
 							SetCursorPos(stoi(qx), stoi(qy)); rei();
 						}
 						else if (qqb("<XY>")) {//return pointer
-							SetCursorPos(qxc, qyc);
-							rei();
+							SetCursorPos(qxc, qyc); rei();
 						}
 						else if (qqb("<XY:")) {//set return pointer
 							qxc = stoi(qx); qyc = stoi(qy); rei();
@@ -1056,7 +1055,7 @@ void scanDb() {
 				clearAllKeys();
 				strand.clear();
 			}
-			if (speed > 0)speed = 0;
+			if (speed > 0) speed = 0;
 			break;
 		}
 	}
@@ -1158,6 +1157,7 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
+			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = "<"; prints(); continue; }
 			if (strand.substr(0, 1) == "<") {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(">") != std::string::npos) strand.clear();
