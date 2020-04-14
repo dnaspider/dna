@@ -661,17 +661,21 @@ void scanDb() {
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:") || qqb("<App:")) {//app activate, if app in foreground
-							string a = qp, x = "1", ms = "333";//<app:a,x,ms>
+							string a = qp, x = "1", ms = "333", c = "";//<app:a,x,ms,c>
 							a = a.substr(0, a.find(","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
 							if (qp.find(",") != string::npos) {
 								x = qp.substr(qp.find(",") + 1);
 								if (x.find(",") != string::npos) {
-									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") { printq(); break; }
+									ms = x.substr(x.find(",") + 1);
+									if (ms.find(",") != string::npos) {
+										c = ms.substr(ms.find(",") + 1); if (c[0] == ' ') { c = c.substr(1); }
+										ms = ms.substr(0, ms.find(",")); if (check_if_num(ms) == "") { printq(); break; }
+									}//c
 									x = x.substr(0, x.find(","));
 								}
 								if (check_if_num(x) == "") { printq(); break; }
-							}//cout << a << " " << x << " " << ms << endl;
+							}//cout << a << " " << x << " " << ms << " " << c << endl;
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
@@ -694,7 +698,10 @@ void scanDb() {
 								}
 								if (length > 1) Sleep(stoi(ms));
 							}
-							if (size >= length) { f(); break; }
+							if (size >= length) {//fail
+								if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { tail = "<" + c + ">"; i = -1; break; }//else <c:>
+								f(); break;
+							}
 							rei();
 						}
 						else conn();
@@ -929,22 +936,26 @@ void scanDb() {
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
 						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string r, g, b, x = "1", ms = "333";
+							string r, g, b, x = "1", ms = "333", c = "";
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",") + 1);
 							g = b.substr(0, b.find(","));
 							b = b.substr(b.find(",") + 1);
-							if (check_if_num(r) == "" || check_if_num(g) == "" || check_if_num(b) == "") { printq(); break; }
 							if (b.find(",") != string::npos) {//x,ms
 								x = b; b = b.substr(0, b.find(","));
 								x = x.substr(x.find(",") + 1);
 								if (x.find(",") != string::npos) {
-									ms = x.substr(x.find(",") + 1); if (check_if_num(ms) == "") { printq(); break; }
+									ms = x.substr(x.find(",") + 1);
+									if (ms.find(",") != string::npos) {
+										c = ms.substr(ms.find(",") + 1); if (c[0] == ' ') { c = c.substr(1); }
+										ms = ms.substr(0, ms.find(",")); if (check_if_num(ms) == "") { printq(); break; }
+									}//c
 									x = x.substr(0, x.find(",")); 
 								}
 								if (check_if_num(x) == "") { printq(); break; }
-							}//cout << r << " " << g << " " << b << " " << x << " " << ms << endl;
+							}//cout << r << " " << g << " " << b << " " << x << " " << ms << " " << c << endl;
+							if (check_if_num(r) == "" || check_if_num(g) == "" || check_if_num(b) == "") { printq(); break; }
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
@@ -964,7 +975,10 @@ void scanDb() {
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
 									if (length > 1) Sleep(stoi(ms));
 								}
-								if (size >= length) { f(); break; }
+								if (size >= length) { 
+									if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { tail = "<" + c + ">"; i = -1; break; }//else <c:>
+									f(); break;
+								}
 								rei();
 							}
 						}
