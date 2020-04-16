@@ -700,7 +700,10 @@ void scanDb() {
 								if (length > 1) Sleep(stoi(ms));
 							}
 							if (size >= length) {//fail
-								if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { tail = "<" + c + ">"; i = -1; break; }//else <c:>
+								if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
+									tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<app:a,x,ms,<c->..., <app:a,x,ms,c->
+									fail = 1; re = " "; i = -1; break;
+								}
 								f(); break;
 							}
 							rei();
