@@ -8,6 +8,7 @@
 using namespace std;
 
 #pragma region global_var
+bool fail = 0;
 bool sleep = 1;
 bool esc_pressed = 0;
 bool pause_resume = 0;
@@ -222,7 +223,7 @@ void scanDb(); void conn() {//<connect:>
 				re = " ";//codes
 				return;
 			}
-		}f.close(); printq();
+		}f.close(); if (fail == 1) { if (showStrand) { cout << "Fail: " << qqs << endl; } fail = 0; i = tail.length(); return; }printq();
 	}
 	else printq();
 }
@@ -976,7 +977,10 @@ void scanDb() {
 									if (length > 1) Sleep(stoi(ms));
 								}
 								if (size >= length) { 
-									if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { tail = "<" + c + ">"; i = -1; break; }//else <c:>
+									if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
+										tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<rgb:r,g,b,*,ms,<c-> = <c->..., <rgb:r,g,b,*,ms,c-> = <c->
+										fail = 1; re = " "; i = -1; break;
+									}
 									f(); break;
 								}
 								rei();
