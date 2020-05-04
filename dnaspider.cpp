@@ -523,6 +523,7 @@ void getRGB() {
 	hDC = GetDC(NULL);
 	if (hDC != NULL) {
 		color = GetPixel(hDC, pt.x, pt.y);
+		//ReleaseDC(NULL, hDC);
 		if (color != CLR_INVALID) {
 			string c = to_string(GetRValue(color)) + "," + to_string(GetGValue(color)) + "," + to_string(GetBValue(color));
 			tail = "<shift>,<shift->rgb:" + c + ">";
@@ -659,7 +660,7 @@ void scanDb() {
 						break;
 					case'\'':
 						if (qq.find(">") != string::npos && qqb("<''")) i = tail.length();//<''ignore>...
-						else if (qq.find(">") != string::npos && qqb("<'")) { if (showStrand) { string s = cell[strand.length() + 1] == '>' ? ">" : ""; cout << OutsTemplate << strand << cell[strand.length()] << s << " " << qq.substr(2, qq.find(">") - 2) << endl; } rei(); } //<'comments>
+						else if (qq.find(">") != string::npos && qqb("<'")) { if (showStrand) { string s = cell[strand.length() + 1] == '>' ? ">" : ""; cout << OutsTemplate << strand << cell[strand.length()] << s << " " << qq.substr(2, qq.find(">") - 2) << endl; } rei(); sleep = 0; } //<'comments>
 						else printq();
 						break;
 					case'a':
@@ -971,6 +972,7 @@ void scanDb() {
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
 							color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
+							//ReleaseDC(NULL, hDC);
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								rei();//cout << "rgb\n";
 							}
@@ -983,6 +985,7 @@ void scanDb() {
 									if (size >= length) { f(); break; }
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
+									//ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
 									if (length > 1) Sleep(stoi(ms));
 								}
