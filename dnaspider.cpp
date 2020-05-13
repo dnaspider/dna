@@ -524,8 +524,9 @@ void getApp() {
 	int l = GetWindowTextLength(h);
 	string title(l, 0);
 	GetWindowText(h, &title[0], l + 1);
-	if (title == "") { out("<shift><alt><esc><alt-><shift->"); return; }
-	out("<shift><alt><esc><alt-><shift-><shift>,<shift->app:" + title + ">");
+	out("<shift><,><alt><esc><alt-><shift->");
+	if (title == "") return;
+	out("<shift>,<shift->app:" + title + ">");
 }
 
 void getRGB() {
@@ -1126,7 +1127,7 @@ void printInterfaceCtrls() {
 	cout << "LEFT_SHIFT + PAUSE_BREAK:  Clear strand" << endl;
 	if (StockInterfaceControls) { cout << "<odb:  Open database: " << database << endl;	cout << "<ose:  Open settings: " << settings << endl; }
 	(StockInterfaceControls) ? cout << "<xy or P + ESC" : cout << "P + ESC"; cout << ":  <xy:>" << endl;
-	cout << "A + ESC:  <app:>" << endl;
+	cout << "A + ESC:  <rgb:>" << endl;
 	cout << "R + ESC:  <rgb:>" << endl;
 	(reKey == 145) ? c = "SCROLL_LOCK" : c = "repeatKey: " + reKey; cout << c << " or EQUAL + ESC:  Repeat" << endl;
 	cout << endl;
