@@ -1254,7 +1254,7 @@ int main() {//cout << "@dnaspider\n\n";
 			GetAsyncKeyState(65); if (GetAsyncKeyState(65)) {//esc + a: <app:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
-				getApp(); out(""); continue;
+				string s = tail; getApp(); tail = s; continue;
 			}
 			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
