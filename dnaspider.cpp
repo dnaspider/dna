@@ -217,10 +217,11 @@ void scanDb(); void conn() {//<connect:>
 		ifstream f(database); string cell; while (getline(f, cell)) {
 			if (cell.substr(0, 4) == "<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
+				
 				string q = qq, x = cell.substr(qqs.length()), xx = q.substr(qqs.length()), l = in.substr(0, link.length());
 				if (link > "") {
 					if (link[0] == '<') {
-						if (link == l || link == l && re > "") qq = fail ? x : x + xx;
+						if (link == l && re > "") qq = fail ? x : x + xx;
 						else if (link != l && i == 0) {
 							if (fail || !fail) qq = x + xx;
 							if (l == qq.substr(0, link.length())) qq = x;
@@ -230,7 +231,6 @@ void scanDb(); void conn() {//<connect:>
 				}
 				else qq = x + xx;
 				tail = qq;
-				fail = 0;
 				if (SlightPauseInBetweenConnects) Sleep(150);
 				strand.clear(); f.close(); 
 				i = -1;
@@ -605,7 +605,7 @@ void scanDb() {
 #pragma endregion
 			if (tail.find("<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close();
-			for (i = 0; i < tail.length(); ++i) {
+			fail = 0; for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
@@ -614,7 +614,7 @@ void scanDb() {
 				if (showOuts) { cout << "ctail: " << ctail << endl; }
 				switch (ctail[0]) {
 				case'<':
-					qq = tail.substr(i, tail.length() - i); //<test>
+					if (!fail) qq = tail.substr(i, tail.length() - i); //<test>
 					if (showOuts) { cout << "qq: " << qq << endl; }
 					if (qq.find(":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(":") + 1, qq.find(">") - qq.find(":") - 1);//#
@@ -721,22 +721,21 @@ void scanDb() {
 								if (size >= length) { f(); break; }
 								if (qq[1] == 'A') {//App
 									h = GetForegroundWindow(); h1 = FindWindowA(0, a.c_str());
-									if (h == h1) break;
+									if (h == h1) { break; fail = 0; }
 								}
 								else if (qq[1] == 'a') {//'app
 									h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 									if (h) {
 										if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
 										SetForegroundWindow(h);
-										break;
+										fail = 0; break;
 									}
 								}
 								if (length >= 1) Sleep(stoi(ms));
 							}
 							if (size >= length) {//fail
 								if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
-									tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<app:a,x,ms,<c->..., <app:a,x,ms,c->
-									fail = 1; re = " "; i = -1; break;
+									fail = 1; re = " "; i = -1; break;//<app:a,x,ms,<c->..., <app:a,x,ms,c->
 								}
 								f(); break;
 							}
@@ -1002,6 +1001,7 @@ void scanDb() {
 							link = c;
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								rei();//cout << "rgb\n";
+								fail = 0;
 							}
 							else {
 								auto size{ 0 }, length{ stoi(x) };
@@ -1013,13 +1013,14 @@ void scanDb() {
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 									//ReleaseDC(NULL, hDC);
-									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) break;
+									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
+										fail = 0; break;
+									}
 									if (length >= 1) Sleep(stoi(ms));
 								}
 								if (size >= length) { 
 									if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
-										tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<rgb:r,g,b,*,ms,<c-> = <c->..., <rgb:r,g,b,*,ms,c-> = <c->
-										fail = 1; re = " "; i = -1; break;
+										fail = 1; re = " "; i = -1; break;//<rgb:r,g,b,*,ms,<c-> = <c->..., <rgb:r,g,b,*,ms,c-> = <c->
 									}
 									f(); break;
 								}
