@@ -217,22 +217,12 @@ void scanDb(); void conn() {//<connect:>
 		ifstream f(database); string cell; while (getline(f, cell)) {
 			if (cell.substr(0, 4) == "<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
-				
-				string q = qq, x = cell.substr(qqs.length()), xx = q.substr(qqs.length()), l = in.substr(0, link.length());
-				if (link > "") {
-					if (link[0] == '<') {
-						if (link == l && re > "") qq = fail ? x : x + xx;
-						else if (link != l && i == 0) {
-							if (fail || !fail) qq = x + xx;
-							if (l == qq.substr(0, link.length())) qq = x;
-						}
-					}
-					else if (re > "") qq = fail ? x : x + xx;
-				}
-				else qq = x + xx;
+				string x = cell.substr(qqs.length()), xx = qq.substr(qqs.length()), l = in.substr(0, link.length());
+				qq = x + xx;
+				if (link != l && l == qq.substr(0, link.length())) qq = x;
 				tail = qq;
 				if (SlightPauseInBetweenConnects) Sleep(150);
-				strand.clear(); f.close(); 
+				strand.clear(); f.close();
 				i = -1;
 				if (speed > 0) sleep = 0;
 				re = " ";//codes
@@ -697,7 +687,7 @@ void scanDb() {
 						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
 						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb("<app:") || qqb("<App:")) {//app activate, if app in foreground
-							string a = qp, x = "1", ms = "333", c = "";//<app:a,x,ms,c>
+							string a = qp, x = "1", ms = "333"; link = "";//<app:a,x,ms,link>
 							a = a.substr(0, a.find(","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
 							if (qp.find(",") != string::npos) {
@@ -705,17 +695,17 @@ void scanDb() {
 								if (x.find(",") != string::npos) {
 									ms = x.substr(x.find(",") + 1);
 									if (ms.find(",") != string::npos) {
-										c = ms.substr(ms.find(",") + 1); if (c[0] == ' ') { c = c.substr(1); }
+										link = ms.substr(ms.find(",") + 1); if (link[0] == ' ') { link = link.substr(1); }
 										ms = ms.substr(0, ms.find(",")); if (check_if_num(ms) == "") { printq(); break; }
-									}//c
+									}
 									x = x.substr(0, x.find(","));
 								}
 								if (check_if_num(x) == "") { printq(); break; }
-							}//cout << a << " " << x << " " << ms << " " << c << endl;
+							}//cout << a << " " << x << " " << ms << " " << link << endl;
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
-							link = c; for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
+							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
@@ -735,12 +725,12 @@ void scanDb() {
 								if (length >= 1) Sleep(stoi(ms));
 							}
 							if (size >= length) {//fail
-								if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
-									if ("<" + c == in.substr(0, c.length() + 1) || c == in.substr(0, c.length())) {
+								if (link > "" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
+									if ("<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
 										fail = 1;
 									}
 									else {
-										tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<app:a,x,ms,<c->..., <app:a,x,ms,c->
+										tail = link[0] == '<' ? link + ">" + qq.substr(qq.find(">") + 1) : "<" + link + ">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
 									}
 									re = " "; i = -1; break;
 								}
@@ -979,8 +969,8 @@ void scanDb() {
 						}
 						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
 						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
-						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms>
-							string r, g, b, x = "1", ms = "333", c = "";
+						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms,link>
+							string r, g, b, x = "1", ms = "333"; link = "";
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
 							r = qp.substr(0, qp.find(","));
 							b = qp.substr(qp.find(",") + 1);
@@ -992,20 +982,19 @@ void scanDb() {
 								if (x.find(",") != string::npos) {
 									ms = x.substr(x.find(",") + 1);
 									if (ms.find(",") != string::npos) {
-										c = ms.substr(ms.find(",") + 1); if (c[0] == ' ') { c = c.substr(1); } 
+										link = ms.substr(ms.find(",") + 1); if (link[0] == ' ') { link = link.substr(1); }
 										ms = ms.substr(0, ms.find(",")); if (check_if_num(ms) == "") { printq(); break; }
-									}//c
+									}
 									x = x.substr(0, x.find(",")); 
 								}
 								if (check_if_num(x) == "") { printq(); break; }
-							}//cout << r << " " << g << " " << b << " " << x << " " << ms << " " << c << endl;
+							}//cout << r << " " << g << " " << b << " " << x << " " << ms << " " << link << endl;
 							if (check_if_num(r) == "" || check_if_num(g) == "" || check_if_num(b) == "") { printq(); break; }
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
 							color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 							//ReleaseDC(NULL, hDC);
-							link = c;
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								rei();//cout << "rgb\n";
 								fail = 0;
@@ -1026,12 +1015,12 @@ void scanDb() {
 									if (length >= 1) Sleep(stoi(ms));
 								}
 								if (size >= length) { 
-									if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
-										if ("<" + c == in.substr(0, c.length() + 1) || c == in.substr(0, c.length())) {
+									if (link > "" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
+										if ("<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
 											fail = 1;
 										}
 										else {
-											tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<rgb:r,g,b,*,ms,<c-> = <c->..., <rgb:r,g,b,*,ms,c-> = <c->
+											tail = link[0] == '<' ? link + ">" + qq.substr(qq.find(">") + 1) : "<" + link + ">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
 										}
 										re = " "; i = -1; break;
 									}
