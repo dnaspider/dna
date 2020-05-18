@@ -614,6 +614,7 @@ void scanDb() {
 				if (showOuts) { cout << "ctail: " << ctail << endl; }
 				switch (ctail[0]) {
 				case'<':
+					if (i > 0) in = tail.substr(i, tail.length() - i);
 					if (!fail) qq = tail.substr(i, tail.length() - i); //<test>
 					if (showOuts) { cout << "qq: " << qq << endl; }
 					if (qq.find(":") != std::string::npos) { //<test:#>
@@ -735,7 +736,13 @@ void scanDb() {
 							}
 							if (size >= length) {//fail
 								if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
-									fail = 1; re = " "; i = -1; break;//<app:a,x,ms,<c->..., <app:a,x,ms,c->
+									if ("<" + c == in.substr(0, c.length() + 1) || c == in.substr(0, c.length())) {
+										fail = 1;
+									}
+									else {
+										tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<app:a,x,ms,<c->..., <app:a,x,ms,c->
+									}
+									re = " "; i = -1; break;
 								}
 								f(); break;
 							}
@@ -1020,7 +1027,13 @@ void scanDb() {
 								}
 								if (size >= length) { 
 									if (c > "" && (c[c.length() - 1] == ':' || c[c.length() - 1] == '-')) { 
-										fail = 1; re = " "; i = -1; break;//<rgb:r,g,b,*,ms,<c-> = <c->..., <rgb:r,g,b,*,ms,c-> = <c->
+										if ("<" + c == in.substr(0, c.length() + 1) || c == in.substr(0, c.length())) {
+											fail = 1;
+										}
+										else {
+											tail = c[0] == '<' ? c + ">" + qq.substr(qq.find(">") + 1) : "<" + c + ">";//<rgb:r,g,b,*,ms,<c-> = <c->..., <rgb:r,g,b,*,ms,c-> = <c->
+										}
+										re = " "; i = -1; break;
 									}
 									f(); break;
 								}
