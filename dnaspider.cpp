@@ -254,27 +254,17 @@ void kbPress(string s, short key) {
 	ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
 	for (int j = 0; j < stoi(star_num); ++j) {
 		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
-		if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
+		if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 		if (pause_resume) { --j; Sleep(frequency); continue; }
-		if (s == "<,*") Sleep(CommaSleep);
-		else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
-		else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-		else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
-		else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+		if (s.length() == 3) {
+			if (s == "<,*") Sleep(CommaSleep);
+			else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+			else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+			else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
+			else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+			else SendInput(2, ip, sizeof(ip[0]));
+		}
 		else SendInput(2, ip, sizeof(ip[0]));
-		//switch (s[2]) {
-		//case '*': Sleep(CommaSleep); break;
-		//case 'c':
-		//	if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
-		//	else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-		//	else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
-		//	break;
-		//case 's':
-		//	if (s == "<bs" || s == "<esc" || s == "<ps") SendInput(2, ip, sizeof(ip[0]));
-		//	else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
-		//	break;
-		//default: SendInput(2, ip, sizeof(ip[0]));
-		//}
 		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
 	}
 	rei();
@@ -597,7 +587,7 @@ void scanDb() {
 			f.close();
 			fail = 0; for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
-				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 
 				string ctail = tail.substr(i, 1);//extracted char from tail
@@ -707,7 +697,7 @@ void scanDb() {
 							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
 							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
-								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
+								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
 								if (size >= length) { f(); break; }
 								if (qq[1] == 'A') {//App
@@ -1003,7 +993,7 @@ void scanDb() {
 								auto size{ 0 }, length{ stoi(x) };
 								for (; size < length; ++size) {
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
-									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); } else { pause_resume = 1; } }
+									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE);  kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (pause_resume) { --size; Sleep(frequency); continue; }
 									if (size >= length) { f(); break; }
 									GetCursorPos(&pt);
