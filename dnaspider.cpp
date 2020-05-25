@@ -5,12 +5,14 @@
 #include <string>
 #include <windows.h>
 #include <ctime>
+#include <regex>
+#include <codecvt>
 using namespace std;
 
 #pragma region global_var
-string in = ""; //strand
-string link = ""; //<app|rgb,,,<link:>
-string editor = "Notepad", editor1 = "Visual Studio Code", db = "";//"db.txt - "
+wstring in = L""; //strand
+wstring link = L""; //<app|rgb,,,<link:>
+wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"";//"db.txt - "
 bool fail = 0;
 bool sleep = 1;
 bool esc_pressed = 0;
@@ -53,23 +55,23 @@ bool ignoreCaps = true;
 bool strandLengthMode = false;
 int strandLength = 3;
 bool qScanOnly = false;
-string database = R"(C:\dna\db.txt)";
-string settings = R"(C:\dna\se.txt)";
+wstring database = L"C:\\dna\\db.txt";
+wstring settings = L"C:\\dna\\se.txt";//R"(C:\dna\se.txt)";
 int frequency = 150; //>> ms response -> vk_
 int speed = 0; //<< 
 short reKey = VK_SCROLL; //repeat
 short cKey = VK_RCONTROL; //< 163 
-string strand = ""; //>> supply
-string tail = ""; //strand:tail
-string re = "";//repeat clone
+wstring strand = L""; //>> supply
+wstring tail = L""; //strand:tail
+wstring re = L"";//repeat clone
 bool showStrand = true; //cout <<
 bool showOuts = false; //cout << 
 bool showIntro = false;
 bool showSettings = false;
-string star_num; //*#
-string qq; //<x>
-string qp; //<x:#>
-string qx, qy; //<xy:#,#>
+wstring star_num; //*#
+wstring qq; //<x>
+wstring qp; //<x:#>
+wstring qx, qy; //<xy:#,#>
 auto qxc = 0;//<rp>
 auto qyc = 0;
 bool shft = false;
@@ -77,10 +79,10 @@ size_t i = 0;
 bool close_ctrl_mode = true; //x>, x:, x- 
 bool clear_after_stock = true; //<se, <db
 bool SlightPauseInBetweenConnects = false;
-string OutsTemplate = "strand: ";
+wstring OutsTemplate = L"strand: ";
 bool EscCommaAutoBs = true;
 bool EscEqualAutoBs = true;
-string codes = ""; //tail re
+wstring codes = L""; //tail re
 bool EscHAutoBs = true;
 bool AutoBs_RepeatKey = 0;
 bool SeHotReload_CtrlS=1;
@@ -89,40 +91,40 @@ bool assume = 0;
 #pragma endregion
 
 #pragma region global_sub
-string check_if_num(string &s) {
+wstring check_if_num(wstring &s) {
 	if (assume) return s;
-	if (s > "") {
+	if (s > L"") {
 		for (size_t t = 0; t < s.length(); ++t) {//!0-9
 			if (s[0] == ' ') {
 				if (s.length() == 1) {
-					s = ""; return s;
+					s = L""; return s;
 				}
 				s = s.substr(1, s.length()); --t;
 				continue;
 			}//rem ws
 			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1) continue; //-+
-			if (!(s[t] >= 48 && s[t] <= 57)) { if (showStrand) { cout << "NAN: " << s << endl; } s = ""; return s; }
+			if (!(s[t] >= 48 && s[t] <= 57)) { if (showStrand) { wcout << "NAN: " << s << endl; } s = L""; return s; }
 		}
 	}
-	else s = "";
+	else s = L"";
 	return s;
 }
 
-void rei() { i += qq.find(">"); }
+void rei() { i += qq.find(L">"); }
 
-void kb(CHAR b) {//out char
+void kb(wchar_t b) {//out char
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
-	if (VkKeyScan(b) == -1) { ip[0].ki.wScan = b; ip[0].ki.wVk = 0; }
-	else { ip[0].ki.wVk = VkKeyScan(b); }
+	if (VkKeyScanW(b) == -1) { ip[0].ki.wScan = b; ip[0].ki.wVk = 0; }
+	else { ip[0].ki.wVk = VkKeyScanW(b); }
 	ip[1] = ip[0]; ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
 	SendInput(2, ip, sizeof(ip[0]));
 }
 
-void kb1(string b) {//alt codes, emoji
+void kb1(wstring b) {//alt codes, emoji
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
-	ip[0].ki.dwFlags = KEYEVENTF_UNICODE; //cout << "hex: " << (unsigned)strtoull(b.c_str(), nullptr, 16) << endl;
-	ip[0].ki.wScan = (unsigned)strtoull(b.c_str(), nullptr, 16); ip[0].ki.wVk = 0;//(unsigned)stoull(b);
+	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
+	ip[0].ki.wScan = (unsigned)stoull(b); ip[0].ki.wVk = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
 	SendInput(2, ip, sizeof(ip[0]));
 }
@@ -142,7 +144,7 @@ void mouseEvent(short key) {
 	INPUT ip; ip.type = INPUT_MOUSE; ip.mi.time = 0;
 	ip.mi.dwFlags = key;
 	if (key == MOUSEEVENTF_HWHEEL) ip.mi.mouseData = 150;//hscrollwheel
-	if (key == MOUSEEVENTF_HWHEEL && qq.substr(0,3)=="<ls") ip.mi.mouseData = -150;
+	if (key == MOUSEEVENTF_HWHEEL && qq.substr(0,3)==L"<ls") ip.mi.mouseData = -150;
 	SendInput(1, &ip, sizeof(ip));
 }
 
@@ -157,9 +159,9 @@ void shftRelease() {
 
 void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
-void prints() { if (showStrand) cout << OutsTemplate << strand << '\n'; }
+void prints() { if (showStrand) wcout << OutsTemplate << strand << '\n'; }
 
-bool qqb(string s) {
+bool qqb(wstring s) {
 	if (qq.substr(0, s.length()) == s) return true; else return false;
 }
 
@@ -200,24 +202,24 @@ void clearAllKeys() {
 }
 
 void printDb() {
-	cout << database << "\n";
-	ifstream f(database); string cell;
-	SetConsoleOutputCP(CP_UTF8); while (getline(f, cell)) { cout << cell << endl; }
+	wcout << database << "\n";
+	wifstream f(database); wstring cell;
+	SetConsoleOutputCP(CP_UTF8); while (getline(f, cell)) { wcout << cell << endl; }
 	f.close(); cout << endl;
 }
 
 void scanDb(); void conn() {//<connect:>	
-	bool con = false; string qqs = qq.substr(0, qq.find(">") + 1);
+	bool con = false; wstring qqs = qq.substr(0, qq.find(L">") + 1);
 	if (qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
-		if (qqs.substr(qqs.length() - 2, 2) == ":>" || qqs.substr(qqs.length() - 2, 2) == "->") {
+		if (qqs.substr(qqs.length() - 2, 2) == L":>" || qqs.substr(qqs.length() - 2, 2) == L"->") {
 			con = true;
 		}
 	}
 	if (con) {
-		ifstream f(database); string cell; while (getline(f, cell)) {
-			if (cell.substr(0, 4) == "<'''") break;
+		wifstream f(database); wstring cell; while (getline(f, cell)) {
+			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
-				string x = cell.substr(qqs.length()), xx = qq.substr(qqs.length()), l = in.substr(0, link.length());
+				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length()), l = in.substr(0, link.length());
 				qq = x + xx;
 				if (link != l && l == qq.substr(0, link.length())) qq = x;
 				tail = qq;
@@ -225,25 +227,25 @@ void scanDb(); void conn() {//<connect:>
 				strand.clear(); f.close();
 				i = -1;
 				if (speed > 0) sleep = 0;
-				re = " ";//codes
+				re = L" ";//codes
 				return;
 			}
-		}f.close(); if (fail == 1) { if (showStrand) { cout << "Fail: " << qqs << endl; } fail = 0; i = tail.length(); return; }printq();
+		}f.close(); if (fail == 1) { if (showStrand) { wcout << "Fail: " << qqs << endl; } fail = 0; i = tail.length(); return; }printq();
 	}
 	else printq();
 }
 
-void kbPress(string s, short key) {
-	string n = s;
-	if (qq.find(">") == std::string::npos) { printq(); return; }
-	if (qq[n.length()] == '>') star_num = "1";
+void kbPress(wstring s, short key) {
+	wstring n = s;
+	if (qq.find(L">") == std::string::npos) { printq(); return; }
+	if (qq[n.length()] == '>') star_num = L"1";
 	else {
-		if (qq.substr(qq.find(">") - 1, 1) == ":" || qq.substr(qq.find(">") - 1, 1) == "-") { conn(); return; }
-		n = qq.substr(n.length(), qq.find(">") - n.length());
-		if (n > "") {
+		if (qq.substr(qq.find(L">") - 1, 1) == L":" || qq.substr(qq.find(L">") - 1, 1) == L"-") { conn(); return; }
+		n = qq.substr(n.length(), qq.find(L">") - n.length());
+		if (n > L"") {
 			if (n[0] == '*') n = n.substr(1, n.length()); //case: <f1*
 			n = check_if_num(n);
-			if (n == "") { printq(); return; }
+			if (n == L"") { printq(); return; }
 			star_num = n;
 			if (!(stoi(n) > 0)) { printq(); return; };
 		}
@@ -257,11 +259,11 @@ void kbPress(string s, short key) {
 		if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 		if (pause_resume) { --j; Sleep(frequency); continue; }
 		if (s.length() == 3) {
-			if (s == "<,*") Sleep(CommaSleep);
-			else if (s == "<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
-			else if (s == "<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
-			else if (s == "<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
-			else if (s == "<ls" || s == "<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
+			if (s == L"<,*") Sleep(CommaSleep);
+			else if (s == L"<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
+			else if (s == L"<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
+			else if (s == L"<mc") { mouseEvent(MOUSEEVENTF_MIDDLEDOWN); mouseEvent(MOUSEEVENTF_MIDDLEUP); }
+			else if (s == L"<ls" || s == L"<rs") mouseEvent(MOUSEEVENTF_HWHEEL);
 			else SendInput(2, ip, sizeof(ip[0]));
 		}
 		else SendInput(2, ip, sizeof(ip[0]));
@@ -270,137 +272,137 @@ void kbPress(string s, short key) {
 	rei();
 }
 
-void out(string ai) { re = ">" + ai; strand.clear(); scanDb(); re.clear(); }
+void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
 
 void calc() {
-	qq = to_string(ic) + qq.substr(qq.find(">") + 1, qq.length());
+	qq = to_wstring(ic) + qq.substr(qq.find(L">") + 1, qq.length());
 	i = -1;
-	re = " ";
+	re = L" ";
 	tail = qq;
 }
 
 void loadSe() {
-	ifstream f(settings); if (!f) { cout << settings << " not found!\n"; return; }
-	string cell; while (getline(f, cell)) {
-		string se = cell.substr(0, cell.find(":") + 1);
-		string v = (cell.substr(cell.find(":") + 1));
+	wifstream f(settings); if (!f) { wcout << settings << " not found!\n"; return; }
+	wstring cell; while (getline(f, cell)) {
+		wstring se = cell.substr(0, cell.find(L":") + 1);
+		wstring v = (cell.substr(cell.find(L":") + 1));
 		if (v[0] == ' ') v = v.substr(1, v.length());
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		auto er = [se, v]() { cout << "Error in " << settings << " [" << se << " " << v << "]" << endl; };
+		auto er = [se, v]() { wcout << "Error in " << settings << " [" << se << " " << v << "]" << endl; };
 		switch (x) {
 			case 673://Editor:
 				{ if (v.length() > 0) editor = v.substr(0); else er(); } break;
 			case 772://Editor1:
 				{ if (v.length() > 0) editor1 = v.substr(0); else er(); } break;
 			case 680://Assume:
-				{ if (v == "1" || v == "0") assume = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") assume = stoi(v); else er(); } break;
 			case 1095://ShowStrand:
-				{ if (v == "1" || v == "0") showStrand = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") showStrand = stoi(v); else er(); } break;
 			case 847://Database:
-				{ if (v.length() > 0) { database = v.substr(0); db = database.substr(database.find_last_of('\\') + 1) + " - "; } else er(); } break;
+				{ if (v.length() > 0) { database = v.substr(0); db = database.substr(database.find_last_of('\\') + 1) + L" - "; } else er(); } break;
 			case 1313://OutsTemplate:
 				OutsTemplate = v.substr(0); break;
 			case 1354://CloseCtrlMode:
-				{ if (v == "1" || v == "0") close_ctrl_mode = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") close_ctrl_mode = stoi(v); else er(); } break;
 			case 1659://CtrlScanOnlyMode:
-				{ if (v == "1" || v == "0") qScanOnly = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") qScanOnly = stoi(v); else er(); } break;
 			case 1677://StrandLengthMode:
-				{ if (v=="1" || v == "0") strandLengthMode = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") strandLengthMode = stoi(v); else er(); } break;
 			case 1288://StrandLength:
-				{ if (check_if_num(v) != "") strandLength = stoi(v); else er(); } break;
+				{ if (check_if_num(v) != L"") strandLength = stoi(v); else er(); } break;
 			case 956://Ignore_A-Z:
-				{ if (v == "1" || v == "0") ignoreAZ = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreAZ = stoi(v); else er(); } break;
 			case 915://Ignore_0-9:
-				{ if (v == "1" || v == "0") ignore09 = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignore09 = stoi(v); else er(); } break;
 			case 1172://StartHidden:
-				{ if (v == "1" || v == "0") startHidden = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey:
-				{ if (check_if_num(v) > "") cKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") cKey = stoi(v); else er(); } break;
 			case 999://ShowIntro:
-				{ if (v == "1" || v == "0") showIntro = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") showIntro = stoi(v); else er(); } break;
 			case 1324://ShowSettings:
-				{ if (v == "1" || v == "0") showSettings = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") showSettings = stoi(v); else er(); } break;
 			case 1004://Frequency:
-				{ if (check_if_num(v) != "") frequency = stoi(v); else er(); } break;
+				{ if (check_if_num(v) != L"") frequency = stoi(v); else er(); } break;
 			case 964://RepeatKey:
-				{ if (check_if_num(v) != "") reKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) != L"") reKey = stoi(v); else er(); } break;
 			case 1649://AutoBs_RepeatKey:
-				{ if (v == "1" || v == "0") AutoBs_RepeatKey = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") AutoBs_RepeatKey = stoi(v); else er(); } break;
 			case 902://ShowOuts:
-				{ if (v == "1" || v == "0") showOuts = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") showOuts = stoi(v); else er(); } break;
 			case 2699://ClearStrandAfterStockCtrls:
-				{ if (v == "1" || v == "0") clear_after_stock = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") clear_after_stock = stoi(v); else er(); } break;
 			case 2913://SlightPauseInBetweenConnects:
-				{ if (v == "1" || v == "0") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 2339://StockInterfaceControls:
-				{ if (v == "1" || v == "0") StockInterfaceControls = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") StockInterfaceControls = stoi(v); else er(); } break;
 			case 1098://AutoBs_EscH: //Ignore_F1-F12:
-				{	if (v == "1" || v == "0") {
-						if (se == "AutoBs_EscH:") EscHAutoBs = stoi(v);
-						else if (se == "Ignore_F1-F12:") ignoreF1s = stoi(v);
+				{	if (v == L"1" || v == L"0") {
+						if (se == L"AutoBs_EscH:") EscHAutoBs = stoi(v);
+						else if (se == L"Ignore_F1-F12:") ignoreF1s = stoi(v);
 					}
 					else er();
 				} break;
 			case 1519://AutoBs_EscComma:
-				{ if (v == "1" || v == "0") EscCommaAutoBs = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") EscCommaAutoBs = stoi(v); else er(); } break;
 			case 1530://AutoBs_EscEqual:
-				{ if (v == "1" || v == "0") EscEqualAutoBs = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") EscEqualAutoBs = stoi(v); else er(); } break;
 			case 1723://SeHotReload_CtrlS:
-				{ if (v == "1" || v == "0") SeHotReload_CtrlS = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") SeHotReload_CtrlS = stoi(v); else er(); } break;
 			case 2098://SeDbClearStrand_CtrlS:
-				{ if (v == "1" || v == "0") SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
 			case 1257://Ignore_Space:
-				{ if (v == "1" || v == "0") ignoreSpace = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreSpace = stoi(v); else er(); } break;
 			case 1403://Ignore_Arrows:
-				{ if (v == "1" || v == "0") ignoreArrows = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreArrows = stoi(v); else er(); } break;
 			case 1048://Ignore_Esc:
-				{ if (v == "1" || v == "0") ignoreEsc = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreEsc = stoi(v); else er(); } break;
 			case 1044://Ignore_Tab:
-				{ if (v == "1" || v == "0") ignoreTab = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreTab = stoi(v); else er(); } break;
 			case 1275://Ignore_Enter:
-				{ if (v == "1" || v == "0") ignoreEnter = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreEnter = stoi(v); else er(); } break;
 			case 1156://Ignore_Caps:
-				{ if (v == "1" || v == "0") ignoreCaps = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreCaps = stoi(v); else er(); } break;
 			case 1351://Ignore_LShift:
-				{ if (v == "1" || v == "0") ignoreLShift = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreLShift = stoi(v); else er(); } break;
 			case 1357://Ignore_RShift:
-				{ if (v == "1" || v == "0") ignoreRShift = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreRShift = stoi(v); else er(); } break;
 			case 1130://Ignore_LAlt:
-				{ if (v == "1" || v == "0") ignoreLAlt = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreLAlt = stoi(v); else er(); } break;
 			case 1136://Ignore_RAlt:
-				{ if (v == "1" || v == "0") ignoreRAlt = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreRAlt = stoi(v); else er(); } break;
 			case 1246://Ignore_LCtrl:
-				{ if (v == "1" || v == "0") ignoreLCtrl = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreLCtrl = stoi(v); else er(); } break;
 			case 1252://Ignore_RCtrl:
-				{ if (v == "1" || v == "0") ignoreRCtrl = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreRCtrl = stoi(v); else er(); } break;
 			case 1856://Ignore_GraveAccent:
-				{ if (v == "1" || v == "0") ignoreGraveAccent = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreGraveAccent = stoi(v); else er(); } break;
 			case 1289://Ignore_Minus:
-				{ if (v == "1" || v == "0") ignoreMinus = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreMinus = stoi(v); else er(); } break;
 			case 1269://Ignore_Equal:
-				{ if (v == "1" || v == "0") ignoreEqual = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreEqual = stoi(v); else er(); } break;
 			case 1541://Ignore_LBracket:
-				{ if (v == "1" || v == "0") ignoreLBracket = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreLBracket = stoi(v); else er(); } break;
 			case 1547://Ignore_RBracket:
-				{ if (v == "1" || v == "0") ignoreRBracket = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreRBracket = stoi(v); else er(); } break;
 			case 1673://Ignore_Backslash:
-				{ if (v == "1" || v == "0") ignoreBackslash = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreBackslash = stoi(v); else er(); } break;
 			case 1702://Ignore_Semicolon:
-				{ if (v == "1" || v == "0") ignoreSemicolon = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreSemicolon = stoi(v); else er(); } break;
 			case 1291://Ignore_Quote:
-				{ if (v == "1" || v == "0") ignoreQuote = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreQuote = stoi(v); else er(); } break;
 			case 1258://Ignore_Comma:
-				{ if (v == "1" || v == "0") ignoreComma = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreComma = stoi(v); else er(); } break;
 			case 1376://Ignore_Period:
-				{ if (v == "1" || v == "0") ignorePeriod = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignorePeriod = stoi(v); else er(); } break;
 			case 2029://Ignore_Forwardslash:
-				{ if (v == "1" || v == "0") ignoreForwardslash = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreForwardslash = stoi(v); else er(); } break;
 			case 1170://Ignore_Menu:
-				{ if (v == "1" || v == "0") ignoreMenuKey = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreMenuKey = stoi(v); else er(); } break;
 			case 1346://Ignore_NumPad:
-				{ if (v == "1" || v == "0") ignoreNumPad = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") ignoreNumPad = stoi(v); else er(); } break;
 			case 934://Exit_EscX:
-				{ if (v == "1" || v == "0") enableEscX = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") enableEscX = stoi(v); else er(); } break;
 			//case 1657://Ignore_MediaKeys:
 		}
 	}
@@ -408,7 +410,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { cout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp> or <XY>  Return pointer\n<XY:>  Set. E.g., <XY:0,0><XY>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<ls><rs>  LEFT, RIGHT SCROLL\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>";
+	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp> or <XY>  Return pointer\n<XY:>  Set. E.g., <XY:0,0><XY>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<ls><rs>  LEFT, RIGHT SCROLL\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>";
 	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -428,7 +430,7 @@ void printStockCtrls() {
 			}
 			cout << "<r e:  Change RepeatKey: " << reKey << endl;
 			//cout << "<f r:  Change frequency: " << frequency << endl;
-			cout << "<d b:  Change Database: " << database << endl;
+			wcout << "<d b:  Change Database: " << database << endl;
 		}
 		cout << "Hold RIGHT_CTRL LEFT_CTRL or ESC on startup:  Change < key" << endl;
 		cout << "Hold O on startup:  ShowStrand, ShowOuts: 1" << endl;
@@ -441,13 +443,13 @@ void printStockCtrls() {
 void printSe() {
 	loadSe();
 	if (showSettings) {
-		cout << settings << endl;  ifstream f(settings); if (f.fail()) { cout << "Copy to " << settings; cout << endl; }
+		wcout << settings << endl;  ifstream f(settings); if (f.fail()) { wcout << "Copy to " << settings; cout << endl; }
 		cout << "ShowSettings: " << showSettings << endl;
 		cout << "ShowIntro: " << showIntro << endl;
 		cout << "ShowStrand: " << showStrand << endl;
 		cout << "ShowOuts: " << showOuts << endl;
-		cout << "OutsTemplate: " << OutsTemplate << endl;
-		cout << "Database: " << database << endl;
+		wcout << "OutsTemplate: " << OutsTemplate << endl;
+		wcout << "Database: " << database << endl;
 		cout << "CtrlScanOnlyMode: " << qScanOnly << endl;
 		cout << "CtrlKey: " << cKey << endl;
 		cout << "StrandLengthMode: " << strandLengthMode << endl;
@@ -496,8 +498,8 @@ void printSe() {
 		cout << "SeHotReload_CtrlS: " << SeHotReload_CtrlS << endl;
 		cout << "SeDbClearStrand_CtrlS: " << SeDbClearStrand_CtrlS << endl;
 		cout << "Assume: " << assume << endl;
-		cout << "Editor: " << editor << endl;
-		cout << "Editor1: " << editor1 << endl;
+		wcout << "Editor: " << editor << endl;
+		wcout << "Editor1: " << editor1 << endl;
 		cout << "Exit_EscX: " << enableEscX << endl;
 		cout << endl;
 	}
@@ -513,14 +515,14 @@ void toggle_visibility() {
 }
 
 void getApp() {
-	out("<alt><esc><alt->");
+	out(L"<alt><esc><alt->");
 	HWND h = GetForegroundWindow();
 	int l = GetWindowTextLength(h);
-	string title(l, 0);
-	GetWindowText(h, &title[0], l + 1);
-	out("<shift><,><alt><esc><alt-><shift->");
-	if (title == "") return;
-	out("<shift>,<shift->app:" + title + ">");
+	wstring title(l,0);
+	GetWindowTextW(h, &title[0], l + 1);
+	out(L"<shift><,><alt><esc><alt-><shift->");
+	if (title == L"") return;
+	out(L"<shift>,<shift->app:" + title + L">");
 }
 
 void getRGB() {
@@ -528,40 +530,52 @@ void getRGB() {
 	hDC = GetDC(NULL);
 	if (hDC != NULL) {
 		color = GetPixel(hDC, pt.x, pt.y);
-		//ReleaseDC(NULL, hDC);
+		ReleaseDC(NULL, hDC);
 		if (color != CLR_INVALID) {
-			string c = to_string(GetRValue(color)) + "," + to_string(GetGValue(color)) + "," + to_string(GetBValue(color));
-			tail = "<shift>,<shift->rgb:" + c + ">";
+			wstring c = to_wstring(GetRValue(color)) + L"," + to_wstring(GetGValue(color)) + L"," + to_wstring(GetBValue(color));
+			tail = L"<shift>,<shift->rgb:" + c + L">";
 			re = tail;
 		}
 	}
 }
 
+void cbSet(wstring& s) {
+	auto length = 2 * (wcslen(s.c_str()) + 1);
+	HGLOBAL h = GlobalAlloc(GMEM_DDESHARE, length);
+	memcpy(GlobalLock(h), s.c_str(), length);
+	GlobalUnlock(h);
+	OpenClipboard(0);
+	EmptyClipboard();
+	SetClipboardData(CF_UNICODETEXT, h);
+	CloseClipboard();
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
-			if (re == "")
+			if (re == L"")
 				return;
 		}
 		else {
-			if (strand.substr(strand.length() - 1) != ">")
+			if (strand.substr(strand.length() - 1) != L">")
 				return;
 		}
 
 	}
-	ifstream f(database); if (!f) { cout << database << " not found!\n"; return; }
-	string cell; while (getline(f, cell)) { //cout << cell << endl;
-		if (cell.substr(0, 4) == "<'''") break; //ignore db...
-		if (re > "" || (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + ":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + "-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + ":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + "->") || cell.substr(0, strand.length() + 1) == strand + ">" || cell.substr(0, strand.length() + 1) == strand + ":" || cell.substr(0, strand.length() + 1) == strand + "-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != "<") || close_ctrl_mode && strandLengthMode && strand.substr(0, 1) != "<" && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
-			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == ">") strand = strand.substr(0, strand.length() - 1);
-			in = re > "" ? re.substr(1) : cell;
-			if (re > "") {
+wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
+	wstring cell; f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
+	while (getline(f, cell)) { //cout << cell << endl;
+		if (cell.substr(0, 4) == L"<'''") break; //ignore db...
+		if (re > L"" || (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L"-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L"->") || cell.substr(0, strand.length() + 1) == strand + L">" || cell.substr(0, strand.length() + 1) == strand + L":" || cell.substr(0, strand.length() + 1) == strand + L"-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != L"<") || close_ctrl_mode && strandLengthMode && strand.substr(0, 1) != L"<" && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
+			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == L">") strand = strand.substr(0, strand.length() - 1);
+			in = re > L"" ? re.substr(1) : cell;
+			if (re > L"") {
 				cell = re;
-				if (re.substr(0, 20) == "><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); string xy = to_string(pt.x) + "," + to_string(pt.y); cell = "><shift>,<shift->xy:" + xy + ">"; re = cell; if (showStrand) { cout << OutsTemplate << "<xy:" + xy + ">\n"; } }
-				else if (re.substr(0, 21) == "><shift>,<shift->rgb:") { getRGB(); if (showStrand) { cout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
+				if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
+				else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
 			}
 #pragma region set_tail
-			tail = re > "" ? re : cell.substr(strand.length(), cell.length() - strand.length());
+			tail = re > L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
 			switch (tail[0]) {
 			case ':':
 				tail = tail.substr(1, tail.length());
@@ -581,36 +595,36 @@ void scanDb() {
 			default:
 				codes = cell;
 			}
-			if (showOuts) cout << "found: " << cell << "\ntail: " << tail << endl;
+			if (showOuts) wcout << "found: " << cell << "\ntail: " << tail << endl;
 #pragma endregion
-			if (tail.find("<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
+			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close();
 			fail = 0; for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 
-				string ctail = tail.substr(i, 1);//extracted char from tail
-				if (showOuts) { cout << "ctail: " << ctail << endl; }
+				wstring ctail = tail.substr(i, 1);//extracted char from tail
+				if (showOuts) { wcout << "ctail: " << ctail << endl; }
 				switch (ctail[0]) {
 				case'<':
 					if (i > 0) in = tail.substr(i, tail.length() - i);
 					if (!fail) qq = tail.substr(i, tail.length() - i); //<test>
-					if (showOuts) { cout << "qq: " << qq << endl; }
-					if (qq.find(":") != std::string::npos) { //<test:#>
-						qp = qq.substr(qq.find(":") + 1, qq.find(">") - qq.find(":") - 1);//#
-						qx = qp.substr(0, qp.find(","));//x <xy:#,#>
-						qy = qp.substr(qp.find(",") + 1, qp.find(">") - qp.find(",") - 1);//y
+					if (showOuts) { wcout << "qq: " << qq << endl; }
+					if (qq.find(L":") != std::string::npos) { //<test:#>
+						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
+						qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
+						qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
 						//cout << "qp: " << qp  << endl; cout << "qx: " << qx << endl; cout << "qy: " << qy << endl;
 					}
 					switch (qq[1]) {
 					case'+': //calc
-						if (qqb("<+>")) {//repeat#
+						if (qqb(L"<+>")) {//repeat#
 							calc();
 							break;
 						}
-						else if (qqb("<+:")) {//calc +
-							if (check_if_num(qp) == "") { printq(); continue; }
+						else if (qqb(L"<+:")) {//calc +
+							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic += stoi(qp);
 							calc();
 							break;
@@ -618,8 +632,8 @@ void scanDb() {
 						else printq();
 						break;
 					case'-':
-						if (qqb("<-:")) {//-
-							if (check_if_num(qp) == "") { printq(); continue; }
+						if (qqb(L"<-:")) {//-
+							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic -= stoi(qp);
 							calc();
 							break;
@@ -627,8 +641,8 @@ void scanDb() {
 						else printq();
 						break;
 					case'*':
-						if (qqb("<*:")) {//*
-							if (check_if_num(qp) == "") { printq(); continue; }
+						if (qqb(L"<*:")) {//*
+							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic *= stoi(qp);
 							calc();
 							break;
@@ -636,8 +650,8 @@ void scanDb() {
 						else printq();
 						break;
 					case'/':
-						if (qqb("</:")) {//divide
-							if (check_if_num(qp) == "" || stoi(qp) <= 0) { printq(); continue; }
+						if (qqb(L"</:")) {//divide
+							if (check_if_num(qp) == L"" || stoi(qp) <= 0) { printq(); continue; }
 							ic /= stoi(qp);
 							calc();
 							break;
@@ -645,8 +659,8 @@ void scanDb() {
 						else printq();
 						break;
 					case'%':
-						if (qqb("<%:")) {//%
-							if (check_if_num(qp) == "") { printq(); continue; }
+						if (qqb(L"<%:")) {//%
+							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic %= stoi(qp);
 							calc();
 							break;
@@ -654,58 +668,58 @@ void scanDb() {
 						else printq();
 						break;
 					case',':
-						if (qqb("<,*")) kbPress("<,*", VK_F7);//sleep150ms, vk_dud
-						else if (qqb("<,")) { //<,#>
-							string s = qq.substr(2, qq.find('>') - 2);
-							if (s == "") s = to_string(CommaSleep);
+						if (qqb(L"<,*")) kbPress(L"<,*", VK_F7);//sleep150ms, vk_dud
+						else if (qqb(L"<,")) { //<,#>
+							wstring s = qq.substr(2, qq.find('>') - 2);
+							if (s == L"") s = to_wstring(CommaSleep);
 							s = check_if_num(s);
-							if (s == "") { printq(); break; }
+							if (s == L"") { printq(); break; }
 							if (stoi(s) >= 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
 							rei();
 						}
 						else printq();
 						break;
 					case'\'':
-						if (qq.find(">") != string::npos && qqb("<''")) i = tail.length();//<''ignore>...
-						else if (qq.find(">") != string::npos && qqb("<'")) { if (showStrand) { string s = cell[strand.length() + 1] == '>' ? ">" : ""; cout << OutsTemplate << strand << cell[strand.length()] << s << " " << qq.substr(2, qq.find(">") - 2) << endl; } rei(); sleep = 0; } //<'comments>
+						if (qq.find(L">") != string::npos && qqb(L"<''")) i = tail.length();//<''ignore>...
+						else if (qq.find(L">") != string::npos && qqb(L"<'")) { auto x = (qq.find('>') - 2); wstring v = qq.substr(2, x); for(size_t x = 0; x < qq.length() - 1; ++x){ if (qq[x] > 127) { v = L""; break; } } if (showStrand) { SetConsoleCP(CP_UTF8); wstring s = cell[strand.length() + 1] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); wcout << OutsTemplate << strand << cell[strand.length()] << s << " " <<  v << endl; } rei(); sleep = 0; } //<'com1ments>
 						else printq();
 						break;
 					case'a':
 					case 'A':
-						if (qqb("<alt>")) { kbHold(VK_LMENU); rei(); }
-						else if (qqb("<alt->")) { kbRelease(VK_LMENU); rei(); }
-						else if (qqb("<alt")) kbPress("<alt", VK_LMENU);
-						else if (qqb("<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
-						else if (qqb("<app:") || qqb("<App:")) {//app activate, if app in foreground
-							string a = qp, x = "1", ms = "333"; link = "";//<app:a,x,ms,link>
-							a = a.substr(0, a.find(","));
+						if (qqb(L"<alt>")) { kbHold(VK_LMENU); rei(); }
+						else if (qqb(L"<alt->")) { kbRelease(VK_LMENU); rei(); }
+						else if (qqb(L"<alt")) kbPress(L"<alt", VK_LMENU);
+						else if (qqb(L"<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
+						else if (qqb(L"<app:") || qqb(L"<App:")) {//app activate, if app in foreground
+							wstring a = qp, x = L"1", ms = L"333"; link = L"";//<app:a,x,ms,link>
+							a = a.substr(0, a.find(L","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
-							if (qp.find(",") != string::npos) {
-								x = qp.substr(qp.find(",") + 1);
-								if (x.find(",") != string::npos) {
-									ms = x.substr(x.find(",") + 1);
-									if (ms.find(",") != string::npos) {
-										link = ms.substr(ms.find(",") + 1); if (link[0] == ' ') { link = link.substr(1); }
-										ms = ms.substr(0, ms.find(",")); if (check_if_num(ms) == "") { printq(); break; }
+							if (qp.find(L",") != string::npos) {
+								x = qp.substr(qp.find(L",") + 1);
+								if (x.find(L",") != string::npos) {
+									ms = x.substr(x.find(L",") + 1);
+									if (ms.find(L",") != string::npos) {
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); }
+										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
 									}
-									x = x.substr(0, x.find(","));
+									x = x.substr(0, x.find(L","));
 								}
-								if (check_if_num(x) == "") { printq(); break; }
+								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
-							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
+							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
 							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
 								if (size >= length) { f(); break; }
 								if (qq[1] == 'A') {//App
-									h = GetForegroundWindow(); h1 = FindWindowA(0, a.c_str());
+									h = GetForegroundWindow(); h1 = FindWindowW(0, a.c_str());
 									if (h == h1) { break; fail = 0; }
 								}
 								else if (qq[1] == 'a') {//'app
-									h = FindWindowA(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
+									h = FindWindowW(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 									if (h) {
 										if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
 										SetForegroundWindow(h);
@@ -715,14 +729,14 @@ void scanDb() {
 								if (length >= 1) Sleep(stoi(ms));
 							}
 							if (size >= length) {//fail
-								if (link > "" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
-									if ("<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
+								if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
+									if (L"<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
 										fail = 1;
 									}
 									else {
-										tail = link[0] == '<' ? link + ">" + qq.substr(qq.find(">") + 1) : "<" + link + ">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
+										tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
 									}
-									re = " "; i = -1; break;
+									re = L" "; i = -1; break;
 								}
 								f(); break;
 							}
@@ -731,153 +745,110 @@ void scanDb() {
 						else conn();
 						break;
 					case'b':
-						if (qqb("<bs")) kbPress("<bs", VK_BACK);
-						else if (qqb("<beep>")) { cout << "\a" << endl; rei(); }
+						if (qqb(L"<bs")) kbPress(L"<bs", VK_BACK);
+						else if (qqb(L"<beep>")) { cout << "\a" << endl; rei(); }
 						else conn();
 						break;
 					case'c':
-						if (qqb("<ctrl>")) { kbHold(VK_CONTROL); rei(); }
-						else if (qqb("<ctrl->")) { kbRelease(VK_CONTROL); rei(); }
-						else if (qqb("<ctrl")) kbPress("<ctrl", VK_CONTROL);
+						if (qqb(L"<ctrl>")) { kbHold(VK_CONTROL); rei(); }
+						else if (qqb(L"<ctrl->")) { kbRelease(VK_CONTROL); rei(); }
+						else if (qqb(L"<ctrl")) kbPress(L"<ctrl", VK_CONTROL);
+						else if (qqb(L"<cb:")) {
+							cbSet(qp);
+							rei();
+						}
 						else conn();
 						break;
 					case'd':
-						if (qqb("<db>")) { printDb(); rei(); }
-						else if (qqb("<down")) kbPress("<down", VK_DOWN);
-						else if (qqb("<delete")) kbPress("<delete", VK_DELETE);
+						if (qqb(L"<db>")) { printDb(); rei(); }
+						else if (qqb(L"<down")) kbPress(L"<down", VK_DOWN);
+						else if (qqb(L"<delete")) kbPress(L"<delete", VK_DELETE);
 						else conn();
 						break;
 					case'e':
-						if (qqb("<enter")) kbPress("<enter", VK_RETURN);
-						else if (qqb("<end")) kbPress("<end", VK_END);
-						else if (qqb("<esc")) kbPress("<esc", VK_ESCAPE);
+						if (qqb(L"<enter")) kbPress(L"<enter", VK_RETURN);
+						else if (qqb(L"<end")) kbPress(L"<end", VK_END);
+						else if (qqb(L"<esc")) kbPress(L"<esc", VK_ESCAPE);
 						else conn();
 						break;
 					case'f':
-						if (qqb("<f10")) kbPress("<f10", VK_F10);
-						else if (qqb("<f11")) kbPress("<f11", VK_F11);
-						else if (qqb("<f12")) kbPress("<f12", VK_F12);
-						else if (qqb("<f1")) kbPress("<f1", VK_F1);
-						else if (qqb("<f2")) kbPress("<f2", VK_F2);
-						else if (qqb("<f3")) kbPress("<f3", VK_F3);
-						else if (qqb("<f4")) kbPress("<f4", VK_F4);
-						else if (qqb("<f5")) kbPress("<f5", VK_F5);
-						else if (qqb("<f6")) kbPress("<f6", VK_F6);
-						else if (qqb("<f7")) kbPress("<f7", VK_F7);
-						else if (qqb("<f8")) kbPress("<f8", VK_F8);
-						else if (qqb("<f9")) kbPress("<f9", VK_F9);
+						if (qqb(L"<f10")) kbPress(L"<f10", VK_F10);
+						else if (qqb(L"<f11")) kbPress(L"<f11", VK_F11);
+						else if (qqb(L"<f12")) kbPress(L"<f12", VK_F12);
+						else if (qqb(L"<f1")) kbPress(L"<f1", VK_F1);
+						else if (qqb(L"<f2")) kbPress(L"<f2", VK_F2);
+						else if (qqb(L"<f3")) kbPress(L"<f3", VK_F3);
+						else if (qqb(L"<f4")) kbPress(L"<f4", VK_F4);
+						else if (qqb(L"<f5")) kbPress(L"<f5", VK_F5);
+						else if (qqb(L"<f6")) kbPress(L"<f6", VK_F6);
+						else if (qqb(L"<f7")) kbPress(L"<f7", VK_F7);
+						else if (qqb(L"<f8")) kbPress(L"<f8", VK_F8);
+						else if (qqb(L"<f9")) kbPress(L"<f9", VK_F9);
 						else conn();
 						break;
-						//{
-						//	int s = 0;
-						//	for (size_t i = 2; i <= qq.length(); ++i) {
-						//		s += qq[i];
-						//		if (qq[i] == '*' || qq[i] == ' ' || qq[i] == '>')
-						//			break;
-						//	}
-						//	switch (s) {
-						//	case 111://1 + >
-						//	case 91: //1 + *
-						//	case 81: //1 + " " = 81
-						//		if (qqb("<f11")) kbPress("<f11", VK_F11);
-						//		else if (qqb("<f12")) kbPress("<f12", VK_F12);
-						//		else if kbPress("<f1", VK_F1);
-						//		else conn();
-						//		break;	
-						//	case 112: 
-						//	case 92:
-						//	case 82: kbPress("<f2", VK_F2); break;
-						//	case 113:
-						//	case 93:
-						//	case 83: kbPress("<f3", VK_F3); break;
-						//	case 114:
-						//	case 94:
-						//	case 84: kbPress("<f4", VK_F4); break;
-						//	case 115: 
-						//	case 95: 
-						//	case 85: kbPress("<f5", VK_F5); break;
-						//	case 116:
-						//	case 96:
-						//	case 86: kbPress("<f6", VK_F6); break;
-						//	case 117:
-						//	case 97:
-						//	case 87: kbPress("<f7", VK_F7); break;
-						//	case 118:
-						//	case 98:
-						//	case 88: kbPress("<f8", VK_F8); break;
-						//	case 119:
-						//	case 99:
-						//	case 89: kbPress("<f9", VK_F9); break;
-						//	case 110:
-						//	case 90:
-						//	case 129: kbPress("<f10", VK_F10); break;							
-						//	default: conn();
-						//	}
-						//}
-						//break;
 					case'h':
-						if (qqb("<home")) kbPress("<home", VK_HOME);
+						if (qqb(L"<home")) kbPress(L"<home", VK_HOME);
 						else conn();
 						break;
 					case'i':
-						if (qqb("<ins")) kbPress("<ins", VK_INSERT);
+						if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
 						else conn();
 						break;
 					case'l':
-						if (qqb("<lc")) kbPress("<lc", VK_F7);//left click
-						else if (qqb("<lh>")) {//left hold
+						if (qqb(L"<lc")) kbPress(L"<lc", VK_F7);//left click
+						else if (qqb(L"<lh>")) {//left hold
 							mouseEvent(MOUSEEVENTF_LEFTDOWN);
 							rei();
 						}
-						else if (qqb("<lr>")) {//left release
+						else if (qqb(L"<lr>")) {//left release
 							mouseEvent(MOUSEEVENTF_LEFTUP);
 							rei();
 						}
-						else if (qqb("<left")) kbPress("<left", VK_LEFT);
-						else if (qqb("<ls")) { kbPress("<ls", VK_F7); }//hscroll+
+						else if (qqb(L"<left")) kbPress(L"<left", VK_LEFT);
+						else if (qqb(L"<ls")) { kbPress(L"<ls", VK_F7); }//hscroll+
 						else conn();
 						break;
 					case'm':
-						if (qqb("<ms:")) if (check_if_num(qp) != "") { Sleep(stoi(qp));	rei(); }
+						if (qqb(L"<ms:")) if (check_if_num(qp) != L"") { Sleep(stoi(qp));	rei(); }
 						else printq();
-						else if (qqb("<mc")) kbPress("<mc", VK_F7);//middle click
-						else if (qqb("<mh>")) {//middle hold
+						else if (qqb(L"<mc")) kbPress(L"<mc", VK_F7);//middle click
+						else if (qqb(L"<mh>")) {//middle hold
 							mouseEvent(MOUSEEVENTF_MIDDLEDOWN);
 							rei();
 						}
-						else if (qqb("<mr>")) {//middle release
+						else if (qqb(L"<mr>")) {//middle release
 							mouseEvent(MOUSEEVENTF_MIDDLEUP);
 							rei();
 						}
-						else if (qqb("<menu")) kbPress("<menu", VK_APPS);
+						else if (qqb(L"<menu")) kbPress(L"<menu", VK_APPS);
 						else conn();
 						break;
 					case'p':
-						if (qqb("<ps")) kbPress("<ps", VK_SNAPSHOT);
-						else if (qqb("<pu")) kbPress("<pu", VK_PRIOR);//pgup
-						else if (qqb("<pd")) kbPress("<pd", VK_NEXT);//pgdn
+						if (qqb(L"<ps")) kbPress(L"<ps", VK_SNAPSHOT);
+						else if (qqb(L"<pu")) kbPress(L"<pu", VK_PRIOR);//pgup
+						else if (qqb(L"<pd")) kbPress(L"<pd", VK_NEXT);//pgdn
 						else conn();
 						break;
 					case'R':
 					case'r':
-						if (qqb("<rp>")) {//return pointer
+						if (qqb(L"<rp>")) {//return pointer
 							SetCursorPos(qxc, qyc);
 							rei();
 						}
-						else if (qqb("<rand:") || qqb("<rand>") || qqb("<Rand>") || qqb("<Rand:")) {//<rand:0,1>
+						else if (qqb(L"<rand:") || qqb(L"<rand>") || qqb(L"<Rand>") || qqb(L"<Rand:")) {//<rand:0,1>
 							int r = rand();
 							char s = (qq[5] + qq[1]);
-							string t = tail;
+							wstring t = tail;
 							size_t rei = i;
 							switch (s) {
 							case -84://':r': <rand:> #
-								if (check_if_num(qx) != "" && check_if_num(qy) != "" && stoi(qy) > stoi(qx)) {
-									r = qx == "0" ?
+								if (check_if_num(qx) != L"" && check_if_num(qy) != L"" && stoi(qy) > stoi(qx)) {
+									r = qx == L"0" ?
 										rand() % (stoi(qy) + 1) :
 										(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
 								}
-								out(to_string(r));
-								codes = t; tail = t; i = rei + qq.find(">");
+								out(to_wstring(r));
+								codes = t; tail = t; i = rei + qq.find(L">");
 								break;
 							case -112://'>R': <Rand> A-Z
 								r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
@@ -892,99 +863,99 @@ void scanDb() {
 									(char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
 							outr:
 								switch (r) {
-								case 65: out("A"); break;
-								case 66: out("B"); break;
-								case 67: out("C"); break;
-								case 68: out("D"); break;
-								case 69: out("E"); break;
-								case 70: out("F"); break;
-								case 71: out("G"); break;
-								case 72: out("H"); break;
-								case 73: out("I"); break;
-								case 74: out("J"); break;
-								case 75: out("K"); break;
-								case 76: out("L"); break;
-								case 77: out("M"); break;
-								case 78: out("N"); break;
-								case 79: out("O"); break;
-								case 80: out("P"); break;
-								case 81: out("Q"); break;
-								case 82: out("R"); break;
-								case 83: out("S"); break;
-								case 84: out("T"); break;
-								case 85: out("U"); break;
-								case 86: out("V"); break;
-								case 87: out("W"); break;
-								case 88: out("X"); break;
-								case 89: out("Y"); break;
-								case 90: out("Z"); break;
-								case 97: out("a"); break;
-								case 98: out("b"); break;
-								case 99: out("c"); break;
-								case 100: out("d"); break;
-								case 101: out("e"); break;
-								case 102: out("f"); break;
-								case 103: out("g"); break;
-								case 104: out("h"); break;
-								case 105: out("i"); break;
-								case 106: out("j"); break;
-								case 107: out("k"); break;
-								case 108: out("l"); break;
-								case 109: out("m"); break;
-								case 110: out("n"); break;
-								case 111: out("o"); break;
-								case 112: out("p"); break;
-								case 113: out("q"); break;
-								case 114: out("r"); break;
-								case 115: out("s"); break;
-								case 116: out("t"); break;
-								case 117: out("u"); break;
-								case 118: out("v"); break;
-								case 119: out("w"); break;
-								case 120: out("x"); break;
-								case 121: out("y"); break;
-								case 122: out("z"); break;
+								case 65: out(L"A"); break;
+								case 66: out(L"B"); break;
+								case 67: out(L"C"); break;
+								case 68: out(L"D"); break;
+								case 69: out(L"E"); break;
+								case 70: out(L"F"); break;
+								case 71: out(L"G"); break;
+								case 72: out(L"H"); break;
+								case 73: out(L"I"); break;
+								case 74: out(L"J"); break;
+								case 75: out(L"K"); break;
+								case 76: out(L"L"); break;
+								case 77: out(L"M"); break;
+								case 78: out(L"N"); break;
+								case 79: out(L"O"); break;
+								case 80: out(L"P"); break;
+								case 81: out(L"Q"); break;
+								case 82: out(L"R"); break;
+								case 83: out(L"S"); break;
+								case 84: out(L"T"); break;
+								case 85: out(L"U"); break;
+								case 86: out(L"V"); break;
+								case 87: out(L"W"); break;
+								case 88: out(L"X"); break;
+								case 89: out(L"Y"); break;
+								case 90: out(L"Z"); break;
+								case 97: out(L"a"); break;
+								case 98: out(L"b"); break;
+								case 99: out(L"c"); break;
+								case 100: out(L"d"); break;
+								case 101: out(L"e"); break;
+								case 102: out(L"f"); break;
+								case 103: out(L"g"); break;
+								case 104: out(L"h"); break;
+								case 105: out(L"i"); break;
+								case 106: out(L"j"); break;
+								case 107: out(L"k"); break;
+								case 108: out(L"l"); break;
+								case 109: out(L"m"); break;
+								case 110: out(L"n"); break;
+								case 111: out(L"o"); break;
+								case 112: out(L"p"); break;
+								case 113: out(L"q"); break;
+								case 114: out(L"r"); break;
+								case 115: out(L"s"); break;
+								case 116: out(L"t"); break;
+								case 117: out(L"u"); break;
+								case 118: out(L"v"); break;
+								case 119: out(L"w"); break;
+								case 120: out(L"x"); break;
+								case 121: out(L"y"); break;
+								case 122: out(L"z"); break;
 								}
-								codes = t; tail = t; i = rei + qq.find(">");
+								codes = t; tail = t; i = rei + qq.find(L">");
 							}
 						}
-						else if (qqb("<rc")) kbPress("<rc", VK_F7);
-						else if (qqb("<rh>")) {//right hold
+						else if (qqb(L"<rc")) kbPress(L"<rc", VK_F7);
+						else if (qqb(L"<rh>")) {//right hold
 							mouseEvent(MOUSEEVENTF_RIGHTDOWN);
 							rei();
 						}
-						else if (qqb("<rr>")) {//right release
+						else if (qqb(L"<rr>")) {//right release
 							mouseEvent(MOUSEEVENTF_RIGHTUP);
 							rei();
 						}
-						else if (qqb("<right")) kbPress("<right", VK_RIGHT);
-						else if (qqb("<rs")) { kbPress("<rs", VK_F7); }//hscroll-
-						else if (qqb("<rgb:") || qqb("<RGB:")) { //<rgb:r,g,b,x,ms,link>
-							string r, g, b, x = "1", ms = "333"; link = "";
-							auto f = []() { i = tail.length(); if (showStrand) cout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
-							r = qp.substr(0, qp.find(","));
-							b = qp.substr(qp.find(",") + 1);
-							g = b.substr(0, b.find(","));
-							b = b.substr(b.find(",") + 1);
-							if (b.find(",") != string::npos) {//x,ms
-								x = b; b = b.substr(0, b.find(","));
-								x = x.substr(x.find(",") + 1);
-								if (x.find(",") != string::npos) {
-									ms = x.substr(x.find(",") + 1);
-									if (ms.find(",") != string::npos) {
-										link = ms.substr(ms.find(",") + 1); if (link[0] == ' ') { link = link.substr(1); }
-										ms = ms.substr(0, ms.find(",")); if (check_if_num(ms) == "") { printq(); break; }
+						else if (qqb(L"<right")) kbPress(L"<right", VK_RIGHT);
+						else if (qqb(L"<rs")) { kbPress(L"<rs", VK_F7); }//hscroll-
+						else if (qqb(L"<rgb:") || qqb(L"<RGB:")) { //<rgb:r,g,b,x,ms,link>
+							wstring r, g, b, x = L"1", ms = L"333"; link = L"";
+							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <" << qq[1] << qq[2] << qq[3] << ":" << qp << ">\n"; };
+							r = qp.substr(0, qp.find(L","));
+							b = qp.substr(qp.find(L",") + 1);
+							g = b.substr(0, b.find(L","));
+							b = b.substr(b.find(L",") + 1);
+							if (b.find(L",") != string::npos) {//x,ms
+								x = b; b = b.substr(0, b.find(L","));
+								x = x.substr(x.find(L",") + 1);
+								if (x.find(L",") != string::npos) {
+									ms = x.substr(x.find(L",") + 1);
+									if (ms.find(L",") != string::npos) {
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); }
+										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
 									}
-									x = x.substr(0, x.find(",")); 
+									x = x.substr(0, x.find(L","));
 								}
-								if (check_if_num(x) == "") { printq(); break; }
+								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << r << " " << g << " " << b << " " << x << " " << ms << " " << link << endl;
-							if (check_if_num(r) == "" || check_if_num(g) == "" || check_if_num(b) == "") { printq(); break; }
+							if (check_if_num(r) == L"" || check_if_num(g) == L"" || check_if_num(b) == L"") { printq(); break; }
 							POINT pt; GetCursorPos(&pt);
 							COLORREF color; HDC hDC;
 							hDC = GetDC(NULL);
 							color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
-							//ReleaseDC(NULL, hDC);
+							ReleaseDC(NULL, hDC);
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								rei();//cout << "rgb\n";
 								fail = 0;
@@ -998,71 +969,86 @@ void scanDb() {
 									if (size >= length) { f(); break; }
 									GetCursorPos(&pt);
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
-									//ReleaseDC(NULL, hDC);
+									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 										fail = 0; break;
 									}
 									if (length >= 1) Sleep(stoi(ms));
 								}
 								if (size >= length) { 
-									if (link > "" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
-										if ("<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
+									if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
+										if (L"<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
 											fail = 1;
 										}
 										else {
-											tail = link[0] == '<' ? link + ">" + qq.substr(qq.find(">") + 1) : "<" + link + ">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
+											tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
 										}
-										re = " "; i = -1; break;
+										re = L" "; i = -1; break;
 									}
 									f(); break;
 								}
 								rei();
 							}
 						}
+						else if (qqb(L"<replace:")) { 
+							wstring cb = L""; OpenClipboard(0);
+							HANDLE c = GetClipboardData(CF_UNICODETEXT);
+							if (c != nullptr) {
+								wchar_t* t = static_cast<wchar_t*>(GlobalLock(c));
+								if (t != nullptr) cb = t;
+								GlobalUnlock(c);
+							}
+							CloseClipboard();
+							if (cb > L"") {
+								cb = regex_replace(cb, wregex(qx), qy);
+								cbSet(cb);
+							}
+							rei();
+						}
 						else conn();
 						break;
 					case's':
-						if (qqb("<se>")) { printSe(); rei(); }
-						else if (qqb("<shift>")) { kbHold(VK_LSHIFT); rei(); }
-						else if (qqb("<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
-						else if (qqb("<shift")) kbPress("<shift", VK_LSHIFT);
-						else if (qqb("<sleep:")) if (check_if_num(qp) != "") { Sleep(stoi(qp)); rei(); } else printq();
-						else if (qqb("<space")) kbPress("<space", VK_SPACE);
-						else if (qqb("<speed:")) if (check_if_num(qp) != "") { speed = stoi(qp); rei(); sleep = 0; } else printq();
+						if (qqb(L"<se>")) { printSe(); rei(); }
+						else if (qqb(L"<shift>")) { kbHold(VK_LSHIFT); rei(); }
+						else if (qqb(L"<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
+						else if (qqb(L"<shift")) kbPress(L"<shift", VK_LSHIFT);
+						else if (qqb(L"<sleep:")) if (check_if_num(qp) != L"") { Sleep(stoi(qp)); rei(); } else printq();
+						else if (qqb(L"<space")) kbPress(L"<space", VK_SPACE);
+						else if (qqb(L"<speed:")) if (check_if_num(qp) != L"") { speed = stoi(qp); rei(); sleep = 0; } else printq();
 						else conn();
 						break;
 					case't':
-						if (qqb("<tab")) kbPress("<tab", VK_TAB);
+						if (qqb(L"<tab")) kbPress(L"<tab", VK_TAB);
 						else conn();
 						break;
 					case'u':
-						if (qqb("<up")) kbPress("<up", VK_UP);
+						if (qqb(L"<up")) kbPress(L"<up", VK_UP);
 						else conn();
 						break;
 					case 'v':
-						if (qqb("<v>")) { toggle_visibility(); rei(); }
+						if (qqb(L"<v>")) { toggle_visibility(); rei(); }
 						else conn();
 						break;
 					case'w':
-						if (qqb("<win>")) { kbHold(VK_LWIN); rei(); }
-						else if (qqb("<win->")) { kbRelease(VK_LWIN); rei(); }
-						else if (qqb("<win")) kbPress("<win", VK_LWIN);
+						if (qqb(L"<win>")) { kbHold(VK_LWIN); rei(); }
+						else if (qqb(L"<win->")) { kbRelease(VK_LWIN); rei(); }
+						else if (qqb(L"<win")) kbPress(L"<win", VK_LWIN);
 						else conn();
 						break;
 					case'X':
 					case'x':
-						if (qqb("<xy:")) {
+						if (qqb(L"<xy:")) {
 							SetCursorPos(stoi(qx), stoi(qy)); rei();
 						}
-						else if (qqb("<XY>")) {//return pointer
+						else if (qqb(L"<XY>")) {//return pointer
 							SetCursorPos(qxc, qyc); rei();
 						}
-						else if (qqb("<XY:")) {//set return pointer
+						else if (qqb(L"<XY:")) {//set return pointer
 							qxc = stoi(qx); qyc = stoi(qy); rei();
 						}
-						else if (qqb("<x:")) {//x + or - 1px
-							if (qp == "") { conn(); break; }
-							if (check_if_num(qp) != "") {
+						else if (qqb(L"<x:")) {//x + or - 1px
+							if (qp == L"") { conn(); break; }
+							if (check_if_num(qp) != L"") {
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
 								rei();
@@ -1072,14 +1058,14 @@ void scanDb() {
 						else conn();
 						break;
 					case 'y':
-						if (qqb("<yesno:")) {
-							int m = MessageBoxA(0, qp.c_str(), "dnaspider", MB_YESNO);
+						if (qqb(L"<yesno:")) {
+							int m = MessageBoxW(0, qp.c_str(), L"dnaspider", MB_YESNO);
 							if (m == IDYES) { rei(); continue; }
 							else { i = tail.length(); break; }
 						}
-						else if (qqb("<y:")) {//y + or - 1px
-							if (qp == "") { conn(); break; }
-							if (check_if_num(qp) != "") {
+						else if (qqb(L"<y:")) {//y + or - 1px
+							if (qp == L"") { conn(); break; }
+							if (check_if_num(qp) != L"") {
 								POINT pt; GetCursorPos(&pt);
 								SetCursorPos((int)(pt.x), stoi(qp) + (int)(pt.y));
 								rei();
@@ -1101,8 +1087,8 @@ void scanDb() {
 				}
 				//GetAsyncKeyState(VkKeyScan(ctail[0])); //clear
 			}
-			if (strand > "" || re > "") {
-				if (re == "" || re == " " || strandLengthMode) { re = ""; tail = codes; }
+			if (strand > L"" || re > L"") {
+				if (re == L"" || re == L" " || strandLengthMode) { re = L""; tail = codes; }
 				clearAllKeys();
 				strand.clear();
 			}
@@ -1111,34 +1097,34 @@ void scanDb() {
 		}
 	}
 	f.close();
-	if (strand > "" && close_ctrl_mode && strand[0]=='<') { tail = strand.substr(1, strand.length() - 2); }//dbless repeat
+	if (strand > L"" && close_ctrl_mode && strand[0]=='<') { tail = strand.substr(1, strand.length() - 2); }//dbless repeat
 }
 
 void printXy() {
 	POINT pt; GetCursorPos(&pt);
-	if (strand == "x") { if (showOuts) cout << "xy: " << pt.x << "," << pt.y << endl; }
-	else { out("<bs*2>"); out("><shift>,<shift->xy:" + to_string(pt.x) + "," + to_string(pt.y) + ">"); }
+	if (strand == L"x") { if (showOuts) cout << "xy: " << pt.x << "," << pt.y << endl; }
+	else { out(L"<bs*2>"); out(L"><shift>,<shift->xy:" + to_wstring(pt.x) + L"," + to_wstring(pt.y) + L">"); }
 }
 
 void printInterfaceCtrls() {
-	string c; if (cKey == VK_CONTROL) c = "CTRL"; else if (cKey == VK_LCONTROL) c = "LEFT_CTRL"; else if (cKey == VK_RCONTROL) c = "RIGHT_CTRL"; else if (cKey == VK_ESCAPE) c = "ESC";
+	wstring c; if (cKey == VK_CONTROL) c = L"CTRL"; else if (cKey == VK_LCONTROL) c = L"LEFT_CTRL"; else if (cKey == VK_RCONTROL) c = L"RIGHT_CTRL"; else if (cKey == VK_ESCAPE) c = L"ESC";
 	cout << "Interface" << endl;
 	if (StockInterfaceControls) {
-		string se = qScanOnly ? "<se" : "S E"; cout << se << ":  Settings (Press " << (qScanOnly ? c+" S E" : "S E") << " to load " << settings << ")\n";
-		if (qScanOnly)se = "<db"; else se = "D B"; cout << se << ":  Database" << endl;
+		wstring se = qScanOnly ? L"<se" : L"S E"; wcout << se << ":  Settings (Press " << (qScanOnly ? c + L" S E" : L"S E") << " to load " << settings << ")\n";
+		if (qScanOnly)se = L"<db"; else se = L"D B"; wcout << se << ":  Database" << endl;
 	}
 	cout << "ESC:  Stop" << endl;
 	if (enableEscX) cout << "X + ESC:  Exit" << endl;
 	cout << "H + ESC:  Toggle visibility" << endl;
-	cout << c << " or COMMA + ESC:  Toggle <" << endl;
-	cout << "LEFT_SHIFT + " << c << ":  <" << endl;
+	wcout << c << " or COMMA + ESC:  Toggle <" << endl;
+	wcout << "LEFT_SHIFT + " << c << ":  <" << endl;
 	cout << "PAUSE_BREAK:  Reset strand | Pause/Resume" << endl;
 	cout << "LEFT_SHIFT + PAUSE_BREAK:  Clear strand" << endl;
-	if (StockInterfaceControls) { cout << "<odb:  Open database: " << database << endl;	cout << "<ose:  Open settings: " << settings << endl; }
+	if (StockInterfaceControls) { wcout << "<odb:  Open database: " << database << endl; wcout << "<ose:  Open settings: " << settings << endl; }
 	(StockInterfaceControls) ? cout << "<xy or P + ESC" : cout << "P + ESC"; cout << ":  <xy:>" << endl;
 	cout << "A + ESC:  <rgb:>" << endl;
 	cout << "R + ESC:  <rgb:>" << endl;
-	(reKey == 145) ? c = "SCROLL_LOCK" : c = "repeatKey: " + reKey; cout << c << " or EQUAL + ESC:  Repeat" << endl;
+	(reKey == 145) ? c = L"SCROLL_LOCK" : c = L"repeatKey: " + reKey; wcout << c << " or EQUAL + ESC:  Repeat" << endl;
 	cout << endl;
 }
 
@@ -1152,32 +1138,32 @@ void printIntro() {
 	}
 }
 
-void key(string k) {
+void key(wstring k) {
 	strand.append(k);
-	if (strandLengthMode && (int)strand.length() > strandLength && strand.substr(0, 1) != "<") { strand = strand.substr(strand.length() - strandLength); }
+	if (strandLengthMode && (int)strand.length() > strandLength && strand.substr(0, 1) != L"<") { strand = strand.substr(strand.length() - strandLength); }
 	prints();
-	if (close_ctrl_mode && strand.find(">") != std::string::npos && strand.substr(strand.length() - 1) != ">") { strand.clear(); prints(); return; }
+	if (close_ctrl_mode && strand.find(L">") != std::string::npos && strand.substr(strand.length() - 1) != L">") { strand.clear(); prints(); return; }
 	scanDb();
-	if (strand > "" && StockInterfaceControls) {
-		if (strand == "db" || strand == "<db") { printDb(); if (clear_after_stock)strand.clear(); }
-		if (strand == "se" || strand == "<se") { printSe(); if (clear_after_stock)strand.clear(); }
-		if (strand == "x" || strand == "<xy") { printXy(); }
-		if (strand == "<odb") { out("<win>r<win-><,>" + database + "<enter>"); }
-		if (strand == "<ose") { out("<win>r<win-><,>" + settings + "<enter>"); }
+	if (strand > L"" && StockInterfaceControls) {
+		if (strand == L"db" || strand == L"<db") { printDb(); if (clear_after_stock)strand.clear(); }
+		if (strand == L"se" || strand == L"<se") { printSe(); if (clear_after_stock)strand.clear(); }
+		if (strand == L"x" || strand == L"<xy") { printXy(); }
+		if (strand == L"<odb") { out(L"<win>r<win-><,>" + database + L"<enter>"); }
+		if (strand == L"<ose") { out(L"<win>r<win-><,>" + settings + L"<enter>"); }
 		if (!ignoreSpace) {
-			if (strand == "<q s") { qScanOnly = !qScanOnly; cout << "<q s: " << qScanOnly << endl; strand.clear(); }
-			if (strand == "<s lm") { strandLengthMode = !strandLengthMode; cout << "Strand length mode: " << strandLengthMode << endl; strand.clear(); if (strandLengthMode) { cout << "Strand length: " << strandLength << endl; } }
-			if (strand == "<s le") { kb(VK_ESCAPE); int sl; cout << "Enter new strand length:" << endl;  cin >> sl; if (sl > 0) { strandLength = sl; } else { return; } clearAllKeys(); cout << "strand length: " << strandLength << endl; strand.clear(); }
-			if (strand == "<r e") { kb(VK_ESCAPE); int sl; cout << "Enter new repeat key:" << endl;  cin >> sl; if (sl > 0) { reKey = sl; } else { return; } clearAllKeys(); cout << "repeat key: " << reKey << endl; strand.clear(); }
-			if (strand == "<q k") { kb(VK_ESCAPE); int sl; cout << "Enter new < key:" << endl;  cin >> sl; if (sl > 0) { cKey = sl; } else { return; } clearAllKeys(); cout << "< key: " << cKey << endl; strand.clear(); }
-			if (strand == "<f r") { kb(VK_ESCAPE); int sl; cout << "Enter new frequency:" << endl;  cin >> sl; if (sl > 0) { frequency = sl; } else { return; } clearAllKeys(); cout << "frequency: " << frequency << endl; strand.clear(); }
-			if (strand == "<d b") { kb(VK_ESCAPE); string sl; cout << "Enter new database:" << endl;  cin >> sl; if (sl > "") { database = sl; } else { return; } clearAllKeys(); cout << "database: " << database << endl; strand.clear(); }
-			if (strand == "<s s") { showStrand = !showStrand; cout << "<s s: " << showStrand << endl; strand.clear(); }
-			if (strand == "<c q") { close_ctrl_mode = !close_ctrl_mode; cout << "<c q: " << close_ctrl_mode << endl; strand.clear(); }
-			if (strand == "<s o") { showOuts = !showOuts; cout << "<s o: " << showOuts << endl; strand.clear(); }
+			if (strand == L"<q s") { qScanOnly = !qScanOnly; cout << "<q s: " << qScanOnly << endl; strand.clear(); }
+			if (strand == L"<s lm") { strandLengthMode = !strandLengthMode; cout << "Strand length mode: " << strandLengthMode << endl; strand.clear(); if (strandLengthMode) { cout << "Strand length: " << strandLength << endl; } }
+			if (strand == L"<s le") { kb(VK_ESCAPE); int sl; cout << "Enter new strand length:" << endl;  cin >> sl; if (sl > 0) { strandLength = sl; } else { return; } clearAllKeys(); cout << "strand length: " << strandLength << endl; strand.clear(); }
+			if (strand == L"<r e") { kb(VK_ESCAPE); int sl; cout << "Enter new repeat key:" << endl;  cin >> sl; if (sl > 0) { reKey = sl; } else { return; } clearAllKeys(); cout << "repeat key: " << reKey << endl; strand.clear(); }
+			if (strand == L"<q k") { kb(VK_ESCAPE); int sl; cout << "Enter new < key:" << endl;  cin >> sl; if (sl > 0) { cKey = sl; } else { return; } clearAllKeys(); cout << "< key: " << cKey << endl; strand.clear(); }
+			if (strand == L"<f r") { kb(VK_ESCAPE); int sl; cout << "Enter new frequency:" << endl;  cin >> sl; if (sl > 0) { frequency = sl; } else { return; } clearAllKeys(); cout << "frequency: " << frequency << endl; strand.clear(); }
+			if (strand == L"<d b") { kb(VK_ESCAPE); wstring sl; cout << "Enter new database:" << endl;  wcin >> sl; if (sl > L"") { database = sl; } else { return; } clearAllKeys(); wcout << "database: " << database << endl; strand.clear(); }
+			if (strand == L"<s s") { showStrand = !showStrand; cout << "<s s: " << showStrand << endl; strand.clear(); }
+			if (strand == L"<c q") { close_ctrl_mode = !close_ctrl_mode; cout << "<c q: " << close_ctrl_mode << endl; strand.clear(); }
+			if (strand == L"<s o") { showOuts = !showOuts; cout << "<s o: " << showOuts << endl; strand.clear(); }
 		}
 	}
-	else if (strand == "") prints();
+	else if (strand == L"") prints();
 }
 
 #pragma endregion
@@ -1186,9 +1172,9 @@ int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	if (CreateDirectory("c:/dna", NULL)) {//L"c:/dna"
 		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;//minimalist se.txt
-		cout << database << " not found.\nPress [1] to auto create.\n\n";
+		wcout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; ofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\nGetting Started:\nPress H (strand: h),\nRIGHT_CTRL E (strand: <e), \nLEFT_SHIFT + RIGHT_CTRL X or,\nCOMMA + ESC X (strand: <x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nRIGHT_CTRL, BACKSPACE, or \nLEFT_SHIFT + PAUSE_BREAK.\n\nPress keys separately\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); ofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out("<win>r<win-><app:run, 3>" + settings + "<enter><ms:1500><win>r<win-><app:run, 3>" + database + "<enter>"); re = ""; tail = ""; strand.clear();
+		showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\nGetting Started:\nPress H (strand: h),\nRIGHT_CTRL E (strand: <e), \nLEFT_SHIFT + RIGHT_CTRL X or,\nCOMMA + ESC X (strand: <x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nRIGHT_CTRL, BACKSPACE, or \nLEFT_SHIFT + PAUSE_BREAK.\n\nPress keys separately\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCloseCtrlMode: 0\nCtrlScanOnlyMode: 0\nCtrlKey: 163\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 	}
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -1202,22 +1188,22 @@ int main() {//cout << "@dnaspider\n\n";
 	srand((unsigned)time(NULL));
 #pragma endregion
 	for (;; Sleep(frequency)) {
-		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowA(0, ("se.txt - " + editor).c_str()) == GetForegroundWindow() || FindWindowA(0, ("se.txt - " + editor1).c_str()) == GetForegroundWindow())) { HWND np = FindWindowA(0, ("se.txt - " + editor).c_str()), vsc = FindWindowA(0, ("se.txt - " + editor1).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key("s"); continue; } }//lctrl+s hot reload
-		if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowA(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowA(0, (db + editor1).c_str()) == GetForegroundWindow())) { strand.clear(); if (showStrand) { prints(); } continue; }//clear
+		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (L"se.txt - " + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (L"se.txt - " + editor1).c_str()) == GetForegroundWindow())) { HWND np = FindWindowW(0, (L"se.txt - " + editor).c_str()), vsc = FindWindowW(0, (L"se.txt - " + editor1).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key(L"s"); continue; } }//lctrl+s hot reload
+		if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())) { strand.clear(); if (showStrand) { prints(); } continue; }//clear
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = "<"; prints(); continue; }
-			if (strand.substr(0, 1) == "<") {
+			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
+			if (strand.substr(0, 1) == L"<") {
 				if (close_ctrl_mode) {//<x>	
-					if (strand.find(">") != std::string::npos) strand.clear();
+					if (strand.find(L">") != std::string::npos) strand.clear();
 					else {
 						if (strand.length() > 1) {
 							//if (cKey >= 160 && cKey <= 165 || cKey == 27) { Sleep(115); } key(">");
-							if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(115); kbRelease(cKey); GetAsyncKeyState(cKey); } key(">");
-							if (strand > "") { strand.clear(); prints(); }
+							if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(115); kbRelease(cKey); GetAsyncKeyState(cKey); } key(L">");
+							if (strand > L"") { strand.clear(); prints(); }
 							continue;
 						}
 						else strand.clear();
@@ -1225,14 +1211,14 @@ int main() {//cout << "@dnaspider\n\n";
 				}
 				else strand.clear();
 			}
-			else if (close_ctrl_mode && strand.length() > 0 && strand.find(">") == std::string::npos) {//x>
+			else if (close_ctrl_mode && strand.length() > 0 && strand.find(L">") == std::string::npos) {//x>
 				//strand.append(">"); if (cKey >= 160 && cKey <= 165 || cKey == 27) { Sleep(115); } scanDb();
-				strand.append(">"); if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(115); kbRelease(cKey); GetAsyncKeyState(cKey); } scanDb();
-				if (strand > "") { prints(); strand.clear(); }
+				strand.append(L">"); if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(115); kbRelease(cKey); GetAsyncKeyState(cKey); } scanDb();
+				if (strand > L"") { prints(); strand.clear(); }
 			}//reg
 			else {
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
-				else { clearAllKeys(); strand = "<"; }
+				else { clearAllKeys(); strand = L"<"; }
 			}
 			prints(); continue;
 		}
@@ -1244,14 +1230,14 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		if (GetAsyncKeyState(VK_PAUSE)) { 
 			if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) { strand.clear(); if (ignoreEsc) kb(VK_ESCAPE); prints(); continue; }
-			if (strand.substr(0, 1) == "<") strand = "<"; else strand.clear(); 
+			if (strand.substr(0, 1) == L"<") strand = L"<"; else strand.clear();
 			continue; 
 		}
 		if (GetAsyncKeyState(VK_ESCAPE)) {
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
-				re = "<shift>,<shift->xy:";
+				re = L"<shift>,<shift->xy:";
 				out(re); continue;
 			}
 			GetAsyncKeyState(82); if (GetAsyncKeyState(82)) {//esc + r: <rgb:>
@@ -1263,156 +1249,156 @@ int main() {//cout << "@dnaspider\n\n";
 			GetAsyncKeyState(65); if (GetAsyncKeyState(65)) {//esc + a: <app:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
-				string s = tail; getApp(); tail = s; continue;
+				wstring s = tail; getApp(); tail = s; continue;
 			}
 			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-				string t = tail;
+				wstring t = tail;
 				if (EscEqualAutoBs) { kb(VK_BACK);  GetAsyncKeyState(VK_BACK); }
 				out(t); continue;
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
 				if (EscCommaAutoBs) { kb(VK_BACK);  GetAsyncKeyState(VK_BACK); }
-				if (strand.substr(0, 1) == "<" && close_ctrl_mode && strand.length() >= 1) {
-					if (strand == "<")continue;
-					strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb();
-					if (strand > "") strand.clear();
-					if (strand == "") prints();
+				if (strand.substr(0, 1) == L"<" && close_ctrl_mode && strand.length() >= 1) {
+					if (strand == L"<")continue;
+					strand.append(L">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb();
+					if (strand > L"") strand.clear();
+					if (strand == L"") prints();
 					continue;
 				}
 				else { 
-					if (strand.substr(0, 1) == "<") { strand.clear(); prints(); continue; }
-					if (strand.substr(0, 1) != "<" && close_ctrl_mode && strand.length() > 0) {
-						strand.append(">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb();
-						if (strand > "") strand.clear();
-						if (strand == "") prints();
+					if (strand.substr(0, 1) == L"<") { strand.clear(); prints(); continue; }
+					if (strand.substr(0, 1) != L"<" && close_ctrl_mode && strand.length() > 0) {
+						strand.append(L">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); scanDb();
+						if (strand > L"") strand.clear();
+						if (strand == L"") prints();
 						continue;
 					}
-					clearAllKeys(); strand = "<"; prints(); continue;
+					clearAllKeys(); strand = L"<"; prints(); continue;
 				}
 			}
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
 				if (EscHAutoBs) kb(VK_BACK);
 				GetAsyncKeyState(VK_ESCAPE); toggle_visibility(); 
-				if (showStrand && !qScanOnly) cout << OutsTemplate << strand << '\n'; 
+				if (showStrand && !qScanOnly) wcout << OutsTemplate << strand << '\n'; 
 				continue; 
 			}
-			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key("~"); }
+			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(L"~"); }
 			continue;
 		}
 		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
-		if (qScanOnly && strand.substr(0, 1) != "<") continue;
+		if (qScanOnly && strand.substr(0, 1) != L"<") continue;
 #pragma region input_strand
 		if (!ignoreAZ) {
-			if (GetAsyncKeyState(0x41)) { key("a"); continue; }
-			if (GetAsyncKeyState(0x42)) { key("b"); continue; }
-			if (GetAsyncKeyState(0x43)) { key("c"); continue; }
-			if (GetAsyncKeyState(0x44)) { key("d"); continue; }
-			if (GetAsyncKeyState(0x45)) { key("e"); continue; }
-			if (GetAsyncKeyState(0x46)) { key("f"); continue; }
-			if (GetAsyncKeyState(0x47)) { key("g"); continue; }
-			if (GetAsyncKeyState(0x48)) { key("h"); continue; }
-			if (GetAsyncKeyState(0x49)) { key("i"); continue; }
-			if (GetAsyncKeyState(0x4A)) { key("j"); continue; }
-			if (GetAsyncKeyState(0x4B)) { key("k"); continue; }
-			if (GetAsyncKeyState(0x4C)) { key("l"); continue; }
-			if (GetAsyncKeyState(0x4D)) { key("m"); continue; }
-			if (GetAsyncKeyState(0x4E)) { key("n"); continue; }
-			if (GetAsyncKeyState(0x4F)) { key("o"); continue; }
-			if (GetAsyncKeyState(0x50)) { key("p"); continue; }
-			if (GetAsyncKeyState(0x51)) { key("q"); continue; }
-			if (GetAsyncKeyState(0x52)) { key("r"); continue; }
-			if (GetAsyncKeyState(0x53)) { key("s"); continue; }
-			if (GetAsyncKeyState(0x54)) { key("t"); continue; }
-			if (GetAsyncKeyState(0x55)) { key("u"); continue; }
-			if (GetAsyncKeyState(0x56)) { key("v"); continue; }
-			if (GetAsyncKeyState(0x57)) { key("w"); continue; }
-			if (GetAsyncKeyState(0x58)) { key("x"); continue; }
-			if (GetAsyncKeyState(0x59)) { key("y"); continue; }
-			if (GetAsyncKeyState(0x5A)) { key("z"); continue; }
+			if (GetAsyncKeyState(0x41)) { key(L"a"); continue; }
+			if (GetAsyncKeyState(0x42)) { key(L"b"); continue; }
+			if (GetAsyncKeyState(0x43)) { key(L"c"); continue; }
+			if (GetAsyncKeyState(0x44)) { key(L"d"); continue; }
+			if (GetAsyncKeyState(0x45)) { key(L"e"); continue; }
+			if (GetAsyncKeyState(0x46)) { key(L"f"); continue; }
+			if (GetAsyncKeyState(0x47)) { key(L"g"); continue; }
+			if (GetAsyncKeyState(0x48)) { key(L"h"); continue; }
+			if (GetAsyncKeyState(0x49)) { key(L"i"); continue; }
+			if (GetAsyncKeyState(0x4A)) { key(L"j"); continue; }
+			if (GetAsyncKeyState(0x4B)) { key(L"k"); continue; }
+			if (GetAsyncKeyState(0x4C)) { key(L"l"); continue; }
+			if (GetAsyncKeyState(0x4D)) { key(L"m"); continue; }
+			if (GetAsyncKeyState(0x4E)) { key(L"n"); continue; }
+			if (GetAsyncKeyState(0x4F)) { key(L"o"); continue; }
+			if (GetAsyncKeyState(0x50)) { key(L"p"); continue; }
+			if (GetAsyncKeyState(0x51)) { key(L"q"); continue; }
+			if (GetAsyncKeyState(0x52)) { key(L"r"); continue; }
+			if (GetAsyncKeyState(0x53)) { key(L"s"); continue; }
+			if (GetAsyncKeyState(0x54)) { key(L"t"); continue; }
+			if (GetAsyncKeyState(0x55)) { key(L"u"); continue; }
+			if (GetAsyncKeyState(0x56)) { key(L"v"); continue; }
+			if (GetAsyncKeyState(0x57)) { key(L"w"); continue; }
+			if (GetAsyncKeyState(0x58)) { key(L"x"); continue; }
+			if (GetAsyncKeyState(0x59)) { key(L"y"); continue; }
+			if (GetAsyncKeyState(0x5A)) { key(L"z"); continue; }
 		}
 		if (!ignore09) {
-			if (GetAsyncKeyState(0x30)) { key("0"); continue; }
-			if (GetAsyncKeyState(0x31)) { key("1"); continue; }
-			if (GetAsyncKeyState(0x32)) { key("2"); continue; }
-			if (GetAsyncKeyState(0x33)) { key("3"); continue; }
-			if (GetAsyncKeyState(0x34)) { key("4"); continue; }
-			if (GetAsyncKeyState(0x35)) { key("5"); continue; }
-			if (GetAsyncKeyState(0x36)) { key("6"); continue; }
-			if (GetAsyncKeyState(0x37)) { key("7"); continue; }
-			if (GetAsyncKeyState(0x38)) { key("8"); continue; }
-			if (GetAsyncKeyState(0x39)) { key("9"); continue; }
+			if (GetAsyncKeyState(0x30)) { key(L"0"); continue; }
+			if (GetAsyncKeyState(0x31)) { key(L"1"); continue; }
+			if (GetAsyncKeyState(0x32)) { key(L"2"); continue; }
+			if (GetAsyncKeyState(0x33)) { key(L"3"); continue; }
+			if (GetAsyncKeyState(0x34)) { key(L"4"); continue; }
+			if (GetAsyncKeyState(0x35)) { key(L"5"); continue; }
+			if (GetAsyncKeyState(0x36)) { key(L"6"); continue; }
+			if (GetAsyncKeyState(0x37)) { key(L"7"); continue; }
+			if (GetAsyncKeyState(0x38)) { key(L"8"); continue; }
+			if (GetAsyncKeyState(0x39)) { key(L"9"); continue; }
 		}
 		if (!ignoreF1s) {
-			if (GetAsyncKeyState(0x70)) { key("!"); continue; } //VK_F1
-			if (GetAsyncKeyState(0x71)) { key("@"); continue; }
-			if (GetAsyncKeyState(0x72)) { key("#"); continue; }
-			if (GetAsyncKeyState(0x73)) { key("$"); continue; }
-			if (GetAsyncKeyState(0x74)) { key("%"); continue; }
-			if (GetAsyncKeyState(0x75)) { key("^"); continue; }
-			if (GetAsyncKeyState(0x76)) { key("&"); continue; }
-			if (GetAsyncKeyState(0x77)) { key("*"); continue; }
-			if (GetAsyncKeyState(0x78)) { key("("); continue; }
-			if (GetAsyncKeyState(0x79)) { key(")"); continue; }
-			if (GetAsyncKeyState(0x7A)) { key("_"); continue; }
-			if (GetAsyncKeyState(0x7B)) { key("+"); continue; }
+			if (GetAsyncKeyState(0x70)) { key(L"!"); continue; } //VK_F1
+			if (GetAsyncKeyState(0x71)) { key(L"@"); continue; }
+			if (GetAsyncKeyState(0x72)) { key(L"#"); continue; }
+			if (GetAsyncKeyState(0x73)) { key(L"$"); continue; }
+			if (GetAsyncKeyState(0x74)) { key(L"%"); continue; }
+			if (GetAsyncKeyState(0x75)) { key(L"^"); continue; }
+			if (GetAsyncKeyState(0x76)) { key(L"&"); continue; }
+			if (GetAsyncKeyState(0x77)) { key(L"*"); continue; }
+			if (GetAsyncKeyState(0x78)) { key(L"("); continue; }
+			if (GetAsyncKeyState(0x79)) { key(L")"); continue; }
+			if (GetAsyncKeyState(0x7A)) { key(L"_"); continue; }
+			if (GetAsyncKeyState(0x7B)) { key(L"+"); continue; }
 		}
 		if (!ignoreArrows) {
-			if (GetAsyncKeyState(VK_LEFT)) { key("L"); continue; }
-			if (GetAsyncKeyState(VK_UP)) { key("U"); continue; }
-			if (GetAsyncKeyState(VK_RIGHT)) { key("R"); continue; }
-			if (GetAsyncKeyState(VK_DOWN)) { key("D"); continue; }
+			if (GetAsyncKeyState(VK_LEFT)) { key(L"L"); continue; }
+			if (GetAsyncKeyState(VK_UP)) { key(L"U"); continue; }
+			if (GetAsyncKeyState(VK_RIGHT)) { key(L"R"); continue; }
+			if (GetAsyncKeyState(VK_DOWN)) { key(L"D"); continue; }
 		}
-		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(" "); continue; }
-		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key("T"); continue; }
-		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { key("S"); continue; }
-		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { key("H"); continue; }
-		if (!ignoreLAlt && GetAsyncKeyState(VK_LMENU)) { key("A"); continue; }
-		if (!ignoreRAlt && GetAsyncKeyState(VK_RMENU)) { key("M"); continue; }
-		if (!ignoreLCtrl && GetAsyncKeyState(VK_LCONTROL)) { key("C"); continue; }
-		if (!ignoreRCtrl && GetAsyncKeyState(VK_RCONTROL)) { key("O"); continue; }
-		if (!ignoreEnter && GetAsyncKeyState(VK_RETURN)) { key("E"); continue; }
-		if (!ignoreCaps && GetAsyncKeyState(VK_CAPITAL)) { key("P"); continue; }
-		if (!ignoreGraveAccent && GetAsyncKeyState(VK_OEM_3)) { key("`"); continue; }
-		if (!ignoreMinus && GetAsyncKeyState(VK_OEM_MINUS)) { key("-"); continue; }
-		if (!ignoreEqual && GetAsyncKeyState(VK_OEM_PLUS)) { key("="); continue; }
-		if (!ignoreLBracket && GetAsyncKeyState(VK_OEM_4)) { key("["); continue; }
-		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { key("]"); continue; }
-		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { key("\\"); continue; }
-		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { key(";"); continue; }
-		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key("'"); continue; }
-		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(","); continue; }
-		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key("."); continue; }
-		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key("/"); continue; }
-		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key("?"); continue; }
+		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(L" "); continue; }
+		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key(L"T"); continue; }
+		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { key(L"S"); continue; }
+		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { key(L"H"); continue; }
+		if (!ignoreLAlt && GetAsyncKeyState(VK_LMENU)) { key(L"A"); continue; }
+		if (!ignoreRAlt && GetAsyncKeyState(VK_RMENU)) { key(L"M"); continue; }
+		if (!ignoreLCtrl && GetAsyncKeyState(VK_LCONTROL)) { key(L"C"); continue; }
+		if (!ignoreRCtrl && GetAsyncKeyState(VK_RCONTROL)) { key(L"O"); continue; }
+		if (!ignoreEnter && GetAsyncKeyState(VK_RETURN)) { key(L"E"); continue; }
+		if (!ignoreCaps && GetAsyncKeyState(VK_CAPITAL)) { key(L"P"); continue; }
+		if (!ignoreGraveAccent && GetAsyncKeyState(VK_OEM_3)) { key(L"`"); continue; }
+		if (!ignoreMinus && GetAsyncKeyState(VK_OEM_MINUS)) { key(L"-"); continue; }
+		if (!ignoreEqual && GetAsyncKeyState(VK_OEM_PLUS)) { key(L"="); continue; }
+		if (!ignoreLBracket && GetAsyncKeyState(VK_OEM_4)) { key(L"["); continue; }
+		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { key(L"]"); continue; }
+		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { key(L"\\"); continue; }
+		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { key(L";"); continue; }
+		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key(L"'"); continue; }
+		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(L","); continue; }
+		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key(L"."); continue; }
+		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key(L"/"); continue; }
+		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key(L"?"); continue; }
 		/*if (!ignoreMediaKeys) {
-			if (GetAsyncKeyState(VK_INSERT)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_DELETE)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_HOME)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_END)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_PRIOR)) { key("?"); continue; }
-			if (GetAsyncKeyState(VK_NEXT)) { key("?"); continue; }
+			if (GetAsyncKeyState(VK_INSERT)) { key(L"?"); continue; }
+			if (GetAsyncKeyState(VK_DELETE)) { key(L"?"); continue; }
+			if (GetAsyncKeyState(VK_HOME)) { key(L"?"); continue; }
+			if (GetAsyncKeyState(VK_END)) { key(L"?"); continue; }
+			if (GetAsyncKeyState(VK_PRIOR)) { key(L"?"); continue; }
+			if (GetAsyncKeyState(VK_NEXT)) { key(L"?"); continue; }
 		}
-		if (GetAsyncKeyState(JOY_BUTTON1)) { key("?"); continue; }*/
+		if (GetAsyncKeyState(JOY_BUTTON1)) { key(L"?"); continue; }*/
 		if (!ignoreNumPad) {
-			if (GetAsyncKeyState(VK_NUMPAD0)) { key("Z"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD1)) { key("Q"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD2)) { key("V"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD3)) { key("W"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD4)) { key("X"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD5)) { key("Y"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD6)) { key("B"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD7)) { key("F"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD8)) { key("G"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD9)) { key("I"); continue; }
-			if (GetAsyncKeyState(VK_NUMLOCK)) { key("N"); continue; }
-			if (GetAsyncKeyState(VK_DIVIDE)) { key("J"); continue; }
-			if (GetAsyncKeyState(VK_MULTIPLY)) { key("K"); continue; }
-			if (GetAsyncKeyState(VK_SUBTRACT)) { key("{"); continue; }
-			if (GetAsyncKeyState(VK_ADD)) { key("}"); continue; }
-			if (GetAsyncKeyState(VK_DECIMAL)) { key("\""); continue; }
-			if (GetAsyncKeyState(VK_RETURN)) { key(":"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD0)) { key(L"Z"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD1)) { key(L"Q"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD2)) { key(L"V"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD3)) { key(L"W"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD4)) { key(L"X"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD5)) { key(L"Y"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD6)) { key(L"B"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD7)) { key(L"F"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD8)) { key(L"G"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD9)) { key(L"I"); continue; }
+			if (GetAsyncKeyState(VK_NUMLOCK)) { key(L"N"); continue; }
+			if (GetAsyncKeyState(VK_DIVIDE)) { key(L"J"); continue; }
+			if (GetAsyncKeyState(VK_MULTIPLY)) { key(L"K"); continue; }
+			if (GetAsyncKeyState(VK_SUBTRACT)) { key(L"{"); continue; }
+			if (GetAsyncKeyState(VK_ADD)) { key(L"}"); continue; }
+			if (GetAsyncKeyState(VK_DECIMAL)) { key(L"\""); continue; }
+			if (GetAsyncKeyState(VK_RETURN)) { key(L":"); continue; }
 		}
 #pragma endregion
 	}
