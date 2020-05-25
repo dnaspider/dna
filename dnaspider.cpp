@@ -216,7 +216,8 @@ void scanDb(); void conn() {//<connect:>
 		}
 	}
 	if (con) {
-		wifstream f(database); wstring cell; while (getline(f, cell)) {
+		wifstream f(database); wstring cell; f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); 
+		while (getline(f, cell)) {
 			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
 				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length()), l = in.substr(0, link.length());
