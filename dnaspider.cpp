@@ -596,7 +596,20 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 			default:
 				codes = cell;
 			}
-			if (showOuts) wcout << "found: " << cell << "\ntail: " << tail << endl;
+			if (showOuts) {
+				wcout << "found: ";
+				for (size_t x = 0; x < cell.length(); x++)	{
+					if (cell[x] > 127) { wcout << "?"; continue; }
+					wcout << cell[x];
+				}
+				wcout << "\ntail: ";
+				for (size_t x = 0; x < tail.length(); x++) {
+					if (tail[x] > 127) { wcout << "?"; continue; }
+					wcout << tail[x];
+				}
+				wcout << endl;
+			}
+
 #pragma endregion
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close();
@@ -606,7 +619,7 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
-				if (showOuts) { wcout << "ctail: " << ctail << endl; }
+				if (showOuts) { wcout << "ctail: " << (ctail[0] > 127 ? L"?" : ctail) << endl; }
 				switch (ctail[0]) {
 				case'<':
 					if (i > 0) in = tail.substr(i, tail.length() - i);
@@ -682,7 +695,20 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 						break;
 					case'\'':
 						if (qq.find(L">") != string::npos && qqb(L"<''")) i = tail.length();//<''ignore>...
-						else if (qq.find(L">") != string::npos && qqb(L"<'")) { auto x = (qq.find('>') - 2); wstring v = qq.substr(2, x); for(size_t x = 0; x < qq.length() - 1; ++x){ if (qq[x] > 127) { v = L""; break; } } if (showStrand) { SetConsoleCP(CP_UTF8); wstring s = cell[strand.length() + 1] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); wcout << OutsTemplate << strand << cell[strand.length()] << s << " " <<  v << endl; } rei(); sleep = 0; } //<'com1ments>
+						else if (qq.find(L">") != string::npos && qqb(L"<'")) { //<'comments>
+							if (showStrand) { 
+								auto x = (qq.find('>') - 2); 
+								wstring v = qq.substr(2, x); 
+								wstring s = cell[strand.length() + 1] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); 
+								wcout << OutsTemplate << strand << cell[strand.length()] << s << " <'";
+								for(size_t x = 0; x < v.length() ; ++x){ 
+									if (v[x] > 127) { wcout << "?"; continue; }
+									wcout << v[x];
+								} 
+								wcout << ">" << endl;
+							}
+							rei(); sleep = 0;
+						}
 						else printq();
 						break;
 					case'a':
