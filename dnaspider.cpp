@@ -523,6 +523,7 @@ void getApp() {
 	GetWindowTextW(h, &title[0], l + 1);
 	out(L"<shift><,><alt><esc><alt-><shift->");
 	if (title == L"") return;
+	title = regex_replace(title, wregex(L","), L"\\,");
 	out(L"<shift>,<shift->app:" + title + L">");
 }
 
@@ -719,7 +720,15 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 						else if (qqb(L"<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
 						else if (qqb(L"<app:") || qqb(L"<App:")) {//app activate, if app in foreground
 							wstring a = qp, x = L"1", ms = L"333"; link = L"";//<app:a,x,ms,link>
-							a = a.substr(0, a.find(L","));
+							if (a.find(L"\\,") != wstring::npos) {// \,
+								wstring t = a.substr(a.find_last_of(L"\\") + 2); 
+								if (t.find(L",") != string::npos) {
+									a = a.substr(0, a.find_last_of(L"\\") + t.find(L",") + 2);
+									qp = qp.substr(a.length());
+								}
+								else qp = L"";
+							}
+							else a = a.substr(0, a.find(L","));
 							if (a[0] == ' ') a = a.substr(1, a.length());
 							if (qp.find(L",") != string::npos) {
 								x = qp.substr(qp.find(L",") + 1);
@@ -733,6 +742,7 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 								}
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
+							if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
 							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
