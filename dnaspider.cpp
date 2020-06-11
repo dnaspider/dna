@@ -222,7 +222,7 @@ void scanDb(); void conn() {//<connect:>
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
 				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length()), l = in.substr(0, link.length());
 				qq = x + xx;
-				if (link != l && l == qq.substr(0, link.length())) qq = x;
+				if (re != L" " && link != l && l == qq.substr(0, link.length())) if (xx == L"") qq = x;
 				tail = qq;
 				if (SlightPauseInBetweenConnects) Sleep(150);
 				strand.clear(); f.close();
@@ -562,9 +562,8 @@ void scanDb() {
 			if (strand.substr(strand.length() - 1) != L">")
 				return;
 		}
-
 	}
-wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
+	wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 	wstring cell; f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	while (getline(f, cell)) { //cout << cell << endl;
 		if (cell.substr(0, 4) == L"<'''") break; //ignore db...
@@ -576,9 +575,8 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 				if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
 				else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
 			}
-#pragma region set_tail
 			tail = re > L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
-			switch (tail[0]) {
+			switch (tail[0]) {//set_tail
 			case ':':
 				tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
@@ -610,15 +608,12 @@ wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 				}
 				wcout << endl;
 			}
-
-#pragma endregion
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
-			f.close();
-			fail = 0; for (i = 0; i < tail.length(); ++i) {
+			f.close(); fail = 0;
+			for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
-
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { wcout << "ctail: " << (ctail[0] > 127 ? L"?" : ctail) << endl; }
 				switch (ctail[0]) {
