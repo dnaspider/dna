@@ -161,9 +161,7 @@ void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
 void prints() { if (showStrand) wcout << OutsTemplate << strand << '\n'; }
 
-bool qqb(wstring s) {
-	if (qq.substr(0, s.length()) == s) return true; else return false;
-}
+bool qqb(wstring s) { return qq.substr(0, s.length()) == s; }
 
 void clearAllKeys() {
 	for (int i = 65; i < 91; i++) { GetAsyncKeyState(i); }
