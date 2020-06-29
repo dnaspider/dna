@@ -550,6 +550,15 @@ void cbSet(wstring& s) {
 	CloseClipboard();
 }
 
+void showOutsMsg(wstring s, wstring w, wstring s1=L"") {
+	wcout << s;
+	for (size_t x = 0; x < w.length(); x++) {
+		if (w[x] > 127) { wcout << "?"; continue; } //ignore > 127
+		wcout << w[x];
+	}
+	wcout << s1 << endl;
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -593,19 +602,7 @@ void scanDb() {
 			default:
 				codes = cell;
 			}
-			if (showOuts) {
-				wcout << "found: ";
-				for (size_t x = 0; x < cell.length(); x++)	{
-					if (cell[x] > 127) { wcout << "?"; continue; }
-					wcout << cell[x];
-				}
-				wcout << "\ntail: ";
-				for (size_t x = 0; x < tail.length(); x++) {
-					if (tail[x] > 127) { wcout << "?"; continue; }
-					wcout << tail[x];
-				}
-				wcout << endl;
-			}
+			if (showOuts) { showOutsMsg(L"found: ", cell); showOutsMsg(L"tail: ", tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close(); fail = 0;
 			for (i = 0; i < tail.length(); ++i) {
@@ -618,7 +615,7 @@ void scanDb() {
 				case'<':
 					if (i > 0) in = tail.substr(i, tail.length() - i);
 					if (!fail) qq = tail.substr(i, tail.length() - i); //<test>
-					if (showOuts) { wcout << "qq: " << qq << endl; }
+					if (showOuts) showOutsMsg(L"qq: ", qq);
 					if (qq.find(L":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
 						qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
@@ -692,14 +689,8 @@ void scanDb() {
 						else if (qq.find(L">") != string::npos && qqb(L"<'")) { //<'comments>
 							if (showStrand) { 
 								auto x = (qq.find('>') - 2); 
-								wstring v = qq.substr(2, x); 
-								wstring s = cell[strand.length() + 1] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); 
-								wcout << OutsTemplate << strand << cell[strand.length()] << s << " <'";
-								for(size_t x = 0; x < v.length() ; ++x){ 
-									if (v[x] > 127) { wcout << "?"; continue; }
-									wcout << v[x];
-								} 
-								wcout << ">" << endl;
+								wstring v = qq.substr(2, x), s = cell[strand.length() + 1] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); 
+								showOutsMsg(OutsTemplate + strand + cell[strand.length()] + s + L" <'", v, L">");
 							}
 							rei(); sleep = 0;
 						}
@@ -739,7 +730,7 @@ void scanDb() {
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
 							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
-							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
+						for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
