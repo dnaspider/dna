@@ -730,14 +730,14 @@ void scanDb() {
 							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
 							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <" << qq[1] << "pp:" << qp << ">\n"; };
-						for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
+							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
 								if (size >= length) { f(); break; }
 								if (qq[1] == 'A') {//App
 									h = GetForegroundWindow(); h1 = FindWindowW(0, a.c_str());
-									if (h == h1) { break; fail = 0; }
+									if (h == h1) { break; }//fail = 0; 
 								}
 								else if (qq[1] == 'a') {//'app
 									h = FindWindowW(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
@@ -813,6 +813,55 @@ void scanDb() {
 						break;
 					case'i':
 						if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
+						if (qqb(L"<ifcb:")) {
+							wstring a = qp, x = L"1", ms = L"333"; link = L"";//<ifcb:a,x,ms,link>
+							a = a.substr(0, a.find(L","));
+							if (a[0] == ' ') a = a.substr(1, a.length());
+							if (qp.find(L",") != string::npos) {
+								x = qp.substr(qp.find(L",") + 1);
+								if (x.find(L",") != string::npos) {
+									ms = x.substr(x.find(L",") + 1);
+									if (ms.find(L",") != string::npos) {
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); }
+										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
+									}
+									x = x.substr(0, x.find(L","));
+								}
+								if (check_if_num(x) == L"") { printq(); break; }
+							}//cout << a << " " << x << " " << ms << " " << link << endl;
+							auto size{ 0 }, length{ stoi(x) };
+							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <ifcb:" << qp << ">\n"; };
+							HANDLE hcb; wchar_t* c; wstring w;
+							for (; size < length; ++size) { //cout << size << " ifcb:" << a << " *" << x << " " << ms << "ms" << endl;
+								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
+								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
+								if (pause_resume) { --size; Sleep(frequency); continue; }
+								if (size >= length) { f(); break; }
+								OpenClipboard(0);
+								hcb = GetClipboardData(CF_UNICODETEXT);
+								if (hcb == nullptr) { CloseClipboard(); continue; }
+								c = static_cast<wchar_t*>(GlobalLock(hcb));
+								if (c == nullptr) { CloseClipboard(); continue; }
+								w = TEXT(c);
+								if (w == a) break;
+								CloseClipboard();
+								if (length >= 1) Sleep(stoi(ms));
+							}
+							CloseClipboard();
+							if (size >= length) {//fail
+								if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
+									if (L"<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
+										fail = 1;
+									}
+									else {
+										tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
+									}
+									re = L" "; i = -1; break;
+								}
+								f(); break;
+							}
+							rei();
+						}
 						else conn();
 						break;
 					case'l':
