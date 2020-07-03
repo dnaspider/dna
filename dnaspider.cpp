@@ -409,7 +409,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp> or <XY>  Return pointer\n<XY:>  Set. E.g., <XY:0,0><XY>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<ls><rs>  LEFT, RIGHT SCROLL\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<replace:>  Regex replace cb. E.g. <replace:t,T>";
+	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp> or <XY>  Return pointer\n<XY:>  Set. E.g., <XY:0,0><XY>\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<ls><rs>  LEFT, RIGHT SCROLL\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:>  Cb operator (==, !=, >, >=, <, <=, find)\n<replace:>  Regex replace cb. E.g. <replace:t,T>";
 	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -813,9 +813,18 @@ void scanDb() {
 						break;
 					case'i':
 						if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
-						if (qqb(L"<ifcb:")) {
+						if (qqb(L"<ifcb")) {//Clipboard <ifcb: <ifcb!: <ifcbg: <ifcge: <ifcbl: <ifcble: <ifcbf: (=, !=, >, >=, <, <=, find)
 							wstring a = qp, x = L"1", ms = L"333"; link = L"";//<ifcb:a,x,ms,link>
-							a = a.substr(0, a.find(L","));
+							if (a.find(L"\\,") != wstring::npos) {// \,
+								wstring t = a.substr(a.find_last_of(L"\\") + 2);
+								if (t.find(L",") != string::npos) {
+									a = a.substr(0, a.find_last_of(L"\\") + t.find(L",") + 2);
+									qp = qp.substr(a.length());
+								}
+								else qp = L"";
+							}
+							else a = a.substr(0, a.find(L","));
+							if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
 							if (a[0] == ' ') a = a.substr(1, a.length());
 							if (qp.find(L",") != string::npos) {
 								x = qp.substr(qp.find(L",") + 1);
@@ -830,7 +839,7 @@ void scanDb() {
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
 							auto size{ 0 }, length{ stoi(x) };
-							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: <ifcb:" << qp << ">\n"; };
+							auto f = []() { i = tail.length(); if (showStrand) wcout << "Fail: " << qq.substr(0, qq.find(L":") + 1) << qp << ">\n"; };
 							HANDLE hcb; wchar_t* c; wstring w;
 							for (; size < length; ++size) { //cout << size << " ifcb:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
@@ -843,7 +852,24 @@ void scanDb() {
 								c = static_cast<wchar_t*>(GlobalLock(hcb));
 								if (c == nullptr) { CloseClipboard(); continue; }
 								w = TEXT(c);
-								if (w == a) break;
+								if (qq[5] == ':') {
+									if (w == a) break;
+								}
+								else if (qq[5] == '!') {
+									if (w != a) break;
+								}
+								else if (qq[5] == 'f') {									
+									if (w.find(a) != string::npos) break;
+								}
+								else if (qq[5] == 'l' || qq[5] == 'g' && check_if_num(a) == L"" || check_if_num(w) == L"") { f(); break; }
+								if (qq[5] == 'l') {//lt
+									if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stoi(w) <= stoi(a)) break; } //ifcble <=
+									if (stoi(w) < stoi(a)) break;
+								}
+								else if (qq[5] == 'g') {//gt
+									if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stoi(w) >= stoi(a)) break; } //ifcbge >=
+									if (stoi(w) > stoi(a)) break;
+								}
 								CloseClipboard();
 								if (length >= 1) Sleep(stoi(ms));
 							}
@@ -879,7 +905,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'm':
-						if (qqb(L"<ms:")) if (check_if_num(qp) != L"") { Sleep(stoi(qp));	rei(); }
+						if (qqb(L"<ms:")) if (check_if_num(qp) != L"") { Sleep(stoi(qp)); rei(); }
 						else printq();
 						else if (qqb(L"<mc")) kbPress(L"<mc", VK_F7);//middle click
 						else if (qqb(L"<mh>")) {//middle hold
