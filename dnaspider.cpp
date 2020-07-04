@@ -813,7 +813,7 @@ void scanDb() {
 						break;
 					case'i':
 						if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
-						if (qqb(L"<ifcb")) {//Clipboard <ifcb: <ifcb!: <ifcbg: <ifcge: <ifcbl: <ifcble: <ifcbf: (=, !=, >, >=, <, <=, find)
+						if (qqb(L"<ifcb:") || qqb(L"<ifcb!:") || qqb(L"<ifcbf:") || qqb(L"<ifcbl:") || qqb(L"<ifcble:") || qqb(L"<ifcbg:") || qqb(L"<ifcge:")) {//Clipboard ==, !=, find, <, <=, >, >=
 							wstring a = qp, x = L"1", ms = L"333"; link = L"";//<ifcb:a,x,ms,link>
 							if (a.find(L"\\,") != wstring::npos) {// \,
 								wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -858,15 +858,14 @@ void scanDb() {
 								else if (qq[5] == '!') {
 									if (w != a) break;
 								}
-								else if (qq[5] == 'f') {									
-									if (w.find(a) != string::npos) break;
+								else if (qq[5] == 'f') {
+									if (regex_search(w, wregex(a))) break;
 								}
-								else if (qq[5] == 'l' || qq[5] == 'g' && check_if_num(a) == L"" || check_if_num(w) == L"") { f(); break; }
-								if (qq[5] == 'l') {//lt
+								else if (qq[5] == 'l' && check_if_num(a) != L"" && check_if_num(w) != L"") {//lt
 									if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stoi(w) <= stoi(a)) break; } //ifcble <=
 									if (stoi(w) < stoi(a)) break;
 								}
-								else if (qq[5] == 'g') {//gt
+								else if (qq[5] == 'g' && check_if_num(a) != L"" && check_if_num(w) != L"") {//gt
 									if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stoi(w) >= stoi(a)) break; } //ifcbge >=
 									if (stoi(w) > stoi(a)) break;
 								}
