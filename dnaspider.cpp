@@ -1092,7 +1092,7 @@ void scanDb() {
 								rei();
 							}
 						}
-						else if (qqb(L"<replace:")) { 
+						else if (qqb(L"<replace:")) {
 							wstring cb = L""; OpenClipboard(0);
 							HANDLE c = GetClipboardData(CF_UNICODETEXT);
 							if (c != nullptr) {
@@ -1102,6 +1102,14 @@ void scanDb() {
 							}
 							CloseClipboard();
 							if (cb > L"") {
+								if (qp.find(L"\\,") != wstring::npos) {// \,
+									wstring t = qp.substr(qp.find_last_of(L"\\") + 2);
+									if (t.find(L",") != string::npos) {
+										qx = qp.substr(0, qp.find_last_of(L"\\") + t.find(L",") + 2);
+										qy = qp.substr(qx.length() + 1);
+										if (qx.find(L"\\,") != wstring::npos) qx = regex_replace(qx, wregex(L"\\\\,"), L",");// \,
+									}
+								}
 								cb = regex_replace(cb, wregex(qx), qy);
 								cbSet(cb);
 							}
