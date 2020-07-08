@@ -746,7 +746,7 @@ void scanDb() {
 								else if (qq[1] == 'a') {//'app
 									h = FindWindowW(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 									if (h) {
-										if (IsIconic(h)) ShowWindow(h, SW_RESTORE);
+										if (IsIconic(h)) ShowWindow(h, SWP_SHOWWINDOW);
 										SetForegroundWindow(h);
 										fail = 0; break;
 									}
