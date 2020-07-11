@@ -852,32 +852,37 @@ void scanDb() {
 								if (size >= length) { f(); break; }
 								OpenClipboard(0);
 								hcb = GetClipboardData(CF_UNICODETEXT);
-								if (hcb == nullptr) { CloseClipboard(); continue; }
-								c = static_cast<wchar_t*>(GlobalLock(hcb));
-								if (c == nullptr) { CloseClipboard(); continue; }
-								w = TEXT(c);
-								if (qq[5] == ':') {
-									if (w == a) break;
-								}
-								else if (qq[5] == '!') {
-									if (w != a) break;
-								}
-								else if (qq[5] == 'f') {
-									if (regex_search(w, wregex(a))) break;
-								}
-								else if (qq[5] == 'F') {
-									if (w.find(a) != string::npos) break;
-								}
-								else if (qq[5] == 'l' && check_if_num(a) != L"" && check_if_num(w) != L"") {//lt
-									if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stod(w) <= stod(a)) break; } //ifcble <=
-									if (stod(w) < stod(a)) break;
-								}
-								else if (qq[5] == 'g' && check_if_num(a) != L"" && check_if_num(w) != L"") {//gt
-									if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stod(w) >= stod(a)) break; } //ifcbge >=
-									if (stod(w) > stod(a)) break;
+								if (hcb != nullptr) {
+									c = static_cast<wchar_t*>(GlobalLock(hcb));
+									if (c != nullptr) {
+										w = TEXT(c);
+										if (qq[5] == ':') {
+											if (w == a) break;
+										}
+										else if (qq[5] == '!') {
+											if (w != a) break;
+										}
+										else if (qq[5] == 'f') {
+											if (regex_search(w, wregex(a))) break;
+										}
+										else if (qq[5] == 'F') {
+											if (w.find(a) != string::npos) break;
+										}
+										else if (qq[5] == 'l' && check_if_num(a) != L"" && check_if_num(w) != L"") {//lt
+											if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stod(w) <= stod(a)) break; } //ifcble <=
+											if (stod(w) < stod(a)) break;
+										}
+										else if (qq[5] == 'g' && check_if_num(a) != L"" && check_if_num(w) != L"") {//gt
+											if (qq[6] == 'e') { if (a == L"0" && w == L"0") break; if (stod(w) >= stod(a)) break; } //ifcbge >=
+											if (stod(w) > stod(a)) break;
+										}
+										CloseClipboard();
+										if (link > L"" || length > 1) Sleep(stoi(ms));
+										continue;
+									}
 								}
 								CloseClipboard();
-								if (length >= 1) Sleep(stoi(ms));
+								if (link > L"" || length > 1) Sleep(stoi(ms));
 							}
 							CloseClipboard();
 							if (size >= length) {//fail
