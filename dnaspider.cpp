@@ -222,7 +222,7 @@ void scanDb(); void conn() {//<connect:>
 		while (getline(f, cell)) {
 			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
-				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());// , l = in.substr(0, link.length());
+				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());
 				if (relink) tail = x; else tail = x + xx;
 				if (SlightPauseInBetweenConnects) Sleep(150);
 				strand.clear(); f.close();
