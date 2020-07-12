@@ -10,8 +10,8 @@
 using namespace std;
 
 #pragma region global_var
-wstring in = L""; //strand
-wstring link = L""; //<app|rgb,,,<link:>
+bool relink = 0;
+wstring link = L""; //<app|rgb|ifcb,,,<link:>
 wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"";//"db.txt - "
 bool fail = 0;
 bool sleep = 1;
@@ -222,10 +222,8 @@ void scanDb(); void conn() {//<connect:>
 		while (getline(f, cell)) {
 			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
-				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length()), l = in.substr(0, link.length());
-				qq = x + xx;
-				if (re != L" " && link != l && l == qq.substr(0, link.length())) if (xx == L"") qq = x;
-				tail = qq;
+				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());// , l = in.substr(0, link.length());
+				if (relink) tail = x; else tail = x + xx;
 				if (SlightPauseInBetweenConnects) Sleep(150);
 				strand.clear(); f.close();
 				i = -1;
@@ -576,12 +574,12 @@ void scanDb() {
 	}
 	wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
 	wstring cell; f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
-	while (getline(f, cell)) { //cout << cell << endl;
+	relink = 0; while (getline(f, cell)) { //cout << cell << endl;
 		if (cell.substr(0, 4) == L"<'''") break; //ignore db...
 		if (re > L"" || (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L"-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L"->") || cell.substr(0, strand.length() + 1) == strand + L">" || cell.substr(0, strand.length() + 1) == strand + L":" || cell.substr(0, strand.length() + 1) == strand + L"-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != L"<") || close_ctrl_mode && strandLengthMode && strand.substr(0, 1) != L"<" && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
 			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == L">") strand = strand.substr(0, strand.length() - 1);
-			in = re > L"" ? re.substr(1) : cell;
 			if (re > L"") {
+				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
 				if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
 				else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
@@ -617,8 +615,7 @@ void scanDb() {
 				if (showOuts) { wcout << "ctail: " << (ctail[0] > 127 ? L"?" : ctail) << endl; }
 				switch (ctail[0]) {
 				case'<':
-					if (i > 0) in = tail.substr(i, tail.length() - i);
-					if (!fail) qq = tail.substr(i, tail.length() - i); //<test>
+					qq = tail.substr(i, tail.length() - i); //<test>
 					if (showOuts) showOutsMsg(L"qq: ", qq);
 					if (qq.find(L":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
@@ -741,27 +738,23 @@ void scanDb() {
 								if (size >= length) { f(); break; }
 								if (qq[1] == 'A') {//App
 									h = GetForegroundWindow(); h1 = FindWindowW(0, a.c_str());
-									if (h == h1) { break; }//fail = 0; 
+									if (h == h1) break;
 								}
 								else if (qq[1] == 'a') {//'app
 									h = FindWindowW(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
 									if (h) {
 										if (IsIconic(h)) ShowWindow(h, SWP_SHOWWINDOW);
 										SetForegroundWindow(h);
-										fail = 0; break;
+										break;
 									}
 								}
 								if (length >= 1) Sleep(stoi(ms));
 							}
 							if (size >= length) {//fail
 								if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
-									if (L"<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
-										fail = 1;
-									}
-									else {
-										tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
-									}
-									re = L" "; i = -1; break;
+									if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
+									tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
+									re = L" "; i = -1; fail = 1; break;
 								}
 								f(); break;
 							}
@@ -887,13 +880,9 @@ void scanDb() {
 							CloseClipboard();
 							if (size >= length) {//fail
 								if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
-									if (L"<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
-										fail = 1;
-									}
-									else {
-										tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
-									}
-									re = L" "; i = -1; break;
+									if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
+									tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
+									re = L" "; i = -1; fail = 1; break;
 								}
 								f(); break;
 							}
@@ -1065,7 +1054,6 @@ void scanDb() {
 							ReleaseDC(NULL, hDC);
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								rei();//cout << "rgb\n";
-								fail = 0;
 							}
 							else {
 								auto size{ 0 }, length{ stoi(x) };
@@ -1078,19 +1066,15 @@ void scanDb() {
 									color = (qq[1] == 'R') ? GetPixel(hDC, qxc, qyc) : GetPixel(hDC, pt.x, pt.y);//<RGB> get xy from <XY:> or current
 									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
-										fail = 0; break;
+										break;
 									}
 									if (length >= 1) Sleep(stoi(ms));
 								}
 								if (size >= length) { 
 									if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
-										if (L"<" + link == in.substr(0, link.length() + 1) || link == in.substr(0, link.length())) {
-											fail = 1;
-										}
-										else {
-											tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
-										}
-										re = L" "; i = -1; break;
+										if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
+										tail = link[0] == '<' ? link + L">" + qq.substr(qq.find(L">") + 1) : L"<" + link + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
+										re = L" "; i = -1; fail = 1; break;
 									}
 									f(); break;
 								}
