@@ -870,12 +870,12 @@ void scanDb() {
 											if (stod(w) > stod(a)) break;
 										}
 										CloseClipboard();
-										if (link > L"" || length > 1) Sleep(stoi(ms));
+										if (length >= 1) Sleep(stoi(ms));
 										continue;
 									}
 								}
 								CloseClipboard();
-								if (link > L"" || length > 1) Sleep(stoi(ms));
+								if (length >= 1) Sleep(stoi(ms));
 							}
 							CloseClipboard();
 							if (size >= length) {//fail
