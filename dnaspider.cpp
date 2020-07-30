@@ -741,7 +741,7 @@ void scanDb() {
 								if (x.find(L",") != string::npos) {
 									ms = x.substr(x.find(L",") + 1);
 									if (ms.find(L",") != string::npos) {
-										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); }
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (strand > L"" && strand == link.substr(0, strand.length()) && link[0] == '<') { link = link.substr(1); }
 										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
 									}
 									x = x.substr(0, x.find(L","));
@@ -849,7 +849,7 @@ void scanDb() {
 								if (x.find(L",") != string::npos) {
 									ms = x.substr(x.find(L",") + 1);
 									if (ms.find(L",") != string::npos) {
-										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); }
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (strand > L"" && strand == link.substr(0, strand.length()) && link[0] == '<') { link = link.substr(1); }
 										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
 									}
 									x = x.substr(0, x.find(L","));
@@ -1060,7 +1060,7 @@ void scanDb() {
 								if (x.find(L",") != string::npos) {
 									ms = x.substr(x.find(L",") + 1);
 									if (ms.find(L",") != string::npos) {
-										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); }
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (strand > L"" && strand == link.substr(0, strand.length()) && link[0] == '<') { link = link.substr(1); }
 										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
 									}
 									x = x.substr(0, x.find(L","));
