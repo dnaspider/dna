@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <windows.h>
-#include <ctime>
+#include <chrono>
 #include <regex>
 #include <codecvt>
 using namespace std;
@@ -421,7 +421,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:>  Cb operator (==, !=, >, >=, <, <=, regex find, find)\n<replace:>  Regex replace cb. E.g. <replace:t,T>";
+	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>, use - or : to loop)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:>  Continue if cb. Cb operator (==, !=, >, >=, <, <=, regex find, find)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n";
 	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -556,12 +556,15 @@ void getRGB() {
 void cbSet(wstring& s) {
 	auto length = 2 * (wcslen(s.c_str()) + 1);
 	HGLOBAL h = GlobalAlloc(GMEM_DDESHARE, length);
-	memcpy(GlobalLock(h), s.c_str(), length);
-	GlobalUnlock(h);
-	OpenClipboard(0);
-	EmptyClipboard();
-	SetClipboardData(CF_UNICODETEXT, h);
-	CloseClipboard();
+	if (h != NULL) {
+		auto x = GlobalLock(h);
+		if (x != NULL) memcpy(x, s.c_str(), length);
+		GlobalUnlock(h);
+		OpenClipboard(0);
+		EmptyClipboard();
+		SetClipboardData(CF_UNICODETEXT, h);
+		CloseClipboard();
+	}
 }
 
 void showOutsMsg(wstring s, wstring w, wstring s1=L"") {
@@ -618,7 +621,7 @@ void scanDb() {
 			}
 			if (showOuts) { showOutsMsg(L"found: ", cell); showOutsMsg(L"tail: ", tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
-			f.close(); fail = 0;
+			f.close(); fail = 0; esc_pressed = 0;
 			for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
@@ -770,6 +773,7 @@ void scanDb() {
 									}
 								}
 								if (length >= 1) Sleep(stoi(ms));
+								if (link == L":" || link == L"-" && link.length() == 1) size--;
 							}
 							if (size >= length) {//fail
 								if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
@@ -831,7 +835,7 @@ void scanDb() {
 						break;
 					case'i':
 						if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
-						if (qqb(L"<ifcb:") || qqb(L"<ifcb!:") || qqb(L"<ifcbf:") || qqb(L"<ifcbF:") || qqb(L"<ifcbl:") || qqb(L"<ifcble:") || qqb(L"<ifcbg:") || qqb(L"<ifcge:")) {//Clipboard ==, !=, find, <, <=, >, >=
+						else if (qqb(L"<ifcb:") || qqb(L"<ifcb!:") || qqb(L"<ifcbf:") || qqb(L"<ifcbF:") || qqb(L"<ifcbl:") || qqb(L"<ifcble:") || qqb(L"<ifcbg:") || qqb(L"<ifcbge:")) {//Clipboard ==, !=, find, <, <=, >, >=
 							wstring a = qp, x = L"1", ms = L"333"; link = L"";//<ifcb:a,x,ms,link>
 							if (a.find(L"\\,") != wstring::npos) {// \,
 								wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -892,11 +896,13 @@ void scanDb() {
 										}
 										CloseClipboard();
 										if (length >= 1) Sleep(stoi(ms));
+										if (link == L":" || link == L"-" && link.length() == 1) size--;
 										continue;
 									}
 								}
 								CloseClipboard();
 								if (length >= 1) Sleep(stoi(ms));
+								if (link == L":" || link == L"-" && link.length() == 1) size--;
 							}
 							CloseClipboard();
 							if (size >= length) {//fail
@@ -1091,6 +1097,7 @@ void scanDb() {
 										break;
 									}
 									if (length >= 1) Sleep(stoi(ms));
+									if (link == L":" || link == L"-" && link.length() == 1) size--;
 								}
 								if (size >= length) { 
 									if (link > L"" && (link[link.length() - 1] == ':' || link[link.length() - 1] == '-')) {
@@ -1144,6 +1151,20 @@ void scanDb() {
 						break;
 					case't':
 						if (qqb(L"<tab")) kbPress(L"<tab", VK_TAB);
+						else if (qqb(L"<time>") || qqb(L"<time:>")) {
+							auto np = chrono::system_clock::now();
+							auto n = chrono::system_clock::to_time_t(np);
+							char b[26];
+							ctime_s(b, sizeof(b), &n);
+							wstring w{}; auto c{ 0 };
+							for (auto i = 0; i < 26; ++i) { if (b[i] == ' ') { ++c; if (c == 2 && qq[5] == ':') { continue; } } if (b[i] == '\n') { break; } w += b[i]; }
+							if (qq[5] == '>') {
+								w = w.substr(w.find(L"  ") + 2); w = w.substr(w.find(L" ") + 1); w = w.substr(0, w.rfind(' '));
+							}
+							tail = w + qq.substr(qq.find(L">") + 1, qq.length());
+							i = -1;
+							re = L" ";
+						}
 						else conn();
 						break;
 					case'u':
@@ -1249,7 +1270,7 @@ void printInterfaceCtrls() {
 	(StockInterfaceControls) ? cout << "<xy or P + ESC" : cout << "P + ESC"; cout << ":  <xy:>" << endl;
 	cout << "A + ESC:  <app:>" << endl;
 	cout << "R + ESC:  <rgb:>" << endl;
-	(reKey == 145) ? c = L"SCROLL_LOCK" : c = L"repeatKey: " + reKey; wcout << c << " or EQUAL + ESC:  Repeat" << endl;
+	(reKey == 145) ? c = L"SCROLL_LOCK" : c = L"RepeatKey: " + reKey; wcout << c << " or EQUAL + ESC:  Repeat" << endl;
 	cout << endl;
 }
 
