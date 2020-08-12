@@ -864,7 +864,7 @@ void scanDb() {
 							}
 							if (multiStrand && !mF) {
 								if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
-								if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else rei();
+								if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else i += qq.find(L">");
 							}
 							if (size >= length) {//fail
 								if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
@@ -1185,8 +1185,8 @@ void scanDb() {
 							ReleaseDC(NULL, hDC);
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								if (multiStrand) {
-									tail = multi.getTail();
-									if (tail == qqC) i = tail.find(L">"); else rei();
+									if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
+									if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else i += qq.find(L">");
 								}
 								else rei();
 							}
@@ -1208,7 +1208,7 @@ void scanDb() {
 								}
 								if (multiStrand && !mF) {
 									if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
-									if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else rei();
+									if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else i += qqC.find(L">");
 								}
 								if (size >= length) { 
 									if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
