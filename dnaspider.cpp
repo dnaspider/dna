@@ -1045,7 +1045,7 @@ void scanDb() {
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
-								if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
+								if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
 								OpenClipboard(0);
 								hcb = GetClipboardData(CF_UNICODETEXT);
 								if (hcb != nullptr) {
@@ -1352,12 +1352,15 @@ void scanDb() {
 							auto n = chrono::system_clock::to_time_t(np);
 							char b[26];
 							ctime_s(b, sizeof(b), &n);
-							wstring w{}; auto c{ 0 };
-							for (auto i = 0; i < 26; ++i) { if (b[i] == ' ') { ++c; if (c == 2 && qq[5] == ':') { continue; } } if (b[i] == '\n') { break; } w += b[i]; }
-							if (qq[5] == '>') {
-								w = w.substr(w.find(L"  ") + 2); w = w.substr(w.find(L" ") + 1); w = w.substr(0, w.rfind(' '));
+							wstring w{};
+							for (auto i = 0; i < 26; ++i) {
+								if (b[i] == '\n') break;
+								w += b[i];
 							}
-							tail = w + qq.substr(qq.find(L">") + 1, qq.length());
+							if (qq[5] == '>') {
+								w = w.substr(w.rfind(L" ") - 8, 8);
+							}
+ 							tail = w + qq.substr(qq.find(L">") + 1, qq.length());
 							i = -1;
 							re = L" ";
 						}
