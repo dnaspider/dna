@@ -589,7 +589,6 @@ public:
 	~Mainn();
 	wstring t;
 	wstring s;
-	size_t c = 0;
 	wstring getTail(wstring);
 	void setTail();
 	wstring getStrand(wstring);
@@ -633,10 +632,13 @@ wstring Mainn::getStrand(wstring c)
 class Multi
 {
 public:
-	wstring t = tail;
+	wstring r, g, b, a, x, m, l, t = tail, q = qq;
+	size_t get_i = i;
 	Multi();
 	Multi(wstring);
-	wstring getTail();
+	wstring getTail(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getApp(), getX(), getMS(), getLink();
+	void setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setApp(wstring), setX(wstring), setMS(wstring), setLink(wstring);
+	size_t getI();
 	~Multi();
 };
 
@@ -648,6 +650,86 @@ Multi::Multi()
 Multi::Multi(wstring r) 
 {
 	return;
+}
+
+void Multi::setApp(wstring app)
+{
+	a = app;
+}
+
+void Multi::setRGBr(wstring red)
+{
+	r = red;
+}
+
+void Multi::setRGBg(wstring gre)
+{
+	g = gre;
+}
+
+void Multi::setRGBb(wstring blu)
+{
+	b = blu;
+}
+
+void Multi::setX(wstring it)
+{
+	x = it;
+}
+
+void Multi::setMS(wstring mil)
+{
+	m = mil;
+}
+
+void Multi::setLink(wstring li)
+{
+	l = li;
+}
+
+wstring Multi::getLink()
+{
+	return l;
+}
+
+wstring Multi::getApp()
+{
+	return a;
+}
+
+wstring Multi::getRGBr()
+{
+	return r;
+}
+
+wstring Multi::getRGBg()
+{
+	return g;
+}
+
+wstring Multi::getRGBb()
+{
+	return b;
+}
+
+wstring Multi::getX()
+{
+	return x;
+}
+
+wstring Multi::getMS()
+{
+	return m;
+}
+
+size_t Multi::getI()
+{
+	return get_i;
+}
+
+wstring Multi::getQQ()
+{
+	return q;
 }
 
 wstring Multi::getTail()
@@ -837,16 +919,17 @@ void scanDb() {
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
 							if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
-							auto size{ 0 }, length{ stoi(x) };
 							HWND h, h1; DWORD pid;
 							linkC = link; auto qqC = qq; bool mF = 0;
 							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
-							Multi multi(tail);
+							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+							if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
 							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
-								if (size >= length) { f(); break; }
+								if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
+								if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
 								if (qqC[1] == 'A') {//App
 									h = GetForegroundWindow(); h1 = FindWindowW(0, a.c_str());
 									if (h == h1) break;
@@ -859,12 +942,12 @@ void scanDb() {
 										break;
 									}
 								}
-								if (length >= 1) Sleep(stoi(ms));
+								if (length >= 1) { if (multiStrand) { ms = multi.getMS(); } Sleep(stoi(ms)); }
+								if (multiStrand) linkC = multi.getLink();
 								if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 							}
-							if (multiStrand && !mF) {
-								if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
-								if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else i += qq.find(L">");
+							if (multiStrand) {
+								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">");} //rei
 							}
 							if (size >= length) {//fail
 								if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
@@ -953,16 +1036,16 @@ void scanDb() {
 								}
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
-							auto size{ 0 }, length{ stoi(x) };
 							linkC = link; auto qqC = qq; bool mF = 0;
 							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
-							Multi multi(tail);
+							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 							HANDLE hcb; wchar_t* c; wstring w;
+							if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
 							for (; size < length; ++size) { //cout << size << " ifcb:" << a << " *" << x << " " << ms << "ms" << endl;
 								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
 								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 								if (pause_resume) { --size; Sleep(frequency); continue; }
-								if (size >= length) { f(); break; }
+								if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
 								OpenClipboard(0);
 								hcb = GetClipboardData(CF_UNICODETEXT);
 								if (hcb != nullptr) {
@@ -996,12 +1079,12 @@ void scanDb() {
 									}
 								}
 								CloseClipboard();
-								if (length >= 1) Sleep(stoi(ms));
+								if (length >= 1) { if (multiStrand) { ms = multi.getMS(); } Sleep(stoi(ms)); }
+								if (multiStrand) linkC = multi.getLink();
 								if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 							}
-							if (multiStrand && !mF) {
-								if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
-								if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); CloseClipboard(); break; } else rei();
+							if (multiStrand) {
+								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 							}
 							CloseClipboard();
 							if (size >= length) {//fail
@@ -1180,35 +1263,35 @@ void scanDb() {
 							hDC = GetDC(NULL);
 							linkC = link; auto qqC = qq; bool mF = 0;
 							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
-							Multi multi(tail);
+							Multi multi(tail); if (multiStrand) { multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 							color = (qqC[1] == 'R') ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
 							ReleaseDC(NULL, hDC);
 							if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 								if (multiStrand) {
-									if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
-									if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else i += qq.find(L">");
+									i = multi.getI(); qqC = multi.getQQ(); tail = multi.getTail(); i += qqC.find(L">");
 								}
 								else rei();
 							}
 							else {
-								auto size{ 0 }, length{ stoi(x) };
+								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
 								for (; size < length; ++size) {
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE);  kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (pause_resume) { --size; Sleep(frequency); continue; }
-									if (size >= length) { f(); break; }
+									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
 									hDC = GetDC(NULL); GetCursorPos(&pt);
+									if (multiStrand) { r = multi.getRGBr(); g = multi.getRGBg(); b = multi.getRGBb(); }
 									color = (qqC[1] == 'R') ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
 									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
 										break;
 									}
-									if (length >= 1) Sleep(stoi(ms));
+									if (length >= 1) { if (multiStrand) { ms = multi.getMS(); } Sleep(stoi(ms)); }
+									if (multiStrand) linkC = multi.getLink();
 									if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 								}
-								if (multiStrand && !mF) {
-									if (i == tail.size()) { tail = qqC; i = 0; } else tail = multi.getTail();
-									if (tail == qqC && i != 0 && i > tail.size()) { i = tail.find(L">"); break; } else i += qqC.find(L">");
+								if (multiStrand) {
+									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 								}
 								if (size >= length) { 
 									if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
