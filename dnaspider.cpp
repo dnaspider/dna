@@ -11,9 +11,7 @@
 using namespace std;
 
 #pragma region global_var
-bool multiStrand = 1, sms = 0;
-wstring gT = L"";
-bool skip_gT = 0;
+bool multiStrand = 1, showMultiStrand = 0;
 auto RgbScaleLayout = 1.00; //100%
 auto CloseCtrlSpacer = 120;
 bool relink = 0;
@@ -235,7 +233,7 @@ void scanDb(); void conn() {//<connect:>
 				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());
 				if (relink) tail = x; else tail = x + xx;
 				if (SlightPauseInBetweenConnects) Sleep(150);
-				f.close(); i = -1; skip_gT = 0;
+				f.close(); i = -1;
 				if (speed > 0) sleep = 0;
 				re = L" ";//codes
 				return;
@@ -351,7 +349,7 @@ void loadSe() {
 			case 1201://MultiStrand:
 				{ if (v == L"1" || v == L"0") multiStrand = stoi(v); else er(); } break;
 			case 1618://ShowMultiStrand:
-				{ if (v == L"1" || v == L"0") sms = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") showMultiStrand = stoi(v); else er(); } break;
 			case 2339://StockInterfaceControls:
 				{ if (v == L"1" || v == L"0") StockInterfaceControls = stoi(v); else er(); } break;
 			case 1098://AutoBs_EscH: //Ignore_F1-F12:
@@ -466,7 +464,7 @@ void printSe() {
 		cout << "ShowIntro: " << showIntro << endl;
 		cout << "ShowStrand: " << showStrand << endl;
 		cout << "MultiStrand: " << multiStrand << endl;
-		cout << "ShowMultiStrand: " << sms << endl;
+		cout << "ShowMultiStrand: " << showMultiStrand << endl;
 		cout << "ShowOuts: " << showOuts << endl;
 		wcout << "OutsTemplate: " << OutsTemplate << endl;
 		wcout << "Database: " << database << endl;
@@ -600,15 +598,14 @@ public:
 Mainn::Mainn()
 {
 	if (!multiStrand) return;
-	if (multiStrand && sms &&  showStrand) cout << "thread: " << this << endl;
+	if (showMultiStrand) cout << "thread: " << this << endl;
 }
 
 Mainn::~Mainn()
 {
 	if (!multiStrand) return;
-	gT = L"";
 	t.clear();
-	if (multiStrand && sms && showStrand) cout << "~thread: " << this << endl;
+	if (showMultiStrand) cout << "~thread: " << this << endl;
 	//clearAllKeys();
 }
 
@@ -619,16 +616,16 @@ wstring Mainn::getTail(wstring t)
 void Mainn::setTail()
 {
 	t += tail;
-	if (gT == L"") { gT = t; skip_gT = 1; }
-	if (skip_gT) skip_gT = 0; else gT += tail;
-	if (multiStrand && sms && showStrand) wcout << "output: " << gT << endl;
+	if (showMultiStrand) wcout << "output: " << t << endl;
 }
 
 wstring Mainn::getStrand(wstring c)
 {
 	s = c.substr(0, strand.length() + !strandLengthMode);
-	wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
-	if (multiStrand && sms && showStrand) wcout << "input: " << s << b << endl;
+	if (showMultiStrand) {
+		wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
+		wcout << "input: " << s << b << endl;
+	}
 	return s;
 }
 
@@ -791,10 +788,10 @@ void scanDb() {
 			if (multiStrand) mainn.setTail();
 			if (showOuts) { showOutsMsg(L"found: ", cell); showOutsMsg(L"tail: ", tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
-			f.close(); fail = 0; esc_pressed = 0; skip_gT = 0;
+			f.close(); fail = 0; esc_pressed = 0;
 			for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
-				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; gT = L""; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0;; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { wcout << "ctail: " << (ctail[0] > 127 ? L"?" : ctail) << endl; }
@@ -893,78 +890,88 @@ void scanDb() {
 						break;
 					case'a':
 					case 'A':
-						if (qqb(L"<alt>")) { kbHold(VK_LMENU); rei(); }
-						else if (qqb(L"<alt->")) { kbRelease(VK_LMENU); rei(); }
-						else if (qqb(L"<alt")) kbPress(L"<alt", VK_LMENU);
-						else if (qqb(L"<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); }//alt codes
-						else if (qqb(L"<app:") || qqb(L"<App:")) {//app activate, if app in foreground
-							wstring a = qp, x = L"1", ms = L"333", linkC; link = L"";//<app:a,x,ms,link>
-							if (a.find(L"\\,") != wstring::npos) {// \,
-								wstring t = a.substr(a.find_last_of(L"\\") + 2); 
-								if (t.find(L",") != string::npos) {
-									a = a.substr(0, a.find_last_of(L"\\") + t.find(L",") + 2);
-									qp = qp.substr(a.length());
-								}
-								else qp = L"";
-							}
-							else a = a.substr(0, a.find(L","));
-							if (a[0] == ' ') a = a.substr(1, a.length());
-							if (qp.find(L",") != string::npos) {
-								x = qp.substr(qp.find(L",") + 1); if (x == L"") { x = L"1"; ms = L"1"; link = L"<"; }
-								if (x.find(L",") != string::npos) {
-									ms = x.substr(x.find(L",") + 1);
-									if (ms.find(L",") != string::npos) {
-										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (strand > L"" && strand == link.substr(0, strand.length()) && link[0] == '<') { link = link.substr(1); } if (link == L"") link = L"<";
-										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
-									}
-									x = x.substr(0, x.find(L","));
-								}
-								if (check_if_num(x) == L"") { printq(); break; }
-							}//cout << a << " " << x << " " << ms << " " << link << endl;
-							if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
-							HWND h, h1; DWORD pid;
-							linkC = link; auto qqC = qq; bool mF = 0;
-							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
-							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
-							if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
-							for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
-								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
-								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-								if (pause_resume) { --size; Sleep(frequency); continue; }
-								if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
-								if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
-								if (qqC[1] == 'A') {//App
-									h = GetForegroundWindow(); h1 = FindWindowW(0, a.c_str());
-									if (h == h1) break;
-								}
-								else if (qqC[1] == 'a') {//'app
-									h = FindWindowW(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
-									if (h) {
-										if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); ShowWindow(h, SWP_SHOWWINDOW); }
-										SetForegroundWindow(h);
-										break;
-									}
-								}
-								if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
-								if (length >= 1) Sleep(stoi(ms));
-								if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
-							}
-							if (multiStrand) {
-								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">");} //rei
-							}
-							if (size >= length) {//fail
-								if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
-									if (linkC == L"<") { if (!multiStrand) rei(); break; }
-									if (linkC[0] == '<' && cell.substr(0, linkC.length()) == linkC) relink = 1;
-									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
-									re = L" "; skip_gT = 1; i = -1; fail = 1; break;
-								}
-								f(); break;
-							}
-							if (!multiStrand) rei();
+						switch (qq[2]) {
+						case 'l':
+							if (qqb(L"<alt>")) { kbHold(VK_LMENU); rei(); }
+							else if (qqb(L"<alt->")) { kbRelease(VK_LMENU); rei(); }
+							else if (qqb(L"<alt")) kbPress(L"<alt", VK_LMENU);
+							else conn();
 							break;
+						case ':':
+							if (qqb(L"<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); } else conn();//alt codes
+							break;
+						case 'p':
+							if (qqb(L"<app:") || qqb(L"<App:")) {//app activate, if app in foreground
+								wstring a = qp, x = L"1", ms = L"333", linkC; link = L"";//<app:a,x,ms,link>
+								if (a.find(L"\\,") != wstring::npos) {// \,
+									wstring t = a.substr(a.find_last_of(L"\\") + 2); 
+									if (t.find(L",") != string::npos) {
+										a = a.substr(0, a.find_last_of(L"\\") + t.find(L",") + 2);
+										qp = qp.substr(a.length());
+									}
+									else qp = L"";
+								}
+								else a = a.substr(0, a.find(L","));
+								if (a[0] == ' ') a = a.substr(1, a.length());
+								if (qp.find(L",") != string::npos) {
+									x = qp.substr(qp.find(L",") + 1); if (x == L"") { x = L"1"; ms = L"1"; link = L"<"; }
+									if (x.find(L",") != string::npos) {
+										ms = x.substr(x.find(L",") + 1);
+										if (ms.find(L",") != string::npos) {
+											link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (strand > L"" && strand == link.substr(0, strand.length()) && link[0] == '<') { link = link.substr(1); } if (link == L"") link = L"<";
+											ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
+										}
+										x = x.substr(0, x.find(L","));
+									}
+									if (check_if_num(x) == L"") { printq(); break; }
+								}//cout << a << " " << x << " " << ms << " " << link << endl;
+								if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
+								HWND h, h1; DWORD pid;
+								linkC = link; auto qqC = qq; bool mF = 0;
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
+								Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
+								for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
+									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
+									if (pause_resume) { --size; Sleep(frequency); continue; }
+									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
+									if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
+									if (qqC[1] == 'A') {//App
+										h = GetForegroundWindow(); h1 = FindWindowW(0, a.c_str());
+										if (h == h1) break;
+									}
+									else if (qqC[1] == 'a') {//'app
+										h = FindWindowW(0, a.c_str()); GetWindowThreadProcessId(h, &pid);
+										if (h) {
+											if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); ShowWindow(h, SWP_SHOWWINDOW); }
+											SetForegroundWindow(h);
+											break;
+										}
+									}
+									if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
+									if (length >= 1) Sleep(stoi(ms));
+									if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+								}
+								if (multiStrand) {
+									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">");} //rei
+								}
+								if (size >= length) {//fail
+									if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
+										if (linkC == L"<") { if (!multiStrand) rei(); break; }
+										if (linkC[0] == '<' && cell.substr(0, linkC.length()) == linkC) relink = 1;
+										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
+										re = L" "; i = -1; fail = 1; break;
+									}
+									f(); break;
+								}
+								if (!multiStrand) rei();
+								break;
+							} else conn();
+							break;
+						default:
+							conn();
 						}
-						else conn();
 						break;
 					case'b':
 						if (qqb(L"<bs")) kbPress(L"<bs", VK_BACK);
@@ -1091,7 +1098,7 @@ void scanDb() {
 									if (linkC == L"<") { if (!multiStrand) rei(); break; }
 									if (linkC[0] == '<' && cell.substr(0, linkC.length()) == linkC) relink = 1;
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
-									re = L" "; skip_gT = 1; i = -1; fail = 1; break;
+									re = L" "; i = -1; fail = 1; break;
 								}
 								f(); break;
 							}
@@ -1138,11 +1145,16 @@ void scanDb() {
 						break;
 					case'R':
 					case'r':
-						if (qqb(L"<rp>")) {//return pointer
+						switch (qq[2]) {
+						case 'p':
+							if (qqb(L"<rp>")) {//return pointer
 							SetCursorPos(qxc, qyc);
 							rei();
-						}
-						else if (qqb(L"<rand:") || qqb(L"<rand>") || qqb(L"<Rand>") || qqb(L"<Rand:")) {//<rand:0,1>
+						} else conn();
+							break;
+						case 'a':
+							if (qqb(L"<rand:") || qqb(L"<rand>") || qqb(L"<Rand>") || qqb(L"<Rand:")) {//<rand:0,1>
+							srand((unsigned)time(NULL));
 							int r = rand();
 							char s = (qq[5] + qq[1]);
 							wstring t = tail;
@@ -1225,19 +1237,32 @@ void scanDb() {
 								}
 								codes = t; tail = t; i = rei + qq.find(L">");
 							}
-						}
-						else if (qqb(L"<rc")) kbPress(L"<rc", VK_F7);
-						else if (qqb(L"<rh>")) {//right hold
+						} else conn();
+							break;
+						case 'c':
+							if (qqb(L"<rc")) kbPress(L"<rc", VK_F7); else conn();
+							break;
+						case 'h':
+							if (qqb(L"<rh>")) {//right hold
 							mouseEvent(MOUSEEVENTF_RIGHTDOWN);
 							rei();
-						}
-						else if (qqb(L"<rr>")) {//right release
+						} else conn();
+							break;
+						case 'r':
+							if (qqb(L"<rr>")) {//right release
 							mouseEvent(MOUSEEVENTF_RIGHTUP);
 							rei();
-						}
-						else if (qqb(L"<right")) kbPress(L"<right", VK_RIGHT);
-						else if (qqb(L"<rs")) { kbPress(L"<rs", VK_F7); }//hscroll-
-						else if (qqb(L"<rgb:") || qqb(L"<RGB:")) { //<rgb:r,g,b,x,ms,link>
+						} else conn();
+							break;
+						case 'i':
+							if (qqb(L"<right")) kbPress(L"<right", VK_RIGHT); else conn();
+							break;
+						case 's':
+							if (qqb(L"<rs")) { kbPress(L"<rs", VK_F7); } else conn();//hscroll-
+							break;
+						case 'G':
+						case 'g':
+							if (qqb(L"<rgb:") || qqb(L"<RGB:")) { //<rgb:r,g,b,x,ms,link>
 							wstring r, g, b, x = L"1", ms = L"333", linkC; link = L"";
 							r = qp.substr(0, qp.find(L","));
 							b = qp.substr(qp.find(L",") + 1);
@@ -1292,20 +1317,22 @@ void scanDb() {
 								if (multiStrand) {
 									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 								}
-								if (size >= length) { 
+								if (size >= length) {
 									if (linkC == L"<" || linkC > L"" && (linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-')) {
 										if (linkC == L"<") { if (!multiStrand) rei(); break; }
 										if (linkC[0] == '<' && cell.substr(0, linkC.length()) == linkC) relink = 1;
 										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
-										re = L" "; skip_gT = 1; i = -1; fail = 1; break;
+										re = L" "; i = -1; fail = 1; break;
 									}
 									f(); break;
 								}
 								if (!multiStrand) rei();
 								break;
 							}
-						}
-						else if (qqb(L"<replace:")) {
+						} else conn();
+							break;
+						case 'e':
+							if (qqb(L"<replace:")) {
 							wstring cb = L""; OpenClipboard(0);
 							HANDLE c = GetClipboardData(CF_UNICODETEXT);
 							if (c != nullptr) {
@@ -1327,8 +1354,11 @@ void scanDb() {
 								cbSet(cb);
 							}
 							rei();
+						} else conn();
+							break;
+						default:
+							conn();
 						}
-						else conn();
 						break;
 					case's':
 						if (qqb(L"<se>")) { printSe(); rei(); }
@@ -1512,9 +1542,7 @@ void key(wstring k) {
 
 void repeat() {
 	if (multiStrand) {
-		if (gT > L"") { if (gT != tail) { tail = gT; } gT.clear(); }
 		thread thread(out, tail); thread.detach();
-		if (gT > L"") { re = L">" + gT; gT = L""; }
 	}
 	else out(tail);
 }
@@ -1524,7 +1552,7 @@ void repeat() {
 int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	if (CreateDirectory("c:/dna", NULL)) {//L"c:/dna"
-		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;multiStrand=0;sms=0;//minimalist se.txt
+		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 		wcout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
 		showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\nGetting Started:\nPress H (strand: h),\nRIGHT_CTRL E (strand: <e), \nLEFT_SHIFT + RIGHT_CTRL X or,\nCOMMA + ESC X (strand: <x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nRIGHT_CTRL, BACKSPACE, or \nLEFT_SHIFT + PAUSE_BREAK.\n\nPress keys separately\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nMultiStrand: 0\nShowMultiStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlKey: 163\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
@@ -1538,7 +1566,6 @@ int main() {//cout << "@dnaspider\n\n";
 	if (GetAsyncKeyState(VK_LCONTROL)) cKey = VK_LCONTROL;
 	if (GetAsyncKeyState(VK_ESCAPE)) cKey = VK_ESCAPE;
 	printIntro();
-	srand((unsigned)time(NULL));
 #pragma endregion
 	for (;; Sleep(frequency)) {
 		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (L"se.txt - " + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (L"se.txt - " + editor1).c_str()) == GetForegroundWindow())) { HWND np = FindWindowW(0, (L"se.txt - " + editor).c_str()), vsc = FindWindowW(0, (L"se.txt - " + editor1).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { loadSe(); if (SeDbClearStrand_CtrlS) { clearAllKeys(); strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key(L"s"); continue; } }//lctrl+s hot reload
@@ -1579,10 +1606,8 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat
-			//GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) && GetAsyncKeyState(reKey)) { gT.clear(); tail.clear(); continue; } GetAsyncKeyState(VK_ESCAPE);
 			if (AutoBs_RepeatKey) kb(VK_BACK);
 			repeat();
-			kbRelease(reKey); GetAsyncKeyState(reKey);
 			continue;
 		}
 		if (GetAsyncKeyState(VK_PAUSE)) { 
