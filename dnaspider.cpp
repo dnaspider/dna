@@ -11,6 +11,7 @@
 using namespace std;
 
 #pragma region global_var
+short ClearStrandKey = VK_PAUSE;
 bool multiStrand = 1, showMultiStrand = 0;
 auto RgbScaleLayout = 1.00; //100%
 auto CloseCtrlSpacer = 120;
@@ -298,9 +299,13 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { wcout << "Error in " << settings << " [" << se << " " << v << "]" << endl; };
 		switch (x) {
+			case 1462://ClearStrandKey:
+				{ if (check_if_num(v) > L"") ClearStrandKey = stoi(v); else er(); } break;
+			case 1056://CommaSleep:
+				{ if (check_if_num(v) != L"") CommaSleep = stoi(v); else er(); } break;
 			case 673://Editor:
 				{ if (v.length() > 0) editor = v.substr(0); else er(); } break;
-			case 772://Editor1:
+			case 722://Editor1:
 				{ if (v.length() > 0) editor1 = v.substr(0); else er(); } break;
 			case 680://Assume:
 				{ if (v == L"1" || v == L"0") assume = stoi(v); else er(); } break;
@@ -463,6 +468,7 @@ void printSe() {
 		cout << "ShowSettings: " << showSettings << endl;
 		cout << "ShowIntro: " << showIntro << endl;
 		cout << "ShowStrand: " << showStrand << endl;
+		cout << "ClearStrandKey: " << ClearStrandKey << endl;
 		cout << "MultiStrand: " << multiStrand << endl;
 		cout << "ShowMultiStrand: " << showMultiStrand << endl;
 		cout << "ShowOuts: " << showOuts << endl;
@@ -477,40 +483,40 @@ void printSe() {
 		cout << "RepeatKey: " << reKey << endl;
 		cout << "RgbScaleLayout: " << RgbScaleLayout << endl;
 		cout << "Frequency: " << frequency << endl;
-		cout << "Ignore_A-Z: " << ignoreAZ << endl;
 		cout << "Ignore_0-9: " << ignore09 << endl;
-		cout << "Ignore_Space: " << ignoreSpace << endl;
-		cout << "Ignore_F1-F12: " << ignoreF1s << endl;
+		cout << "Ignore_A-Z: " << ignoreAZ << endl;
 		cout << "Ignore_Arrows: " << ignoreArrows << endl;
-		cout << "Ignore_Esc: " << ignoreEsc << endl;
-		cout << "Ignore_Tab: " << ignoreTab << endl;
-		cout << "Ignore_Enter: " << ignoreEnter << endl;
-		cout << "Ignore_Caps: " << ignoreCaps << endl;
-		cout << "Ignore_LShift: " << ignoreLShift << endl;
-		cout << "Ignore_RShift: " << ignoreRShift << endl;
-		cout << "Ignore_LAlt: " << ignoreLAlt << endl;
-		cout << "Ignore_RAlt: " << ignoreRAlt << endl;
-		cout << "Ignore_LCtrl: " << ignoreLCtrl << endl;
-		cout << "Ignore_RCtrl: " << ignoreRCtrl << endl;
-		cout << "Ignore_GraveAccent: " << ignoreGraveAccent << endl;
-		cout << "Ignore_Minus: " << ignoreMinus << endl;
-		cout << "Ignore_Equal: " << ignoreEqual << endl;
-		cout << "Ignore_LBracket: " << ignoreLBracket << endl;
-		cout << "Ignore_RBracket: " << ignoreRBracket << endl;
 		cout << "Ignore_Backslash: " << ignoreBackslash << endl;
-		cout << "Ignore_Semicolon: " << ignoreSemicolon << endl;
-		cout << "Ignore_Quote: " << ignoreQuote << endl;
+		cout << "Ignore_Caps: " << ignoreCaps << endl;
 		cout << "Ignore_Comma: " << ignoreComma << endl;
-		cout << "Ignore_Period: " << ignorePeriod << endl;
+		cout << "Ignore_Enter: " << ignoreEnter << endl;
+		cout << "Ignore_Equal: " << ignoreEqual << endl;
+		cout << "Ignore_Esc: " << ignoreEsc << endl;
+		cout << "Ignore_F1-F12: " << ignoreF1s << endl;
 		cout << "Ignore_Forwardslash: " << ignoreForwardslash << endl;
+		cout << "Ignore_GraveAccent: " << ignoreGraveAccent << endl;
+		cout << "Ignore_LAlt: " << ignoreLAlt << endl;
+		cout << "Ignore_LBracket: " << ignoreLBracket << endl;
+		cout << "Ignore_LCtrl: " << ignoreLCtrl << endl;
+		cout << "Ignore_LShift: " << ignoreLShift << endl;
 		cout << "Ignore_Menu: " << ignoreMenuKey << endl;
-		//cout << "Ignore_MediaKeys: " << ignoreMediaKeys << endl;
+		cout << "Ignore_Minus: " << ignoreMinus << endl;
 		cout << "Ignore_NumPad: " << ignoreNumPad << endl;
+		cout << "Ignore_Period: " << ignorePeriod << endl;
+		cout << "Ignore_Quote: " << ignoreQuote << endl;
+		cout << "Ignore_RAlt: " << ignoreRAlt << endl;
+		cout << "Ignore_RBracket: " << ignoreRBracket << endl;
+		cout << "Ignore_RCtrl: " << ignoreRCtrl << endl;
+		cout << "Ignore_RShift: " << ignoreRShift << endl;
+		cout << "Ignore_Semicolon: " << ignoreSemicolon << endl;
+		cout << "Ignore_Space: " << ignoreSpace << endl;
+		cout << "Ignore_Tab: " << ignoreTab << endl;
+		//cout << "Ignore_MediaKeys: " << ignoreMediaKeys << endl;
 		cout << "StartHidden: " << startHidden << endl;
+		cout << "StockInterfaceControls: " << StockInterfaceControls << endl;
 		cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 		cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
 		cout << "CommaSleep: " << CommaSleep << endl;
-		cout << "StockInterfaceControls: " << StockInterfaceControls << endl;
 		cout << "AutoBs_EscH: " << EscHAutoBs << endl;
 		cout << "AutoBs_EscComma: " << EscCommaAutoBs << endl;
 		cout << "AutoBs_EscEqual: " << EscEqualAutoBs << endl;
@@ -526,7 +532,7 @@ void printSe() {
 }
 
 void toggle_visibility() {
-	(bool)IsWindowVisible(GetConsoleWindow()) == 1 ?
+	IsWindowVisible(GetConsoleWindow()) ?
 		ShowWindow(GetConsoleWindow(), SW_HIDE)
 		:
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
@@ -1466,7 +1472,7 @@ void scanDb() {
 					if (shft) shftRelease();
 					break;
 				}
-				//GetAsyncKeyState(VkKeyScan(ctail[0])); //clear
+				GetAsyncKeyState(VkKeyScanW(ctail[0])); //clear
 			}
 			if (strand > L"" || re > L"") {
 				if (re == L"" || re == L" " || strandLengthMode) { re = L""; tail = codes; }
@@ -1562,7 +1568,7 @@ int main() {//cout << "@dnaspider\n\n";
 		showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 		wcout << database << " not found.\nPress [1] to auto create.\n\n";
 		for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectory("c:/dna"); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-		showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\nGetting Started:\nPress H (strand: h),\nRIGHT_CTRL E (strand: <e), \nLEFT_SHIFT + RIGHT_CTRL X or,\nCOMMA + ESC X (strand: <x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nRIGHT_CTRL, BACKSPACE, or \nLEFT_SHIFT + PAUSE_BREAK.\n\nPress keys separately\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nMultiStrand: 0\nShowMultiStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlKey: 163\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+		showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\nGetting Started:\nPress H (strand: h),\nRIGHT_CTRL E (strand: <e), \nLEFT_SHIFT + RIGHT_CTRL X or,\nCOMMA + ESC X (strand: <x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nRIGHT_CTRL, BACKSPACE, or \nLEFT_SHIFT + PAUSE_BREAK.\n\nPress keys separately\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 1\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nDatabase: " << database << "\nCtrlKey: 163\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_A-Z: 0\nIgnore_0-9: 0\nIgnore_Space: 0\nIgnore_F1-F12: 1\nIgnore_Arrows: 1\nIgnore_Esc: 1\nIgnore_Tab: 1\nIgnore_Enter: 1\nIgnore_Caps: 1\nIgnore_LShift: 1\nIgnore_RShift: 1\nIgnore_LAlt: 1\nIgnore_RAlt: 1\nIgnore_LCtrl: 1\nIgnore_RCtrl: 1\nIgnore_GraveAccent: 1\nIgnore_Minus: 1\nIgnore_Equal: 1\nIgnore_LBracket: 1\nIgnore_RBracket: 1\nIgnore_Backslash: 1\nIgnore_Semicolon: 1\nIgnore_Quote: 1\nIgnore_Comma: 1\nIgnore_Period: 1\nIgnore_Forwardslash: 1\nIgnore_Menu: 1\nIgnore_NumPad: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 	}
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -1612,13 +1618,13 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			prints(); continue;
 		}
-		if (GetAsyncKeyState(reKey)) { //repeat
+		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
 			repeat();
 			continue;
 		}
-		if (GetAsyncKeyState(VK_PAUSE)) { 
-			if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) { strand.clear(); if (ignoreEsc) kb(VK_ESCAPE); prints(); continue; }
+		if (GetAsyncKeyState(ClearStrandKey)) { //pause
+			if (GetAsyncKeyState(VK_LSHIFT) || GetAsyncKeyState(VK_RSHIFT)) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); strand.clear(); if (ignoreEsc) kb(VK_ESCAPE); prints(); continue; }
 			if (strand.substr(0, 1) == L"<") strand = L"<"; else strand.clear();
 			continue; 
 		}
