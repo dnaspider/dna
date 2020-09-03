@@ -294,6 +294,7 @@ void calc() {
 void loadSe() {
 	wifstream f(settings); if (!f) { wcout << settings << " not found!\n"; return; }
 	wstring cell; while (getline(f, cell)) {
+		if (cell[0] == ' ') continue;
 		wstring se = cell.substr(0, cell.find(L":") + 1);
 		wstring v = (cell.substr(cell.find(L":") + 1));
 		if (v[0] == ' ') v = v.substr(1, v.length());
@@ -933,7 +934,7 @@ void scanDb() {
 						case ':':
 							if (qqb(L"<a:")) {if (qp[0] == ' ') qp = qp.substr(1, qp.length()); kb1(qp); rei(); } else conn();//alt codes
 							break;
-						case 'p': 
+						case 'p':
 							if (qqb(L"<app:") || qqb(L"<App:")) {//app activate, if app in foreground
 								wstring a = qp, x = L"1", ms = L"333", linkC; link = L"";//<app:a,x,ms,link>
 								if (a.find(L"\\,") != wstring::npos) {// \,
