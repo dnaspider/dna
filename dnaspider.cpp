@@ -18,7 +18,7 @@ auto RgbScaleLayout = 1.00; //100%
 auto CloseCtrlSpacer = 120;
 bool relink = 0;
 wstring link = L""; //<app|rgb|ifcb,,,<link:>
-wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"";//"db.txt - "
+wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ";
 bool fail = 0;
 bool sleep = 1;
 bool esc_pressed = 0;
