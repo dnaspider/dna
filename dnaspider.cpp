@@ -11,6 +11,7 @@
 using namespace std;
 
 #pragma region global_var
+wstring reTail = L"";
 wstring linkr = L"";
 short ClearStrandKey = VK_PAUSE;
 bool multiStrand = 1, showMultiStrand = 0;
@@ -595,7 +596,7 @@ class Mainn
 public:
 	Mainn();
 	~Mainn();
-	wstring t;
+	wstring t = tail;
 	wstring s, s1;//strand
 	wstring getTail(wstring);
 	void setTail();
@@ -613,9 +614,8 @@ Mainn::Mainn()
 Mainn::~Mainn()
 {
 	if (!multiStrand) return;
-	t.clear();
+	t.clear(); tail.clear();
 	if (showMultiStrand) cout << "~thread: " << this << endl;
-	//clearAllKeys();
 }
 
 wstring Mainn::getTail(wstring t)
@@ -630,7 +630,8 @@ wstring Mainn::getStrand()
 
 void Mainn::setTail()
 {
-	t += tail;
+	if (t == L"") t = tail; else t += tail;
+	tail = t;
 	if (showMultiStrand) wcout << "output: " << t << endl;
 }
 
@@ -818,7 +819,7 @@ void scanDb() {
 			default:
 				codes = cell;
 			}
-			if (multiStrand) mainn.setTail();
+			if (multiStrand) { reTail = tail; mainn.setTail(); }
 			if (showOuts) { showOutsMsg(L"found: ", cell); showOutsMsg(L"tail: ", tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close(); fail = 0; esc_pressed = 0;
@@ -1591,7 +1592,7 @@ void key(wstring k) {
 
 void repeat() {
 	if (multiStrand) {
-		thread thread(out, tail); thread.detach();
+		thread thread(out, reTail); thread.detach();
 	}
 	else out(tail);
 }
