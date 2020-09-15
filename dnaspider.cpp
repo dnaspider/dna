@@ -8,6 +8,7 @@
 #include <regex>
 #include <codecvt>
 #include <thread>
+
 using namespace std;
 
 #pragma region global_var
@@ -96,6 +97,120 @@ bool SeDbClearStrand_CtrlS=1;
 bool assume = 0;
 #pragma endregion
 
+#pragma region classo
+class Mainn
+{
+public:
+	Mainn();
+	wstring s, s1, t = tail;//strand
+	wstring getStrand();
+	void setStrand(wstring);
+	wstring getStrand(wstring);
+	void setTail();
+	wstring getTail(wstring);
+	~Mainn();
+};
+
+Mainn::Mainn()
+{
+	if (!multiStrand) return;
+	if (showMultiStrand) cout << "thread: " << this << endl;
+}
+
+void Mainn::setStrand(wstring c)
+{
+	s1 = c.substr(0, strand.length());
+	linkr = s1;
+}
+
+wstring Mainn::getStrand() { return s1; }
+
+wstring Mainn::getStrand(wstring c)
+{
+	s = c.substr(0, strand.length() + !strandLengthMode);
+	if (showMultiStrand) {
+		wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
+		wcout << "input: " << s << b << endl;
+	}
+	return s;
+}
+
+void Mainn::setTail()
+{
+	t = tail;
+	if (showMultiStrand) wcout << "output: " << t << endl;
+}
+
+wstring Mainn::getTail(wstring t) { return t; }
+
+Mainn::~Mainn()
+{
+	if (!multiStrand) return;
+	t.clear();
+	if (showMultiStrand) cout << "~thread: " << this << endl;
+}
+
+class Multi
+{
+public:
+	Multi();
+	Multi(wstring);
+	wstring r, g, b, a, x, m, l, t = tail, q = qq;//q = tail;
+	size_t get_i = i;
+	bool getBreak(), br = 0;//break
+	wstring getApp(), getLink(), getMS(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getTail(), getX();
+	void setApp(wstring), setBreak(), setI(), setLink(wstring), setMS(wstring), setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setX(wstring);
+	size_t getI();
+	~Multi();
+};
+
+Multi::Multi() {}
+
+Multi::Multi(wstring r) {}
+
+void Multi::setApp(wstring app) { a = app; }
+
+wstring Multi::getApp() { return a; }
+
+void Multi::setBreak() { br = 1; }
+
+bool Multi::getBreak() { return br; }
+
+size_t Multi::getI() { return get_i; }
+
+void Multi::setI() { get_i = i; }
+
+void Multi::setLink(wstring li) { l = li; }
+
+wstring Multi::getLink() { return l; }
+
+void Multi::setMS(wstring mil) { m = mil; }
+
+wstring Multi::getMS() { return m; }
+
+wstring Multi::getQQ() { return q; }
+
+void Multi::setRGBr(wstring red) { r = red; }
+
+void Multi::setRGBg(wstring gre) { g = gre; }
+
+void Multi::setRGBb(wstring blu) { b = blu; }
+
+wstring Multi::getRGBr() { return r; }
+
+wstring Multi::getRGBg() { return g; }
+
+wstring Multi::getRGBb() { return b; }
+
+wstring Multi::getTail() { return t; }
+
+void Multi::setX(wstring it) { x = it; }
+
+wstring Multi::getX() { return x; }
+
+Multi::~Multi() {}
+#pragma endregion
+
 #pragma region global_sub
 wstring check_if_num(wstring &s) {
 	if (assume) return s;
@@ -119,8 +234,6 @@ wstring check_if_num(wstring &s) {
 	else s = L"";
 	return s;
 }
-
-void rei() { i += qq.find(L">"); }
 
 void kb(wchar_t b) {//out char
 	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
@@ -279,7 +392,7 @@ void kbPress(wstring s, short key) {
 		else SendInput(2, ip, sizeof(ip[0]));
 		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
 	}
-	rei();
+	i += qq.find(L">");
 }
 
 void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
@@ -591,187 +704,10 @@ void showOutsMsg(wstring s, wstring w, wstring s1=L"") {
 	wcout << s1 << endl;
 }
 
-class Mainn
-{
-public:
-	Mainn();
-	~Mainn();
-	wstring t = tail;
-	wstring s, s1;//strand
-	wstring getTail(wstring);
-	void setTail();
-	void setStrand(wstring);
-	wstring getStrand(wstring);
-	wstring getStrand();
-};
+void rei() { i += qq.find(L">"); }
 
-Mainn::Mainn()
-{
-	if (!multiStrand) return;
-	if (showMultiStrand) cout << "thread: " << this << endl;
-}
-
-Mainn::~Mainn()
-{
-	if (!multiStrand) return;
-	t.clear(); tail.clear();
-	if (showMultiStrand) cout << "~thread: " << this << endl;
-}
-
-wstring Mainn::getTail(wstring t)
-{
-	return t;
-}
-
-wstring Mainn::getStrand()
-{
-	return s1;
-}
-
-void Mainn::setTail()
-{
-	if (t == L"") t = tail; else t += tail;
-	tail = t;
-	if (showMultiStrand) wcout << "output: " << t << endl;
-}
-
-void Mainn::setStrand(wstring c)
-{
-	s1 = c.substr(0, strand.length());
-	linkr = s1;
-}
-
-wstring Mainn::getStrand(wstring c)
-{
-	s = c.substr(0, strand.length() + !strandLengthMode);
-	if (showMultiStrand) {
-		wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
-		wcout << "input: " << s << b << endl;
-	}
-	return s;
-}
-
-class Multi
-{
-public:
-	wstring r, g, b, a, x, m, l, t = tail, q = qq;
-	bool getBreak(), br = 0;//break
-	size_t get_i = i;
-	Multi();
-	Multi(wstring);
-	wstring getTail(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getApp(), getX(), getMS(), getLink();
-	void setBreak(), setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setApp(wstring), setX(wstring), setMS(wstring), setLink(wstring);
-	size_t getI();
-	~Multi();
-};
-
-Multi::Multi()
-{
-	return;
-}
-
-Multi::Multi(wstring r) 
-{
-	return;
-}
-
-void Multi::setApp(wstring app)
-{
-	a = app;
-}
-
-void Multi::setBreak()
-{
-	br = 1;
-}
-
-bool Multi::getBreak()
-{
-	return br;
-}
-
-void Multi::setRGBr(wstring red)
-{
-	r = red;
-}
-
-void Multi::setRGBg(wstring gre)
-{
-	g = gre;
-}
-
-void Multi::setRGBb(wstring blu)
-{
-	b = blu;
-}
-
-void Multi::setX(wstring it)
-{
-	x = it;
-}
-
-void Multi::setMS(wstring mil)
-{
-	m = mil;
-}
-
-void Multi::setLink(wstring li)
-{
-	l = li;
-}
-
-wstring Multi::getLink()
-{
-	return l;
-}
-
-wstring Multi::getApp()
-{
-	return a;
-}
-
-wstring Multi::getRGBr()
-{
-	return r;
-}
-
-wstring Multi::getRGBg()
-{
-	return g;
-}
-
-wstring Multi::getRGBb()
-{
-	return b;
-}
-
-wstring Multi::getX()
-{
-	return x;
-}
-
-wstring Multi::getMS()
-{
-	return m;
-}
-
-size_t Multi::getI()
-{
-	return get_i;
-}
-
-wstring Multi::getQQ()
-{
-	return q;
-}
-
-wstring Multi::getTail()
-{
-	return t;
-}
-
-Multi::~Multi()
-{
+void rei(Multi multi) {
+	tail = multi.getTail(); qq = multi.getQQ(); i = multi.getI(); i += qq.find(L">");
 }
 
 void scanDb() {
@@ -790,7 +726,7 @@ void scanDb() {
 	Mainn mainn; relink = 0; while (getline(f, cell)) { //cout << cell << endl;
 		if (cell.substr(0, 4) == L"<'''") break; //ignore db...
 		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L"-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L"->") || cell.substr(0, strand.length() + 1) == strand + L">" || cell.substr(0, strand.length() + 1) == strand + L":" || cell.substr(0, strand.length() + 1) == strand + L"-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != L"<") || close_ctrl_mode && strandLengthMode && strand.substr(0, 1) != L"<" && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
-			if (multiStrand && re == L"") mainn.setStrand(cell);
+			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand.substr(strand.length() - 1) == L">") strand = strand.substr(0, strand.length() - 1);
 			if (re > L"" && strand == L"") {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
@@ -823,20 +759,24 @@ void scanDb() {
 			if (showOuts) { showOutsMsg(L"found: ", cell); showOutsMsg(L"tail: ", tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close(); fail = 0; esc_pressed = 0;
+			Multi multi;
 			for (i = 0; i < tail.length(); ++i) {
 				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
-				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0;; break; }if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; } if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { wcout << "ctail: " << (ctail[0] > 127 ? L"?" : ctail) << endl; }
 				switch (ctail[0]) {
 				case'<':
 					qq = tail.substr(i, tail.length() - i); //<test>
+					if (multiStrand) { multi.q = qq; multi.get_i = i; Multi multi; }
 					if (showOuts) showOutsMsg(L"qq: ", qq);
-					if (qq.find(L":") != std::string::npos) { //<test:#>
+					if (qq.substr(0, qq.find(L">")).find(L":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
-						qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
-						qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
+						if (qp.length() > 0) {
+							qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
+							qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
+						}
 						//cout << "qp: " << qp  << endl; cout << "qx: " << qx << endl; cout << "qy: " << qy << endl;
 					}
 					switch (qq[1]) {
@@ -905,8 +845,8 @@ void scanDb() {
 							if (s == L"") s = to_wstring(CommaSleep);
 							s = check_if_num(s);
 							if (s == L"") { printq(); break; }
-							if (stoi(s) >= 0 && s[0] != '+') { Sleep(stoi(s)); } else { printq(); break; };
-							rei();
+							if (stoi(s) >= 0 && s[0] != '+') { multi.t = tail; Sleep(stoi(s)); } else { printq(); break; };
+							if (multiStrand) rei(multi); else rei();
 						}
 						else conn();
 						break;
@@ -918,7 +858,7 @@ void scanDb() {
 								wstring v = qq.substr(2, x), s = cell[strand.length() + !strandLengthMode] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); 
 								showOutsMsg(OutsTemplate + strand + cell[strand.length()] + s + L" <'", v, L">");
 							}
-							rei(); sleep = 0;
+							if (multiStrand) rei(multi); else { rei(); } sleep = 0;
 						}
 						else conn();
 						break;
@@ -980,7 +920,7 @@ void scanDb() {
 										if (h) {
 											if (IsIconic(h)) { ShowWindow(h, SW_RESTORE); ShowWindow(h, SWP_SHOWWINDOW); }
 											SetForegroundWindow(h);
-											{ multi.setBreak(); break; }
+											multi.setBreak(); break;
 										}
 									}
 									if (!multi.getBreak()) {
@@ -990,15 +930,17 @@ void scanDb() {
 									}
 								}
 								if (multiStrand) {
-									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">");} //rei
+									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 								}
 								if (size >= length) {//fail
-									if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
-										if (linkC == L"<") { if (!multiStrand) rei(); break; }
-										if (linkC[0] == '<') relink = 0;
-										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
-										if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
-										re = L" "; i = -1; fail = 1; break;
+									if (linkC.length() > 0) {
+										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+											if (linkC == L"<") { if (!multiStrand) rei(); break; }
+											if (linkC[0] == '<') relink = 0;
+											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
+											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											re = L" "; i = -1; fail = 1; break;
+										}
 									}
 									f(); break;
 								}
@@ -1114,11 +1056,11 @@ void scanDb() {
 											if (w.find(a) != string::npos) { multi.setBreak(); break; }
 										}
 										else if (qqC[5] == 'l' && check_if_num(a) != L"" && check_if_num(w) != L"") {//lt
-											if (qqC[6] == 'e') { if (a == L"0" && w == L"0") break; if (stod(w) <= stod(a)) break; } //ifcble <=
+											if (qqC[6] == 'e') { if (a == L"0" && w == L"0" || stod(w) <= stod(a)) { multi.setBreak(); break; } } //ifcble <=
 											if (stod(w) < stod(a)) { multi.setBreak(); break; }
 										}
 										else if (qqC[5] == 'g' && check_if_num(a) != L"" && check_if_num(w) != L"") {//gt
-											if (qqC[6] == 'e') { if (a == L"0" && w == L"0") break; if (stod(w) >= stod(a)) break; } //ifcbge >=
+											if (qqC[6] == 'e') { if (a == L"0" && w == L"0" || stod(w) >= stod(a)) { multi.setBreak(); break; } } //ifcbge >=
 											if (stod(w) > stod(a)) { multi.setBreak(); break; }
 										}
 									}
@@ -1135,12 +1077,14 @@ void scanDb() {
 							}
 							CloseClipboard();
 							if (size >= length) {//fail
-								if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
-									if (linkC == L"<") { if (!multiStrand) rei(); break; }
-									if (linkC[0] == '<') relink = 0;
-									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
-									if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
-									re = L" "; i = -1; fail = 1; break;
+								if (linkC.length() > 0) {
+									if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+										if (linkC == L"<") { if (!multiStrand) rei(); break; }
+										if (linkC[0] == '<') relink = 0;
+										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
+										if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+										re = L" "; i = -1; fail = 1; break;
+									}
 								}
 								f(); break;
 							}
@@ -1164,7 +1108,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'm':
-						if (qqb(L"<ms:")) if (check_if_num(qp) != L"") { Sleep(stoi(qp)); rei(); }
+						if (qqb(L"<ms:")) if (check_if_num(qp) != L"") { multi.t = tail; Sleep(stoi(qp)); if (multiStrand) rei(multi); else rei(); }
 						else printq();
 						else if (qqb(L"<mc")) kbPress(L"<mc", VK_F7);//middle click
 						else if (qqb(L"<mh>")) {//middle hold
@@ -1354,7 +1298,7 @@ void scanDb() {
 										color = (qqC[1] == 'R') ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
 										ReleaseDC(NULL, hDC);
 										if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
-											{ multi.setBreak(); break; }
+											multi.setBreak(); break;
 										}
 										if (!multi.getBreak()) {
 											if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
@@ -1366,12 +1310,14 @@ void scanDb() {
 										i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 									}
 									if (size >= length) {
-										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
-											if (linkC == L"<") { if (!multiStrand) rei(); break; }
-											if (linkC[0] == '<') relink = 0;
-											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
-											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
-											re = L" "; i = -1; fail = 1; break;
+										if (linkC.length() > 0) {
+											if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+												if (linkC == L"<") { if (!multiStrand) rei(); break; }
+												if (linkC[0] == '<') relink = 0;
+												tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
+												if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+												re = L" "; i = -1; fail = 1; break;
+											}
 										}
 										f(); break;
 									}
@@ -1416,7 +1362,7 @@ void scanDb() {
 						else if (qqb(L"<shift>")) { kbHold(VK_LSHIFT); rei(); }
 						else if (qqb(L"<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
 						else if (qqb(L"<shift")) kbPress(L"<shift", VK_LSHIFT);
-						else if (qqb(L"<sleep:")) if (check_if_num(qp) != L"") { Sleep(stoi(qp)); rei(); } else printq();
+						else if (qqb(L"<sleep:")) if (check_if_num(qp) != L"") { multi.t = tail; Sleep(stoi(qp)); if (multiStrand) rei(multi); else rei(); } else printq();
 						else if (qqb(L"<space")) kbPress(L"<space", VK_SPACE);
 						else if (qqb(L"<sd")) { kbPress(L"<sd", VK_F7); }//scroll down
 						else if (qqb(L"<sr")) { kbPress(L"<sr", VK_F7); }//scroll right
