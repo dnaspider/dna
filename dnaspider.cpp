@@ -1430,8 +1430,9 @@ void scanDb() {
 						break;
 					case 'y':
 						if (qqb(L"<yesno:")) {
+							multi.t = tail;
 							int m = MessageBoxW(0, qp.c_str(), L"dnaspider", MB_YESNO);
-							if (m == IDYES) { rei(); continue; }
+							if (m == IDYES) { if (multiStrand) rei(multi); else rei(); continue; }
 							else { i = tail.length(); break; }
 						}
 						else if (qqb(L"<y:")) {//y + or - 1px
