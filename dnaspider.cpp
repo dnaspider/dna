@@ -732,7 +732,7 @@ void scanDb() {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
 				if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
-				else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
+				else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); mainn.t.clear(); if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } }
 			}
 			tail = re > L"" && strand == L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
 			if (multiStrand) mainn.getStrand(cell);
@@ -1627,6 +1627,7 @@ int main() {//cout << "@dnaspider\n\n";
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
 				getRGB();
+				//bool b = multiStrand; multiStrand = 0; out(tail); multiStrand = b; continue;
 				out(tail); continue;
 			}
 			GetAsyncKeyState(65); if (GetAsyncKeyState(65)) {//esc + a: <app:>
