@@ -1664,8 +1664,9 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
-				if (EscHAutoBs) kb(VK_BACK);
-				GetAsyncKeyState(VK_ESCAPE); toggle_visibility(); 
+				if (EscHAutoBs) kb(VK_BACK); GetAsyncKeyState(VK_ESCAPE);
+				SetForegroundWindow(GetConsoleWindow()); kbPress(L"f11", VK_F11);//if title "Select dnaspider"
+				toggle_visibility(); 
 				if (showStrand && !qScanOnly) wcout << OutsTemplate << strand << '\n'; 
 				continue; 
 			}
