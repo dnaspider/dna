@@ -1549,7 +1549,7 @@ void repeat() {
 int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	{
-		TCHAR t[MAX_PATH]; GetSystemDirectoryA(t, MAX_PATH); wstring c = L""; for (i = 0; ; i++) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
+		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; i++) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
 		database = c + L"\\db.txt"; settings = c + L"\\se.txt";
 		if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
 			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
@@ -1664,8 +1664,8 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
-				if (EscHAutoBs) kb(VK_BACK); GetAsyncKeyState(VK_ESCAPE);
-				SetForegroundWindow(GetConsoleWindow()); kbPress(L"f11", VK_F11);//if title "Select dnaspider"
+				if (EscHAutoBs) { kb(VK_BACK); } GetAsyncKeyState(VK_ESCAPE);
+				SetForegroundWindow(GetConsoleWindow()); kbPress(L"f12", VK_F12);//if title "Select dnaspider"
 				toggle_visibility(); 
 				if (showStrand && !qScanOnly) wcout << OutsTemplate << strand << '\n'; 
 				continue; 
