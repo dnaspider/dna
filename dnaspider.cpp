@@ -294,7 +294,7 @@ void prints() { if (showStrand) wcout << OutsTemplate << strand << '\n'; }
 bool qqb(wstring s) { return qq.substr(0, s.length()) == s; }
 
 void clearAllKeys() {
-	for (int i = 48; i <= 90; ++i) { if (i >= 58 && i <= 64) { continue; } GetAsyncKeyState(i); }
+	for (int i = 48; i <= 90; ++i) { if (i == 58) { i = 65; } GetAsyncKeyState(i); }
 	GetAsyncKeyState(cKey);
 	GetAsyncKeyState(reKey);
 	GetAsyncKeyState(VK_BACK);
