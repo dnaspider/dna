@@ -1486,7 +1486,7 @@ void scanDb() {
 				}
 			}
 			if (strand > L"" || re > L"") {
-				if (re == L"" || re == L" " || strandLengthMode) { re = L""; tail = codes; }
+				if (re == L"" || re == L" " || strandLengthMode) { re = L""; reTail = tail = codes; }
 				clearAllKeys();
 				strand.clear();
 			}
