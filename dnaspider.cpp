@@ -392,7 +392,7 @@ void kbPress(wstring s, short key) {
 			else SendInput(2, ip, sizeof(ip[0]));
 		}
 		else SendInput(2, ip, sizeof(ip[0]));
-		if (speed > 0 && stoi(star_num) != j + 1) Sleep(speed);
+		if (speed > 0 && stoi(star_num) != j + 1) { if (multiStrand) { Multi multi; Sleep(speed); tail = multi.t; i = multi.get_i; qq = multi.q; } else Sleep(speed); }
 	}
 	i += qq.find(L">");
 }
@@ -772,7 +772,7 @@ void scanDb() {
 			f.close(); fail = 0; esc_pressed = 0;
 			Multi multi;
 			for (i = 0; i < tail.length(); ++i) {
-				if (speed > 0) { if (sleep) { Sleep(speed); } sleep = 1; }
+				if (speed > 0) { if (sleep) { if (multiStrand) { multi.t = tail; multi.get_i = i; multi.q = qq; } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; break; } if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
