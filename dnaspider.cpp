@@ -878,10 +878,10 @@ void scanDb() {
 						else if (qq.find(L">") != string::npos && qqb(L"<'")) { //<'comments>
 							if (showStrand) { 
 								auto x = (qq.find('>') - 2); 
-								wstring v = qq.substr(2, x), s = cell[strand.length() + !strandLengthMode] == '>' ? L">" : L"", t = qq.substr(2, qq.find(L">") - 2); 
+								wstring v = qq.substr(2, x), s = cell[strand.length() + !strandLengthMode] == '>' ? L">" : L"";
 								showOutsMsg(OutsTemplate + strand + cell[strand.length()] + s + L" <'", v, L">");
 							}
-							if (multiStrand) rei(multi); else { rei(); } sleep = 0;
+							rei(); sleep = 0;
 						}
 						else conn();
 						break;
