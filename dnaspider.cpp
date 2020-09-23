@@ -98,7 +98,7 @@ bool SeDbClearStrand_CtrlS=1;
 bool assume = 0;
 #pragma endregion
 
-void showOutsMsg(wstring s, wstring w, wstring s1);
+void showOutsMsg(wstring, wstring, wstring);
 
 #pragma region classo
 class Mainn
