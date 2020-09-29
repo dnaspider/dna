@@ -10,6 +10,7 @@
 #include <thread>
 
 using namespace std;
+using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
 bool OutTabs = 1; wstring OutTab = L"\t";
@@ -98,26 +99,29 @@ bool SeDbClearStrand_CtrlS=1;
 bool assume = 0;
 #pragma endregion
 
+#pragma region protos
 void showOutsMsg(wstring, wstring, wstring);
+ctp clockr(ctp&);
+#pragma endregion
 
 #pragma region classo
-class Mainn
+struct Mainn
 {
-public:
 	Mainn();
-	wstring s, s1, &t = tail;//strand
-	wstring getStrand();
-	void setStrand(wstring);
-	wstring getStrand(wstring);
-	void setTail();
-	wstring getTail(wstring);
+	ctp 
+		c1, c2;//elapsed
+	wstring 
+		getStrand(), getStrand(wstring), getTail(wstring),
+		s, s1, &t = tail;//strand
+	void 
+		setStrand(wstring), setTail();
 	~Mainn();
 };
 
 Mainn::Mainn()
 {
 	if (!multiStrand) return;
-	if (showMultiStrand) wcout << "thread: " << OutTab << this << endl;
+	if (showMultiStrand) wcout << "thread: " << OutTab << this << endl; clockr(c1); //GetCurrentThreadId();
 }
 
 void Mainn::setStrand(wstring c)
@@ -150,20 +154,27 @@ Mainn::~Mainn()
 {
 	if (!multiStrand) return;
 	t.clear();
-	if (showMultiStrand) wcout << "~thread: " << OutTab << this << endl;
+	if (showMultiStrand) { 
+		clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
+		wcout << "~thread: " << OutTab << this << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
+	}
 }
 
-class Multi
+struct Multi
 {
-public:
-	Multi();
-	Multi(wstring);
-	wstring r, g, b, a, x, m, l, t = tail, q = qq;//q = tail;
-	size_t get_i = i;
-	bool getBreak(), br = 0;//break
-	wstring getApp(), getLink(), getMS(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getTail(), getX();
-	void setApp(wstring), setBreak(), setI(), setLink(wstring), setMS(wstring), setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setX(wstring);
-	size_t getI();
+	Multi(); Multi(wstring);
+	wstring 
+		getApp(), getLink(), getMS(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getTail(), getX(),
+		r, g, b, a, x, m, l,
+		t = tail, q = qq;
+	size_t 
+		getI(),
+		get_i = i;
+	bool 
+		getBreak(),
+		br = 0;//break
+	void 
+		setApp(wstring), setBreak(), setI(), setLink(wstring), setMS(wstring), setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setX(wstring);
 	~Multi();
 };
 
@@ -215,6 +226,10 @@ Multi::~Multi() {}
 #pragma endregion
 
 #pragma region global_sub
+ctp clockr(ctp& t) {
+	return t = chrono::high_resolution_clock::now();
+}
+
 wstring check_if_num(wstring &s) {
 	if (assume) return s;
 	if (s > L"") {
@@ -336,7 +351,7 @@ void printDb() {
 	f.close(); cout << endl;
 }
 
-void scanDb(); void conn() {//<connect:>	
+void scanDb(); void conn() {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find(L">") + 1);
 	if (qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
 		if (qqs.substr(qqs.length() - 2, 2) == L":>" || qqs.substr(qqs.length() - 2, 2) == L"->") {
@@ -784,11 +799,11 @@ void scanDb() {
 					if (showOuts) showOutsMsg(L"qq: " + OutTab + OutTab, qq);
 					if (qq.substr(0, qq.find(L">")).find(L":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
-						if (qp.length() > 0) {
+						if (qp.find(L",") != string::npos) {
 							qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
 							qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
 						}
-						//cout << "qp: " << qp  << endl; cout << "qx: " << qx << endl; cout << "qy: " << qy << endl;
+						else { qx.clear(), qy.clear(); } //wcout << "qp: " << qp  << "\nqx: " << qx << "\nqy: " << qy << endl;
 					}
 					switch (qq[1]) {
 					case '~': //manual set, return pointer
@@ -1181,7 +1196,7 @@ void scanDb() {
 											(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
 									}
 									out(to_wstring(r));
-									codes = t; tail = t; i = rei + qq.find(L">");
+									codes = t; tail = t; i = rei + qq.find(L">"); re = L" ";
 									break;
 								case -112://'>R': <Rand> A-Z
 									r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
@@ -1249,7 +1264,7 @@ void scanDb() {
 									case 121: out(L"y"); break;
 									case 122: out(L"z"); break;
 									}
-									codes = t; tail = t; i = rei + qq.find(L">");
+									codes = t; tail = t; i = rei + qq.find(L">"); re = L" ";
 								}
 							}
 							else conn();
@@ -1576,7 +1591,7 @@ void repeat() {
 int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	{
-		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; i++) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
+		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; ++i) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
 		database = c + L"\\db.txt"; settings = c + L"\\se.txt";
 		if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
 			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
