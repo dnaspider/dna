@@ -587,7 +587,7 @@ void printStockCtrls() {
 			//cout << "<f r:  Change frequency: " << frequency << endl;
 			wcout << "<d b:  Change Database: " << database << endl;
 		}
-		cout << "Hold RIGHT_CTRL LEFT_CTRL or ESC on startup:  Change < key" << endl;
+		cout << "Hold RIGHT_CTRL or LEFT_CTRL on startup:  Change < key" << endl;
 		cout << "Hold O on startup:  ShowStrand, ShowOuts: 1" << endl;
 		//cout << "Hold Q on startup:  CtrlScanOnlyMode: 1" << endl;
 		//cout << "Hold S on startup:  ShowStrand: 1" << endl;
@@ -865,7 +865,7 @@ void scanDb() {
 						else conn();
 						break;
 					case',':
-						if (qqb(L"<,")) { //<,#> || <,*
+						if (qqb(L"<,") && qq.at(2) != ':' && qq.at(2) != '-') { //<,#> || <,*
 							wstring s = qq.substr(2, qq.find('>') - 2);
 							if (s == L"") s = to_wstring(CommaSleep);
 							if (s[0] == '*') s = s.substr(1, s.length()); //case: <,*
@@ -1607,8 +1607,9 @@ int main() {//cout << "@dnaspider\n\n";
 	if (GetAsyncKeyState(79)) { showOuts = true; showStrand = true; }//o
 	if (GetAsyncKeyState(VK_RCONTROL)) cKey = VK_RCONTROL;
 	if (GetAsyncKeyState(VK_LCONTROL)) cKey = VK_LCONTROL;
-	if (GetAsyncKeyState(VK_ESCAPE)) cKey = VK_ESCAPE;
+	//if (GetAsyncKeyState(VK_ESCAPE)) cKey = VK_ESCAPE;
 	printIntro();
+	strand = L"<dna>"; scanDb();//run @ startup
 #pragma endregion
 	for (;; Sleep(frequency)) {
 		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (L"se.txt - " + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (L"se.txt - " + editor1).c_str()) == GetForegroundWindow())) { HWND np = FindWindowW(0, (L"se.txt - " + editor).c_str()), vsc = FindWindowW(0, (L"se.txt - " + editor1).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { bool b = qScanOnly; loadSe(); if (!b && qScanOnly || b && !qScanOnly) clearAllKeys(); else GetAsyncKeyState(83); if (SeDbClearStrand_CtrlS) { strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key(L"s"); continue; } }//lctrl+s hot reload
