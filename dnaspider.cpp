@@ -155,7 +155,7 @@ Mainn::~Mainn()
 	if (!multiStrand) return;
 	t.clear();
 	if (showMultiStrand) { 
-		clockr(c2); chrono::duration<milli> ts = c1 - c2;
+		clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
 		wcout << "~thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
 	}
 }
@@ -1613,7 +1613,6 @@ int main() {//cout << "@dnaspider\n\n";
 	if (GetAsyncKeyState(79)) { showOuts = true; showStrand = true; }//o
 	if (GetAsyncKeyState(VK_RCONTROL)) cKey = VK_RCONTROL;
 	if (GetAsyncKeyState(VK_LCONTROL)) cKey = VK_LCONTROL;
-	//if (GetAsyncKeyState(VK_ESCAPE)) cKey = VK_ESCAPE;
 	printIntro();
 	strand = L"<dna>"; scanDb(); strand.clear();//run @ startup
 #pragma endregion
