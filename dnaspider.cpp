@@ -121,7 +121,7 @@ struct Mainn
 Mainn::Mainn()
 {
 	if (!multiStrand) return;
-	if (showMultiStrand) wcout << "thread: " << OutTab << this << endl; clockr(c1); //GetCurrentThreadId();
+	if (showMultiStrand) wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1);
 }
 
 void Mainn::setStrand(wstring c)
@@ -155,8 +155,8 @@ Mainn::~Mainn()
 	if (!multiStrand) return;
 	t.clear();
 	if (showMultiStrand) { 
-		clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
-		wcout << "~thread: " << OutTab << this << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
+		clockr(c2); chrono::duration<milli> ts = c1 - c2;
+		wcout << "~thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
 	}
 }
 
@@ -417,6 +417,7 @@ void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
 void calc() {
 	qq = to_wstring(ic) + qq.substr(qq.find(L">") + 1, qq.length());
 	i = -1;
+	if (speed > 0) sleep = 0;
 	re = L" ";
 	tail = qq;
 }
@@ -736,6 +737,64 @@ void rei(Multi multi) {
 	tail = multi.getTail(); qq = multi.getQQ(); i = multi.getI(); i += qq.find(L">");
 }
 
+wstring parse(int r, wstring &rs) {
+	switch (r) {
+	case 65: rs = L"A"; break;
+	case 66: rs = L"B"; break;
+	case 67: rs = L"C"; break;
+	case 68: rs = L"D"; break;
+	case 69: rs = L"E"; break;
+	case 70: rs = L"F"; break;
+	case 71: rs = L"G"; break;
+	case 72: rs = L"H"; break;
+	case 73: rs = L"I"; break;
+	case 74: rs = L"J"; break;
+	case 75: rs = L"K"; break;
+	case 76: rs = L"L"; break;
+	case 77: rs = L"M"; break;
+	case 78: rs = L"N"; break;
+	case 79: rs = L"O"; break;
+	case 80: rs = L"P"; break;
+	case 81: rs = L"Q"; break;
+	case 82: rs = L"R"; break;
+	case 83: rs = L"S"; break;
+	case 84: rs = L"T"; break;
+	case 85: rs = L"U"; break;
+	case 86: rs = L"V"; break;
+	case 87: rs = L"W"; break;
+	case 88: rs = L"X"; break;
+	case 89: rs = L"Y"; break;
+	case 90: rs = L"Z"; break;
+	case 97: rs = L"a"; break;
+	case 98: rs = L"b"; break;
+	case 99: rs = L"c"; break;
+	case 100: rs = L"d"; break;
+	case 101: rs = L"e"; break;
+	case 102: rs = L"f"; break;
+	case 103: rs = L"g"; break;
+	case 104: rs = L"h"; break;
+	case 105: rs = L"i"; break;
+	case 106: rs = L"j"; break;
+	case 107: rs = L"k"; break;
+	case 108: rs = L"l"; break;
+	case 109: rs = L"m"; break;
+	case 110: rs = L"n"; break;
+	case 111: rs = L"o"; break;
+	case 112: rs = L"p"; break;
+	case 113: rs = L"q"; break;
+	case 114: rs = L"r"; break;
+	case 115: rs = L"s"; break;
+	case 116: rs = L"t"; break;
+	case 117: rs = L"u"; break;
+	case 118: rs = L"v"; break;
+	case 119: rs = L"w"; break;
+	case 120: rs = L"x"; break;
+	case 121: rs = L"y"; break;
+	case 122: rs = L"z"; break;
+	}
+	return rs;
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -981,7 +1040,7 @@ void scanDb() {
 											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
-											re = L" "; i = -1; fail = 1; break;
+											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 									}
 									f(); break;
@@ -1125,7 +1184,7 @@ void scanDb() {
 										if (linkC[0] == '<') relink = 0;
 										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
 										if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
-										re = L" "; i = -1; fail = 1; break;
+										if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 									}
 								}
 								f(); break;
@@ -1184,10 +1243,8 @@ void scanDb() {
 						case 'a':
 							if (qqb(L"<rand:") || qqb(L"<rand>") || qqb(L"<Rand>") || qqb(L"<Rand:")) {//<rand:0,1>
 								srand((unsigned)time(NULL));
-								int r = rand();
+								int r{}; wstring rs;
 								char s = (qq[5] + qq[1]);
-								wstring t = tail;
-								size_t rei = i;
 								switch (s) {
 								case -84://':r': <rand:> #
 									if (check_if_num(qx) != L"" && check_if_num(qy) != L"" && stoi(qy) > stoi(qx)) {
@@ -1195,77 +1252,25 @@ void scanDb() {
 											rand() % (stoi(qy) + 1) :
 											(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
 									}
-									out(to_wstring(r));
-									codes = t; tail = t; i = rei + qq.find(L">"); re = L" ";
+									else r = rand();
+									rs = to_wstring(r);
 									break;
 								case -112://'>R': <Rand> A-Z
 									r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
-									goto outr;
 								case -80://'>r': <rand> a-z
 									r = (char)((rand() % ('z' + 1 - 'a')) + 'a');//cout << (char)r;
-									goto outr;
 								case -116://':R': <Rand:> A-Za-z
 									r = rand() % 2;
 									r = r == 1 ?
 										(char)((rand() % ('z' + 1 - 'a')) + 'a') :
 										(char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
-								outr:
-									switch (r) {
-									case 65: out(L"A"); break;
-									case 66: out(L"B"); break;
-									case 67: out(L"C"); break;
-									case 68: out(L"D"); break;
-									case 69: out(L"E"); break;
-									case 70: out(L"F"); break;
-									case 71: out(L"G"); break;
-									case 72: out(L"H"); break;
-									case 73: out(L"I"); break;
-									case 74: out(L"J"); break;
-									case 75: out(L"K"); break;
-									case 76: out(L"L"); break;
-									case 77: out(L"M"); break;
-									case 78: out(L"N"); break;
-									case 79: out(L"O"); break;
-									case 80: out(L"P"); break;
-									case 81: out(L"Q"); break;
-									case 82: out(L"R"); break;
-									case 83: out(L"S"); break;
-									case 84: out(L"T"); break;
-									case 85: out(L"U"); break;
-									case 86: out(L"V"); break;
-									case 87: out(L"W"); break;
-									case 88: out(L"X"); break;
-									case 89: out(L"Y"); break;
-									case 90: out(L"Z"); break;
-									case 97: out(L"a"); break;
-									case 98: out(L"b"); break;
-									case 99: out(L"c"); break;
-									case 100: out(L"d"); break;
-									case 101: out(L"e"); break;
-									case 102: out(L"f"); break;
-									case 103: out(L"g"); break;
-									case 104: out(L"h"); break;
-									case 105: out(L"i"); break;
-									case 106: out(L"j"); break;
-									case 107: out(L"k"); break;
-									case 108: out(L"l"); break;
-									case 109: out(L"m"); break;
-									case 110: out(L"n"); break;
-									case 111: out(L"o"); break;
-									case 112: out(L"p"); break;
-									case 113: out(L"q"); break;
-									case 114: out(L"r"); break;
-									case 115: out(L"s"); break;
-									case 116: out(L"t"); break;
-									case 117: out(L"u"); break;
-									case 118: out(L"v"); break;
-									case 119: out(L"w"); break;
-									case 120: out(L"x"); break;
-									case 121: out(L"y"); break;
-									case 122: out(L"z"); break;
-									}
-									codes = t; tail = t; i = rei + qq.find(L">"); re = L" ";
 								}
+								rs = parse(r, rs);
+								qq = rs + qq.substr(qq.find(L">") + 1, qq.length());
+								i = -1;
+								if (speed > 0) sleep = 0;
+								re = L" ";
+								tail = qq;
 							}
 							else conn();
 							break;
@@ -1358,7 +1363,7 @@ void scanDb() {
 												if (linkC[0] == '<') relink = 0;
 												tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
 												if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
-												re = L" "; i = -1; fail = 1; break;
+												if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 											}
 										}
 										f(); break;
@@ -1430,6 +1435,7 @@ void scanDb() {
 							}
  							tail = w + qq.substr(qq.find(L">") + 1, qq.length());
 							i = -1;
+							if (speed > 0) sleep = 0;
 							re = L" ";
 						}
 						else conn();
