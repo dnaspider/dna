@@ -100,7 +100,7 @@ bool assume = 0;
 #pragma endregion
 
 #pragma region protos
-void showOutsMsg(wstring, wstring, wstring);
+void showOutsMsg(wstring, wstring, wstring, bool);
 ctp clockr(ctp&);
 #pragma endregion
 
@@ -145,7 +145,7 @@ wstring Mainn::getStrand(wstring c)
 void Mainn::setTail()
 {
 	t = tail;
-	if (showMultiStrand) { wcout << "output: " << OutTab; showOutsMsg(L"", t, L""); }
+	if (showMultiStrand) { wcout << "output: " << OutTab; showOutsMsg(L"", t, L"", 0); }
 }
 
 wstring Mainn::getTail(wstring t) { return t; }
@@ -234,7 +234,7 @@ wstring check_if_num(wstring &s) {
 	if (assume) return s;
 	if (s > L"") {
 		int c = 0, d = 0;
-		auto f = [&s]() { if (showStrand) wcout << "NAN: " << s << endl; s = L""; return s; };
+		auto f = [&s]() { if (showStrand) wcout << "NAN: " << OutTab << OutTab << s << endl; s = L""; return s; };
 		for (size_t t = 0; t < s.length(); ++t) {//!0-9
 			if (s[0] == ' ') {
 				if (s.length() == 1) {
@@ -306,7 +306,13 @@ void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
 void prints() { if (showStrand) wcout << OutsTemplate << strand << '\n'; }
 
-bool qqb(wstring s) { return qq.substr(0, s.length()) == s; }
+bool qqb(const wstring s) {
+	return qq.substr(0, s.length()) == s && qq.find(L">") != string::npos;
+}
+
+bool testqqb(const wstring s) {
+	return qqb(s) && qq.at(s.length()) != '>';
+}
 
 void clearAllKeys() {
 	if (!ignoreAZ) for (int i = 65; i <= 90; ++i) { GetAsyncKeyState(i); }
@@ -371,7 +377,7 @@ void scanDb(); void conn() {//<connect:>
 				re = L" ";//codes
 				return;
 			}
-		}f.close(); if (fail == 1) { if (showStrand) { wcout << "Fail: " << qqs << endl; } fail = 0; i = tail.length(); return; }printq();
+		} f.close(); if (fail) { if (showStrand) { wcout << "Fail: " << OutTab << OutTab << qqs << endl; } fail = 0; i = tail.length(); return; } printq();
 	}
 	else printq();
 }
@@ -566,7 +572,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>. Use - or : to loop. Use comma to run once then continue.)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:>  Continue if cb. Cb operator (==, !=, >, >=, <, <=, regex find, find)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.";
+	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>. Use - or : to loop. Use comma to run once then continue.)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:>  Continue if cb. Cb operator (==, !=, >, >=, <, <=, regex find, find)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.\n<ift:>  If time, hour, min, or sec. E.g. <ift:12:05:00> <ifh:12>. Loop: <ifm:5,1,1000,:> <ifs+:5> <ifs:+5,>. Syntax: ==, !=, <, <=, g, g=, +. E.g. <ifh<=:5>\n<<:>  Output msg. (\\n newline, \\t tab, \\g \">\") E.g. <<:<test\\g>"; //api
 	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -722,9 +728,14 @@ void cbSet(wstring& s) {
 	}
 }
 
-void showOutsMsg(wstring s, wstring w, wstring s1=L"") {
+void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	wcout << s;
-	for (size_t x = 0; x < w.length(); x++) {
+	for (size_t x = 0; x < w.length(); ++x) {
+		if (b && w[x] == '\\') {
+			if (w[x + 1] == 'n') { cout << '\n'; ++x; continue; }
+			else if (w[x + 1] == 't') { cout << '\t'; ++x; continue; }
+			else if (w[x + 1] == 'g') { cout << '>'; ++x; continue; }
+		}
 		if (w[x] > 127) { wcout << "?"; continue; } //ignore > 127
 		wcout << w[x];
 	}
@@ -854,7 +865,7 @@ void scanDb() {
 				switch (ctail[0]) {
 				case'<':
 					qq = tail.substr(i, tail.length() - i); //<test>
-					if (multiStrand) { multi.q = qq; multi.get_i = i; Multi multi; }
+					if (multiStrand) { multi.q = qq; multi.get_i = i; }
 					if (showOuts) showOutsMsg(L"qq: " + OutTab + OutTab, qq);
 					if (qq.substr(0, qq.find(L">")).find(L":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
@@ -865,6 +876,13 @@ void scanDb() {
 						else { qx.clear(), qy.clear(); } //wcout << "qp: " << qp  << "\nqx: " << qx << "\nqy: " << qy << endl;
 					}
 					switch (qq[1]) {
+					case '<'://cout
+						if (testqqb(L"<<:")) {//cout
+							showOutsMsg(L"", qp, L"", 1); rei();
+							break;
+						}
+						else conn();
+						break;
 					case '~': //manual set, return pointer
 						if (qqb(L"<~>")) {
 							POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y; rei();
@@ -879,7 +897,7 @@ void scanDb() {
 							calc();
 							break;
 						}
-						else if (qqb(L"<+:")) {//calc +
+						else if (testqqb(L"<+:")) {//calc +
 							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic += stoi(qp);
 							calc();
@@ -888,7 +906,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'-':
-						if (qqb(L"<-:")) {//-
+						if (testqqb(L"<-:")) {//-
 							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic -= stoi(qp);
 							calc();
@@ -897,7 +915,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'*':
-						if (qqb(L"<*:")) {//*
+						if (testqqb(L"<*:")) {//*
 							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic *= stoi(qp);
 							calc();
@@ -906,7 +924,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'/':
-						if (qqb(L"</:")) {//divide
+						if (testqqb(L"</:")) {//divide
 							if (check_if_num(qp) == L"" || stoi(qp) <= 0) { printq(); continue; }
 							ic /= stoi(qp);
 							calc();
@@ -915,7 +933,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'%':
-						if (qqb(L"<%:")) {//%
+						if (testqqb(L"<%:")) {//%
 							if (check_if_num(qp) == L"") { printq(); continue; }
 							ic %= stoi(qp);
 							calc();
@@ -969,14 +987,14 @@ void scanDb() {
 							else conn();
 							break;
 						case ':':
-							if (qq.at(3) != '>' && qqb(L"<a:")) {
+							if (testqqb(L"<a:")) {
 								if (qp[0] == ' ') qp = qp.substr(1, qp.length()); 
 								kb1(qp); rei(); 
 							} 
 							else conn();//alt codes
 							break;
 						case 'p':
-							if (qqb(L"<app:") || qqb(L"<App:")) {//app activate, if app in foreground
+							if (testqqb(L"<app:") || testqqb(L"<App:")) {//app activate, if app in foreground
 								wstring a = qp, x = L"1", ms = L"333", linkC; link = L"";//<app:a,x,ms,link>
 								if (a.find(L"\\,") != wstring::npos) {// \,
 									wstring t = a.substr(a.find_last_of(L"\\") + 2); 
@@ -991,7 +1009,7 @@ void scanDb() {
 								if (qp.find(L",") != string::npos) {
 									x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
 									if (x.find(L",") != string::npos) {
-										ms = x.substr(x.find(L",") + 1);
+										ms = x.substr(x.find(L",") + 1); if (ms == L"") { printq(); break; }
 										if (ms.find(L",") != string::npos) {
 											link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (link == L"") link = L"<";
 											ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
@@ -1003,7 +1021,7 @@ void scanDb() {
 								if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
 								HWND h, h1; DWORD pid;
 								linkC = link; auto qqC = qq; bool mF = 0;
-								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 								Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
 								for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
@@ -1064,9 +1082,8 @@ void scanDb() {
 						else if (qqb(L"<ctrl->")) { kbRelease(VK_CONTROL); rei(); }
 						else if (qqb(L"<ctrl")) kbPress(L"<ctrl", VK_CONTROL);
 						else if (qqb(L"<caps")) kbPress(L"<caps", VK_CAPITAL);
-						else if (qqb(L"<cb:")) {
-							cbSet(qp);
-							rei();
+						else if (testqqb(L"<cb:")) {
+							cbSet(qp); rei();
 						}
 						else conn();
 						break;
@@ -1102,8 +1119,7 @@ void scanDb() {
 						else conn();
 						break;
 					case'i':
-						if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
-						else if (qqb(L"<ifcb:") || qqb(L"<ifcb!:") || qqb(L"<ifcbf:") || qqb(L"<ifcbF:") || qqb(L"<ifcbl:") || qqb(L"<ifcble:") || qqb(L"<ifcbg:") || qqb(L"<ifcbge:")) {//Clipboard ==, !=, find, <, <=, >, >=
+						if (testqqb(L"<ifcb")) {//Clipboard ==, !=, <, <=, g, g=, (f)ind, (F)ind, (n)ot
 							wstring a = qp, x = L"1", ms = L"333", linkC; link = L"";//<ifcb:a,x,ms,link>
 							if (a.find(L"\\,") != wstring::npos) {// \,
 								wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -1119,7 +1135,7 @@ void scanDb() {
 							if (qp.find(L",") != string::npos) {
 								x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
 								if (x.find(L",") != string::npos) {
-									ms = x.substr(x.find(L",") + 1);
+									ms = x.substr(x.find(L",") + 1); if (ms == L"") { printq(); break; }
 									if (ms.find(L",") != string::npos) {
 										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (link == L"") link = L"<";
 										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
@@ -1129,7 +1145,7 @@ void scanDb() {
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
 							linkC = link; auto qqC = qq; bool mF = 0;
-							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
+							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 							HANDLE hcb; wchar_t* c; wstring w;
 							if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
@@ -1144,26 +1160,42 @@ void scanDb() {
 									c = static_cast<wchar_t*>(GlobalLock(hcb));
 									if (c != nullptr) {
 										w = TEXT(c);
-										if (qqC[5] == ':') {
-											if (w == a) { multi.setBreak(); break; }
+										if (a > L"") {
+											switch (qqC.at(5)) {
+												case ':': //== <ifcb:> <ifcb=:> <ifcbe:>
+												case '=':
+												case 'e':
+													if (w == a) multi.setBreak();
+													break;
+												case 'n': //!= <ifcbn:> <ifcb!:>
+												case '!':
+													if (w != a) multi.setBreak();
+													break;
+												case 'f': //<ifcbf:>
+													if (regex_search(w, wregex(a))) multi.setBreak();
+													break;
+												case 'F': //<ifcbF:>
+													if (w.find(a) != string::npos) multi.setBreak();
+													break;
+												case 'l'://<= <ifcbl:> <ifcble:> <ifcb<:> <ifcb<=:>
+												case 'L':
+												case '<':
+													if (check_if_num(a) != L"" && check_if_num(w) != L"") {
+														if (qqC[6] == 'e' || qqC[6] == '=') { if (a == L"0" && w == L"0" || stod(w) <= stod(a)) { multi.setBreak(); break; } } //ifcble <=
+														if (stod(w) < stod(a)) multi.setBreak();
+													}
+													break;
+												case 'g'://>= <ifcbg:> <ifcbge:> <ifcbg=:>
+													if (check_if_num(a) != L"" && check_if_num(w) != L"") {
+														if (qqC[6] == 'e' || qqC[6] == '=') { if (a == L"0" && w == L"0" || stod(w) >= stod(a)) { multi.setBreak(); break; } } //ifcbge >=/g=
+														if (stod(w) > stod(a)) multi.setBreak();
+													}
+													break;
+												default: multi.setBreak(); mF = 1; i = tail.length(); printq(); //f();
+											}
+											if (multi.getBreak()) break;
 										}
-										else if (qqC[5] == '!') {
-											if (w != a) { multi.setBreak(); break; }
-										}
-										else if (qqC[5] == 'f') {
-											if (regex_search(w, wregex(a))) { multi.setBreak(); break; }
-										}
-										else if (qqC[5] == 'F') {
-											if (w.find(a) != string::npos) { multi.setBreak(); break; }
-										}
-										else if (qqC[5] == 'l' && check_if_num(a) != L"" && check_if_num(w) != L"") {//lt
-											if (qqC[6] == 'e') { if (a == L"0" && w == L"0" || stod(w) <= stod(a)) { multi.setBreak(); break; } } //ifcble <=
-											if (stod(w) < stod(a)) { multi.setBreak(); break; }
-										}
-										else if (qqC[5] == 'g' && check_if_num(a) != L"" && check_if_num(w) != L"") {//gt
-											if (qqC[6] == 'e') { if (a == L"0" && w == L"0" || stod(w) >= stod(a)) { multi.setBreak(); break; } } //ifcbge >=
-											if (stod(w) > stod(a)) { multi.setBreak(); break; }
-										}
+										if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
 									}
 								}
 								CloseClipboard();
@@ -1173,6 +1205,7 @@ void scanDb() {
 									if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 								}
 							}
+							if (a == L"") break;
 							if (multiStrand) {
 								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 							}
@@ -1192,6 +1225,137 @@ void scanDb() {
 							if (!multiStrand) rei();
 							break;
 						}
+						else if (testqqb(L"<if") && qq.at(3) != ':' && qq.at(3) != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge) | <ifs:+5,>
+							wstring a = qp; if (a == L"") { conn(); break; }
+							a = a.substr(0, a.find(L","));
+							wstring x = L"1", ms = L"333", linkC; link = L"";//<app:a,x,ms,link>
+							if (a[0] == ' ') a = a.substr(1);
+							if (qp.find(L",") != string::npos) {
+								x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
+								if (x.find(L",") != string::npos) {
+									ms = x.substr(x.find(L",") + 1); if (ms == L"") { printq(); break; }
+									if (ms.find(L",") != string::npos) {
+										link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (link == L"") link = L"<";
+										ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
+									}
+									x = x.substr(0, x.find(L","));
+								}
+								if (check_if_num(x) == L"") { printq(); break; }
+							}//cout << a << " " << x << " " << ms << " " << link << endl;
+							linkC = link; auto qqC = qq; bool mF = 0;
+							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
+							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+							chrono::system_clock::time_point np;
+							time_t n;
+							char b[26];
+							wstring w{}, h{}, m{}, s{};
+							if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
+							int noq = 0; auto pe = [&a, &noq, qqC](int q) {//+= min, sec. <ifm:+5>
+								if (a > L"" && a.at(0) == '+') {
+									if (a.at(0) == '+') a = a.substr(1);
+									int x = stoi(a);
+									x += noq;
+									if (x >= q) {//24|60
+										x -= q;
+										if (x >= q) noq = 0;
+									}
+									a = to_wstring(x);
+								}
+							};
+							for (; size < length; ++size) { //cout << size << " iftime:" << a << " *" << x << " " << ms << "ms" << endl;
+								GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
+								if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
+								if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
+								np = chrono::system_clock::now();
+								n = chrono::system_clock::to_time_t(np);
+								ctime_s(b, sizeof(b), &n);
+								w = L""; for (auto i = 0; i < 26; ++i) {
+									if (b[i] == '\n') break;
+									if (b[i] == ':') continue;
+									w += b[i];
+								}
+								w = w.substr(w.rfind(L" ") - 6, 6);
+								if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
+								noq = 0;
+								switch (qqC.at(3)) {
+								case 't': //time <ift:>
+									noq = stoi(w);
+									a = regex_replace(a, wregex(L":"), L"");
+									break;
+								case 'h': //hour <ifh:>
+									noq = stoi(w.substr(0, 2));
+									pe(24);//+=
+									break;
+								case 'm': //min <ifm:>
+									noq = stoi(w.substr(2, 2));
+									pe(60);
+									break;
+								case 's': //sec <ifs:>
+									noq = stoi(w.substr(4, 2));
+									pe(60);
+									break;
+								default:
+									noq = 0;
+								}
+								if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
+								if (multiStrand) multi.setApp(a);
+								if (noq == 0) { multi.setBreak(); break; }
+								int ans = 0, aa = stoi(a);
+								switch (qqC.at(4)) {
+									case '+': //+= hr, min, sec <ifm+:5>
+										multi.setMS(L"0");
+										{ int t = aa;
+										if (qqC.at(3) == 'm' || qqC.at(3) == 'h') t *= 60;
+										if (qqC.at(3) == 'h') t *= t;
+										Sleep(t * 1000);
+										ans = 1; }
+										break;
+									case ':': //==
+									case 'e':
+									case '=':
+										if (noq == aa) ans = 1;
+										break;
+									case 'n': //!=
+									case '!':
+										if (noq != aa) ans = 1;
+										break;
+									case 'l': //<=
+									case 'L':
+									case '<':
+										if (qqC[5] == '=' || qqC[5] == 'e') { if (noq <= aa) ans = 1; } //ifcble <=
+										else if (noq < aa) ans = 1;
+										break;
+									case 'g': //g=
+										if (qqC[5] == '=' || qqC[5] == 'e') { if (noq >= aa) ans = 1; } //ifcbge >=/g=
+										else if (noq > aa) ans = 1;
+										break;
+								}
+								if (ans == 1 || noq == 0) break;
+								if (!multi.getBreak()) {
+									if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
+									if (length >= 1) Sleep(stoi(ms));
+									if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+								}
+							}
+							if (multiStrand) {
+								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
+							}
+							if (size >= length) {//fail
+								if (linkC.length() > 0) {
+									if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+										if (linkC == L"<") { if (!multiStrand) rei(); break; }
+										if (linkC[0] == '<') relink = 0;
+										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<iftime:a,x,ms,<link->..., <iftime:a,x,ms,link->
+										if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+										if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
+									}
+								}
+								f(); break;
+							}
+							if (!multiStrand) rei();
+							break;
+						}
+						else if (qqb(L"<ins")) kbPress(L"<ins", VK_INSERT);
 						else conn();
 						break;
 					case'l':
@@ -1299,7 +1463,7 @@ void scanDb() {
 							break;
 						case 'G':
 						case 'g':
-							if (qqb(L"<rgb:") || qqb(L"<RGB:")) { //<rgb:r,g,b,x,ms,link>
+							if (testqqb(L"<rgb:") || testqqb(L"<RGB:")) { //<rgb:r,g,b,x,ms,link>
 								wstring r, g, b, x = L"1", ms = L"333", linkC; link = L"";
 								r = qp.substr(0, qp.find(L","));
 								b = qp.substr(qp.find(L",") + 1);
@@ -1309,7 +1473,7 @@ void scanDb() {
 									x = b; b = b.substr(0, b.find(L","));
 									x = x.substr(x.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
 									if (x.find(L",") != string::npos) {
-										ms = x.substr(x.find(L",") + 1);
+										ms = x.substr(x.find(L",") + 1); if (ms == L"") { printq(); break; }
 										if (ms.find(L",") != string::npos) {
 											link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (link == L"") link = L"<";
 											ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
@@ -1323,7 +1487,7 @@ void scanDb() {
 								COLORREF color; HDC hDC;
 								hDC = GetDC(NULL);
 								linkC = link; auto qqC = qq; bool mF = 0;
-								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << qqC.substr(0, qqC.find(L">") + 1) << endl; };
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 								Multi multi(tail); if (multiStrand) { multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 								color = (qqC[1] == 'R') ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
 								ReleaseDC(NULL, hDC);
@@ -1375,7 +1539,7 @@ void scanDb() {
 							else conn();
 							break;
 						case 'e':
-							if (qqb(L"<replace:")) {
+							if (testqqb(L"<replace:")) {
 								wstring cb = L""; OpenClipboard(0);
 								HANDLE c = GetClipboardData(CF_UNICODETEXT);
 								if (c != nullptr) {
@@ -1409,13 +1573,13 @@ void scanDb() {
 						else if (qqb(L"<shift>")) { kbHold(VK_LSHIFT); rei(); }
 						else if (qqb(L"<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
 						else if (qqb(L"<shift")) kbPress(L"<shift", VK_LSHIFT);
-						else if (qqb(L"<sleep:")) if (check_if_num(qp) != L"") { multi.t = tail; Sleep(stoi(qp)); if (multiStrand) rei(multi); else rei(); } else printq();
+						else if (testqqb(L"<sleep:")) if (check_if_num(qp) != L"") { multi.t = tail; Sleep(stoi(qp)); if (multiStrand) rei(multi); else rei(); } else printq();
 						else if (qqb(L"<space")) kbPress(L"<space", VK_SPACE);
 						else if (qqb(L"<sd")) { kbPress(L"<sd", VK_F7); }//scroll down
 						else if (qqb(L"<sr")) { kbPress(L"<sr", VK_F7); }//scroll right
 						else if (qqb(L"<sl")) { kbPress(L"<sl", VK_F7); }//scroll left
 						else if (qqb(L"<su")) { kbPress(L"<su", VK_F7); }//scroll up
-						else if (qqb(L"<speed:")) if (check_if_num(qp) != L"") { speed = stoi(qp); rei(); sleep = 0; } else printq();
+						else if (testqqb(L"<speed:")) if (check_if_num(qp) != L"") { speed = stoi(qp); rei(); sleep = 0; } else printq();
 						else conn();
 						break;
 					case't':
@@ -1456,16 +1620,16 @@ void scanDb() {
 						break;
 					case'X':
 					case'x':
-						if (qqb(L"<xy:")) {
+						if (testqqb(L"<xy:")) {
 							SetCursorPos(stoi(qx), stoi(qy)); rei();
 						}
 						else if (qqb(L"<XY>")) {//return pointer
 							SetCursorPos(qxc, qyc); rei();
 						}
-						else if (qqb(L"<XY:")) {//set return pointer
+						else if (testqqb(L"<XY:")) {//set return pointer
 							qxc = stoi(qx); qyc = stoi(qy); rei();
 						}
-						else if (qqb(L"<x:")) {//x + or - 1px
+						else if (testqqb(L"<x:")) {//x + or - 1px
 							if (qp == L"") { conn(); break; }
 							if (check_if_num(qp) != L"") {
 								POINT pt; GetCursorPos(&pt);
@@ -1477,13 +1641,13 @@ void scanDb() {
 						else conn();
 						break;
 					case 'y':
-						if (qqb(L"<yesno:")) {
+						if (testqqb(L"<yesno:")) {
 							multi.t = tail;
 							int m = MessageBoxW(0, qp.c_str(), L"dnaspider", MB_YESNO);
 							if (m == IDYES) { if (multiStrand) rei(multi); else rei(); continue; }
 							else { i = tail.length(); break; }
 						}
-						else if (qqb(L"<y:")) {//y + or - 1px
+						else if (testqqb(L"<y:")) {//y + or - 1px
 							if (qp == L"") { conn(); break; }
 							if (check_if_num(qp) != L"") {
 								POINT pt; GetCursorPos(&pt);
