@@ -1191,7 +1191,7 @@ void scanDb() {
 														if (stod(w) > stod(a)) multi.setBreak();
 													}
 													break;
-												default: multi.setBreak(); mF = 1; i = tail.length(); printq(); //f();
+												default: a = L""; //f();
 											}
 											if (multi.getBreak()) break;
 										}
@@ -1293,11 +1293,8 @@ void scanDb() {
 								case 's': //sec <ifs:>
 									noq = stoi(w.substr(4, 2));
 									pe(60);
-									break;
-								default:
-									noq = 0;
 								}
-								if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
+								if (a == L"" || check_if_num(a) == L"") { conn(); mF = 1; multi.setBreak(); break; }
 								if (multiStrand) multi.setApp(a);
 								if (noq == 0) { multi.setBreak(); break; }
 								int ans = 0, aa = stoi(a);
@@ -1310,6 +1307,7 @@ void scanDb() {
 										Sleep(t * 1000);
 										ans = 1; }
 										break;
+									default:
 									case ':': //==
 									case 'e':
 									case '=':
