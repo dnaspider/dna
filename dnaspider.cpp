@@ -254,7 +254,7 @@ wstring check_if_num(wstring &s) {
 }
 
 void kb(wchar_t b) {//out char
-	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
+	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
 	if (VkKeyScanW(b) == -1) { ip[0].ki.wScan = b; ip[0].ki.wVk = 0; }
 	else { ip[0].ki.wVk = VkKeyScanW(b); }
@@ -262,8 +262,8 @@ void kb(wchar_t b) {//out char
 	SendInput(2, ip, sizeof(ip[0]));
 }
 
-void kb1(wstring b) {//alt codes, emoji
-	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD;
+void kb(wstring b) {//alt codes, emoji
+	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
 	ip[0].ki.wScan = (unsigned)stoull(b); ip[0].ki.wVk = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
@@ -271,18 +271,18 @@ void kb1(wstring b) {//alt codes, emoji
 }
 
 void kbHold(short key) {
-	INPUT ip; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key; ip.ki.time = 0;
+	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key; ip.ki.time = 0;
 	if (key == VK_LMENU || key == VK_CONTROL) ip.ki.dwFlags = 0; else ip.ki.dwFlags = 1;
 	SendInput(1, &ip, sizeof(INPUT));
 }
 
 void kbRelease(short key) {
-	INPUT ip; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key;
+	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key;
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; SendInput(1, &ip, sizeof(INPUT));
 }
 
 void mouseEvent(short key) {
-	INPUT ip; ip.type = INPUT_MOUSE; ip.mi.time = 0;
+	INPUT ip{}; ip.type = INPUT_MOUSE; ip.mi.time = 0;
 	ip.mi.dwFlags = key;
 	if (key == MOUSEEVENTF_HWHEEL) {
 		if (qq.substr(0, 3) == L"<sr") ip.mi.mouseData = WHEEL_DELTA;//scroll right
@@ -294,7 +294,7 @@ void mouseEvent(short key) {
 }
 
 void shftRelease() {
-	INPUT ip; ip.type = INPUT_KEYBOARD; ip.ki.dwFlags = 2;
+	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.dwFlags = 2;
 	ip.ki.wVk = VK_LSHIFT;
 	SendInput(1, &ip, sizeof(INPUT));
 	ip.ki.wVk = VK_RSHIFT;
@@ -365,7 +365,8 @@ void scanDb(); void conn() {//<connect:>
 		}
 	}
 	if (con) {
-		wifstream f(database); wstring cell; f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); 
+		wifstream f(database); wstring cell;
+		f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));//properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 		while (getline(f, cell)) {
 			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
@@ -398,7 +399,7 @@ void kbPress(wstring s, short key) {
 		}
 		else { printq(); return; }
 	}
-	INPUT ip[2]; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
+	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD; ip[0].ki.wVk = key;
 	if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
 	for (int j = 0; j < stoi(star_num); ++j) {
@@ -572,7 +573,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>. Use - or : to loop. Use comma to run once then continue.)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:>  Continue if cb. Cb operator (==, !=, >, >=, <, <=, regex find, find)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.\n<ift:>  If time, hour, min, or sec. E.g. <ift:12:05:00> <ifh:12>. Loop: <ifm:5,1,1000,:> <ifs+:5> <ifs:+5,>. Syntax: ==, !=, <, <=, g, g=, +. E.g. <ifh<=:5>\n<<:>  Output msg. (\\n newline, \\t tab, \\g \">\") E.g. <<:<test\\g>"; //api
+	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red,green,blue,*,ms,else:> (Use < to reconnect <else:>. Use - or : to loop. Use comma to run once then continue.)  Continue if rgb in xy (R + ESC to get). E.g., <xy:0,0><rgb:255,255,255><+:1>\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0,0><RGB:255,255,255>1\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:><ifcblen:>  Continue if cb. Cb operator (==, !=, g, g=, <, <=, regex find, find, length)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.\n<ift:>  If time, hour, min, or sec. E.g. <ift:12:05:00> <ifh:12>. Loop: <ifm:5,1,1000,:> <ifs+:5> <ifs:+5,>. Syntax: ==, !=, <, <=, g, g=, +. E.g. <ifh<=:5>\n<<:>  Output msg. (\\n newline, \\t tab, \\g \">\") E.g. <<:<test\\g>"; //api
 	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -818,8 +819,8 @@ void scanDb() {
 		}
 	}
 	wifstream f(database); if (!f) { wcout << database << " not found!\n"; return; }
-	wstring cell; f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
-	Mainn mainn; relink = 0; while (getline(f, cell)) { //cout << cell << endl;
+	f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell)) { //cout << cell << endl;
 		if (cell.substr(0, 4) == L"<'''") break; //ignore db...
 		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L"-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L"->") || cell.substr(0, strand.length() + 1) == strand + L">" || cell.substr(0, strand.length() + 1) == strand + L":" || cell.substr(0, strand.length() + 1) == strand + L"-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell.substr(0, 1) != L"<") || close_ctrl_mode && strandLengthMode && strand.substr(0, 1) != L"<" && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
 			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
@@ -989,7 +990,7 @@ void scanDb() {
 						case ':':
 							if (testqqb(L"<a:")) {
 								if (qp[0] == ' ') qp = qp.substr(1, qp.length()); 
-								kb1(qp); rei(); 
+								kb(qp); rei(); 
 							} 
 							else conn();//alt codes
 							break;
@@ -1020,7 +1021,7 @@ void scanDb() {
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
 								if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
 								HWND h, h1; DWORD pid;
-								linkC = link; auto qqC = qq; bool mF = 0;
+								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 								Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
@@ -1144,7 +1145,7 @@ void scanDb() {
 								}
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
-							linkC = link; auto qqC = qq; bool mF = 0;
+							linkC = link; wstring qqC = qq; bool mF = 0;
 							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 							HANDLE hcb; wchar_t* c; wstring w;
@@ -1177,10 +1178,20 @@ void scanDb() {
 												case 'F': //<ifcbF:>
 													if (w.find(a) != string::npos) multi.setBreak();
 													break;
-												case 'l'://<= <ifcbl:> <ifcble:> <ifcb<:> <ifcb<=:>
+												case 'l'://<= <ifcbl:> <ifcble:> <ifcb<:> <ifcb<=:> || <ifcblen:>
 												case 'L':
 												case '<':
 													if (check_if_num(a) != L"" && check_if_num(w) != L"") {
+														if (qqC.substr(5, 3) == L"len") { //length <ifcblen:> <ifcbleng:>
+															unsigned int len = stoi(a);
+															if (qqC[8] == '!' || qqC[8] == 'n') { if (w.length() != len) { multi.setBreak(); break; } }
+															else if (qqC.substr(8, 2) == L"ge" || qqC.substr(8, 2) == L"g=") { if (w.length() >= len) { multi.setBreak(); break; } }
+															else if (qqC.substr(8) == L"g") { if (w.length() > len) { multi.setBreak(); break; } }
+															else if (qqC.substr(8, 2) == L"le" || qqC.substr(8, 2) == L"<e" || qqC.substr(8, 2) == L"<=") { if (w.length() <= len) { multi.setBreak(); break; } }
+															else if (qqC[8] == 'l' || qqC[8] == '<') { if (w.length() < len) { multi.setBreak(); break; } }
+															else if (qqC[8] == ':' || qqC[8] == 'e' || qqC[8] == '=') { if (w.length() == len) multi.setBreak(); break; }//==
+															else { a = L""; break; }
+														}
 														if (qqC[6] == 'e' || qqC[6] == '=') { if (a == L"0" && w == L"0" || stod(w) <= stod(a)) { multi.setBreak(); break; } } //ifcble <=
 														if (stod(w) < stod(a)) multi.setBreak();
 													}
@@ -1242,7 +1253,7 @@ void scanDb() {
 								}
 								if (check_if_num(x) == L"") { printq(); break; }
 							}//cout << a << " " << x << " " << ms << " " << link << endl;
-							linkC = link; auto qqC = qq; bool mF = 0;
+							linkC = link; wstring qqC = qq; bool mF = 0;
 							auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 							Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 							chrono::system_clock::time_point np;
@@ -1419,8 +1430,10 @@ void scanDb() {
 									break;
 								case -112://'>R': <Rand> A-Z
 									r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
+									[[fallthrough]];
 								case -80://'>r': <rand> a-z
 									r = (char)((rand() % ('z' + 1 - 'a')) + 'a');//cout << (char)r;
+									[[fallthrough]];
 								case -116://':R': <Rand:> A-Za-z
 									r = rand() % 2;
 									r = r == 1 ?
@@ -1484,7 +1497,7 @@ void scanDb() {
 								POINT pt; GetCursorPos(&pt);
 								COLORREF color; HDC hDC;
 								hDC = GetDC(NULL);
-								linkC = link; auto qqC = qq; bool mF = 0;
+								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 								Multi multi(tail); if (multiStrand) { multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 								color = (qqC[1] == 'R') ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
