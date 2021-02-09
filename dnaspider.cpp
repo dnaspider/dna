@@ -26,7 +26,7 @@ auto RgbScaleLayout = 1.00; //100%
 auto CloseCtrlSpacer = 120;
 bool relink = 0;
 wstring link = L""; //<app|rgb|ifcb,,,<link:>
-wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ";
+wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ", se = L"";
 bool fail = 0;
 bool sleep = 1;
 bool esc_pressed = 0;
@@ -116,7 +116,7 @@ struct Mainn
 		c1, c2;//elapsed
 	wstring 
 		getStrand(), getStrand(wstring), getTail(wstring),
-		s, s1, &t = tail;//strand
+ 		s, s1, &t = tail;//strand
 	void 
 		setStrand(wstring), setTail();
 	~Mainn();
@@ -597,7 +597,7 @@ void loadSe() {
  }
 
 void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<xy>  Print\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<~m><~~m>  Disable, enable MultiStrand\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<app>  Print\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red green blue x y,*,ms,false:>  Continue if rgbxy true (xy optional). Use <rgb:r g b,*,m,true: false:> to connect. Use <rgb:r g b,*,m,<t: <f:> to reconnect. Use <rgb:r g b,> <rgb:r g b,*,m,:> or <rgb:r g b,*,m,-> to loop. Use <rgb:r g b,*,m,> to run once then continue. R + ESC to get. E.g., <xy:0,0><rgb:255 255 255><+:1> or <rgb:255 255 255 0 0>1\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0 0><RGB:255 255 255>1\n<rgb>  Print\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:><ifcblen:><ifcbS:><ifcbE:><ifcbA:0 1 x><ifcba:1 x>  Continue if cb. Cb operator (==, !=, g, g=, <, <=, regex find, find, length, starts with, ends with, substr, find + offset)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.\n<ift:>  If time, hour, min, or sec. E.g. <ift:12:05:00> <ifh:12>. Loop: <ifm:5,1,1000,:> <ifs+:5> <ifs:+5,>. Syntax: ==, !=, <, <=, g, g=, +. E.g. <ifh<=:5>\n<ifcblen:>  If clipboard length (==, !=, <, <=, g, g=)\n<<:>  Output msg. (\\n newline, \\t tab, \\T time, \\' blank, \\c cb, \\g \">\", \\1-9 color, \\a beep) E.g. <<:\\T <test\\g>"; //api
+	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<xy>  Print\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<~m><~~m>  Disable, enable MultiStrand\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<app>  Print\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red green blue x y,*,ms,false:>  Continue if rgbxy true (xy optional). Use <rgb:r g b,*,m,true: false:> to connect. Use <rgb:r g b,*,m,<t: <f:> to reconnect. Use <rgb:r g b,> <rgb:r g b,*,m,:> or <rgb:r g b,*,m,-> to loop. Use <rgb:r g b,*,m,> to run once then continue. R + ESC to get. E.g., <xy:0,0><rgb:255 255 255><+:1> or <rgb:255 255 255 0 0>1\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0 0><RGB:255 255 255>1\n<rgb>  Print\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:><ifcblen:><ifcbS:><ifcbE:><ifcba:0 1 x><ifcbA:1 x>  Continue if cb. Cb operator (==, !=, g, g=, <, <=, regex find, find, length, starts with, ends with, substr, find + offset)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.\n<ift:>  If time, hour, min, or sec. E.g. <ift:12:05:00> <ifh:12>. Loop: <ifm:5,1,1000,:> <ifs+:5> <ifs:+5,>. Syntax: ==, !=, <, <=, g, g=, +. E.g. <ifh<=:5>\n<ifcblen:>  If clipboard length (==, !=, <, <=, g, g=)\n<<:>  Output msg. (\\n newline, \\t tab, \\T time, \\' blank, \\c cb, \\g \">\", \\1-9 color, \\a beep) E.g. <<:\\T <test\\g>\n<db:><se:>  Switch db, se. <db:c:/dna/d.txt>"; //api
 	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
 	cout << endl;
 }
@@ -789,11 +789,11 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			t = 0;
 			switch (w[x + 1]) {
 			case'a':
-				cout << "\a"; x += 1; w[x] = 0; break; //beep
-			case'2':
+				{ write('\a'); } break; //beep
 			case'1':
 			case'B':
 				color(1); break; //blu
+			case'2':
 			case'G':
 				color(2); break; //gr
 			case'3':
@@ -1100,10 +1100,10 @@ void scanDb() {
 							else conn();
 							break;
 						case ':':
-							if (testqqb(L"<a:")) {
+							if (testqqb(L"<a:")) {//alt codes
 								kb(qp); rei();
 							}
-							else conn();//alt codes
+							else conn();
 							break;
 						case 'p':
 							if (testqqb(L"<app:") || testqqb(L"<App:")) {//app activate, if app in foreground
@@ -1205,7 +1205,7 @@ void scanDb() {
 									}
 								}
 
-								if (a == L"") break;
+								//if (a == L"") break;
 
 								if (multiStrand) {
 									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
@@ -1214,9 +1214,9 @@ void scanDb() {
 									if (linkC.length() > 0) {
 										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
-											if (linkC[0] == '<') relink = 0;
 											if (linkC.find(L" ") != string::npos)// ..., true: false:>
 												linkC = linkC.substr(linkC.find(L" ") + 1);
+											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
@@ -1227,7 +1227,7 @@ void scanDb() {
 								if (linkC.find(L" ") != string::npos) {// ..., true: false:>
 									linkC = linkC.substr(0, linkC.find(L" "));
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
-									if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+									if (linkC[0] == '<') relink = 0;
 									if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 								}
 								if (!multiStrand) rei();
@@ -1261,7 +1261,14 @@ void scanDb() {
 						else conn();
 						break;
 					case'd':
-						if (qqb(L"<db>")) { printDb(); rei(); }
+						if (testqqb(L"<db:")) {//.h
+							qp = regex_replace(qp, wregex(L"/"), L"\\");
+							database = qp;
+							db = database.substr(database.find_last_of('\\') + 1) + L" - ";
+							rei();
+							break;
+						}
+						else if (qqb(L"<db>")) { printDb(); rei(); }
 						else if (qqb(L"<down")) kbPress(L"<down", VK_DOWN);
 						else if (qqb(L"<delete")) kbPress(L"<delete", VK_DELETE);
 						else conn();
@@ -1331,15 +1338,15 @@ void scanDb() {
 									a = regex_replace(a, wregex(L"\\\\g"), L">");
 									if (w == a) multi.setBreak();
 									break;
-								case 'A': //<if cb substring from index x matches y: x y> | <ifcbA:0 test>
-								case 'a': //<if cb contains y starting @ offset x: x y> | <ifcba:1 test>
+								case 'A': //<if cb find y starting @ offset x: x y> | <ifcba:1 test>
+								case 'a': //<if cb substring from index x matches y: x y> | <ifcbA:0 test>
 									{
 										auto x = a.substr(0, a.find(L" ")), y = a.substr(a.find(L" ") + 1);
 										y = regex_replace(y, wregex(L"\\\\g"), L">");
-										if (qqC[5] == 'a') {
+										if (qqC[5] == 'A') {
 											auto s = stoi(x) - 1; if (w.find(y, s) != wstring::npos) multi.setBreak();
 										}
-										else { //'A'
+										else { //'a'
 											if (w.substr(stoi(x), y.length()) == y) multi.setBreak();
 										}
 									}
@@ -1446,9 +1453,9 @@ void scanDb() {
 												sifcb();
 											}
 										}
-										
+
 										if (multi.getBreak()) break;
-										
+
 										if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
 									}
 								}
@@ -1459,18 +1466,18 @@ void scanDb() {
 									if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 								}
 							}
-							if (a == L"") break;
+							//if (a == L"") break;
 							if (multiStrand) {
 								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 							}
 							CloseClipboard();
 							if (size >= length) {//fail
 								if (linkC.length() > 0) {
-									if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+									if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {//F:
 										if (linkC == L"<") { if (!multiStrand) rei(); break; }
-										if (linkC[0] == '<') relink = 0;
 										if (linkC.find(L" ") != string::npos) 
 											linkC = linkC.substr(linkC.find(L" ") + 1);//<t-<ifcb:a,*,ms, T: F:>
+										if (linkC[0] == '<') relink = 0;
 										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
 										if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 										if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
@@ -1478,10 +1485,10 @@ void scanDb() {
 								}
 								f(); break;
 							}
-							if (linkC.find(L" ") != string::npos) {
-								linkC = linkC.substr(0, linkC.find(L" "));//<t-<ifcb:a,*,ms, T: F:>
-								tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
-								if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+							if (linkC.find(L" ") != string::npos) {//T:
+								linkC = linkC.substr(0, linkC.find(L" "));
+								tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";
+								if (linkC[0] == '<') relink = 0;
 								if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 							}
 							if (!multiStrand) rei();
@@ -1607,7 +1614,6 @@ void scanDb() {
 											a = t > L"" ? ta.substr(0, ta.length() - 1 - (a.find(L"\\") != string::npos && BackslashLogicals)) : ta;
 											if (a[0] == ' ') a = a.substr(1); if (multiStrand) { multi.setApp(a); }
 											sif();
-
 											if (!multi.br) {
 												if (q == L"&") { sand = 0; 
 													if (t.find(L"|") != string::npos) sand = 1; else break;
@@ -1616,7 +1622,6 @@ void scanDb() {
 												if (t.find(L"&") != string::npos) { sor = 1; }
 												if (t.find(L"&") != string::npos && t.find(L"|") == string::npos) { sor = 1; }
 												}
-												
 											}
 											
 											if (q == L"&" && multi.br) { sand = 1; }
@@ -1651,9 +1656,9 @@ void scanDb() {
 								if (linkC.length() > 0) {
 									if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 										if (linkC == L"<") { if (!multiStrand) rei(); break; }
-										if (linkC[0] == '<') relink = 0;
 										if (linkC.find(L" ") != string::npos)
 											linkC = linkC.substr(linkC.find(L" ") + 1);
+										if (linkC[0] == '<') relink = 0;
 										tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<iftime:a,x,ms,<link->..., <iftime:a,x,ms,link->
 										if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 										if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
@@ -1664,7 +1669,7 @@ void scanDb() {
 							if (linkC.find(L" ") != string::npos) {
 								linkC = linkC.substr(0, linkC.find(L" "));
 								tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";
-								if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+								if (linkC[0] == '<') relink = 0;
 								if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 							}
 							if (!multiStrand) rei();
@@ -1880,7 +1885,7 @@ void scanDb() {
 										if (sor && sand) multi.br = 1;
 									}
 									else {
-										if (b.find(L" ")) {
+										if (b.find(L" ")) {//X Y
 											auto sx = b.substr(b.find(L" ")+ 1);
 											auto sy = sx.substr(sx.find(L" ") + 1);
 											sx = sx.substr(0, sx.find(L" "));
@@ -1902,7 +1907,7 @@ void scanDb() {
 									}
 								}
 
-								if (a == L"") break;
+								//if (a == L"") break;
 
 								if (multiStrand) {
 									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
@@ -1911,9 +1916,9 @@ void scanDb() {
 									if (linkC.length() > 0) {
 										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
-											if (linkC[0] == '<') relink = 0;
 											if (linkC.find(L" ") != string::npos)
 												linkC = linkC.substr(linkC.find(L" ") + 1);
+											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
@@ -1924,7 +1929,7 @@ void scanDb() {
 								if (linkC.find(L" ") != string::npos) {
 									linkC = linkC.substr(0, linkC.find(L" "));
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
-									if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+									if (linkC[0] == '<') relink = 0;
 									if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 								}
 								if (!multiStrand) rei();
@@ -1961,7 +1966,15 @@ void scanDb() {
 						}
 						break;
 					case's':
-						if (qqb(L"<se>")) { printSe(); rei(); }
+						if (testqqb(L"<se:")) {//.h 
+							qp = regex_replace(qp, wregex(L"/"), L"\\");
+							settings = qp; 
+							se = settings.substr(settings.find_last_of('\\') + 1) + L" - ";
+							loadSe();
+							rei();
+							break; 
+						}
+						else if (qqb(L"<se>")) { printSe(); rei(); }
 						else if (qqb(L"<shift>")) { kbHold(VK_LSHIFT); rei(); }
 						else if (qqb(L"<shift->")) { kbRelease(VK_LSHIFT); kbRelease(VK_RSHIFT); rei(); }
 						else if (qqb(L"<shift")) kbPress(L"<shift", VK_LSHIFT);
@@ -2171,7 +2184,7 @@ int main() {//cout << "@dnaspider\n\n";
 	strand = L"<dna>"; scanDb(); strand.clear();//run @ startup
 #pragma endregion
 	for (;; Sleep(frequency)) {
-		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (L"se.txt - " + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (L"se.txt - " + editor1).c_str()) == GetForegroundWindow())) { HWND np = FindWindowW(0, (L"se.txt - " + editor).c_str()), vsc = FindWindowW(0, (L"se.txt - " + editor1).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { bool b = qScanOnly; loadSe(); if (!b && qScanOnly || b && !qScanOnly) clearAllKeys(); else GetAsyncKeyState(83); if (SeDbClearStrand_CtrlS) { strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key(L"s"); continue; } }//lctrl+s hot reload
+		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())) { HWND np = FindWindowW(0, (se + editor).c_str()), vsc = FindWindowW(0, (se + editor1).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload) { bool b = qScanOnly; loadSe(); if (!b && qScanOnly || b && !qScanOnly) clearAllKeys(); else GetAsyncKeyState(83); if (SeDbClearStrand_CtrlS) { strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key(L"s"); continue; } }//lctrl+s hot reload
 		if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())) { GetAsyncKeyState(83); strand.clear(); if (showStrand) { prints(); } continue; }//clear
 		if (GetAsyncKeyState(VK_BACK)) {
 			strand = strand.substr(0, strand.length() - 1);
