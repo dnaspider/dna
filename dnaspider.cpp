@@ -106,6 +106,7 @@ bool assume = 0;
 #pragma region protos
 void showOutsMsg(wstring, wstring, wstring, bool);
 ctp clockr(ctp&);
+void cbSet(wstring&);
 #pragma endregion
 
 #pragma region classo
@@ -714,21 +715,19 @@ void toggle_visibility() {
 	strand.clear();
 }
 
-wstring getApp(bool c = 0) {
-	bool b = showMultiStrand; showMultiStrand = 0;
-	out(L"<alt><esc><alt->");
+wstring getAppT() {
 	HWND h = GetForegroundWindow();
 	int l = GetWindowTextLength(h);
 	wstring title(l, 0);
 	GetWindowTextW(h, &title[0], l + 1);
-	out(L"<shift><,><alt><esc><alt-><shift->");
-	showMultiStrand = b;
-	if (title == L"") return L"";
-	title = regex_replace(title, wregex(L","), L"\\,");
-	if (!BackslashLogicals) title = regex_replace(title, wregex(L"|"), L"\\|") = regex_replace(title, wregex(L"&"), L"\\&");
-	linkr = L"";
-	if (!c) out(L"<shift>,<shift->app:" + title + L">");
+	title = regex_replace(title, wregex(L","), L"\\,");	if (!BackslashLogicals) title = regex_replace(title, wregex(L"|"), L"\\|") = regex_replace(title, wregex(L"&"), L"\\&");
 	return title;
+}
+
+void getApp() {
+	bool b = showMultiStrand; showMultiStrand = 0;
+	out(L"<shift>,<shift->app:");
+	showMultiStrand = b;
 }
 
 wstring getRGB(bool b = 0) {
@@ -929,8 +928,11 @@ void scanDb() {
 			if (re > L"" && strand == L"") {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
-				if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; linkr = L""; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
-				else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); linkr = L""; if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } mainn.t.clear(); }
+				if (re[0] == '>') {
+					if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; linkr = L""; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
+					else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); linkr = L""; if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } mainn.t.clear(); }
+					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt->"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + L">"; }
+				}
 			}
 			tail = re > L"" && strand == L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
 			if (multiStrand) mainn.getStrand(cell);
@@ -1233,11 +1235,10 @@ void scanDb() {
 								if (!multiStrand) rei();
 								break;
 							}
-							else if (qqb(L"<app>")) {//print app title
-								tail = getApp(1) + qq.substr(qq.find(L">") + 1, qq.length());
-								i = -1;
-								if (speed > 0) sleep = 0;
-								re = L" ";
+							else if (qqb(L"<app>")) {//app title to cb
+								wstring a(getAppT());
+								cbSet(a);
+								rei();
 							}
 							else conn();
 							break;
@@ -1951,7 +1952,7 @@ void scanDb() {
 										if (t.find(L",") != string::npos) {
 											qx = qp.substr(0, qp.find_last_of(L"\\") + t.find(L",") + 2);
 											qy = qp.substr(qx.length() + 1);
-											if (qx.find(L"\\,") != wstring::npos) qx = regex_replace(qx, wregex(L"\\\\,"), L",");// \,
+											qx = regex_replace(qx, wregex(L"\\\\,"), L",");// \,
 										}
 									}
 									wstring c = regex_replace(cbGet(), wregex(qx), qy);
