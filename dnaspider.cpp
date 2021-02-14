@@ -26,12 +26,11 @@ auto RgbScaleLayout = 1.00; //100%
 auto CloseCtrlSpacer = 120;
 bool relink = 0;
 wstring link = L""; //<app|rgb|ifcb,,,<link:>
-wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ", se = L"";
+wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ", se = L"se.txt - ";
 bool fail = 0;
 bool sleep = 1;
 bool esc_pressed = 0;
 bool pause_resume = 0;
-bool StockInterfaceControls = false;
 int CommaSleep = 150;
 //bool ignoreMediaKeys = false;
 bool enableEscX = true;
@@ -90,7 +89,6 @@ auto qxcc = 0, qycc = 0;//cc
 bool shft = false;
 size_t i = 0;
 bool close_ctrl_mode = true; //x>, x:, x- 
-bool clear_after_stock = true; //<se, <db
 bool SlightPauseInBetweenConnects = false;
 wstring OutsTemplate = L"strand: \t";
 bool EscCommaAutoBs = true;
@@ -172,13 +170,13 @@ struct Multi
 		getApp(), getLink(), getMS(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getTail(), getX(),
 		r, g, b, a, x, m, l,
 		t = tail, q = qq;
-	size_t 
+	size_t
 		getI(),
 		get_i = i;
 	bool 
 		getBreak(),
 		br = 0;//break
-	void 
+	void
 		setApp(wstring), setBreak(), setI(), setLink(wstring), setMS(wstring), setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setX(wstring);
 	~Multi();
 };
@@ -510,8 +508,6 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") AutoBs_RepeatKey = stoi(v); else er(); } break;
 			case 902://ShowOuts:
 				{ if (v == L"1" || v == L"0") showOuts = stoi(v); else er(); } break;
-			case 2699://ClearStrandAfterStockCtrls:
-				{ if (v == L"1" || v == L"0") clear_after_stock = stoi(v); else er(); } break;
 			case 2913://SlightPauseInBetweenConnects:
 				{ if (v == L"1" || v == L"0") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 1571://CloseCtrlSpacer:
@@ -522,8 +518,6 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") multiStrand = stoi(v); else er(); } break;
 			case 1618://ShowMultiStrand:
 				{ if (v == L"1" || v == L"0") showMultiStrand = stoi(v); else er(); } break;
-			case 2339://StockInterfaceControls:
-				{ if (v == L"1" || v == L"0") StockInterfaceControls = stoi(v); else er(); } break;
 			case 1098://AutoBs_EscH: //Ignore_F1-F12:
 				{	if (v == L"1" || v == L"0") {
 						if (se == L"AutoBs_EscH:") EscHAutoBs = stoi(v);
@@ -597,38 +591,7 @@ void loadSe() {
 	f.close();
  }
 
-void printApi() {
-	cout << "API\n"; if (!StockInterfaceControls) { wcout << "<db>  Show database. " << database << " | db.txt e.g., <d><db>\n<se>  Show, load settings. " << settings << " | db.txt e.g., <s><se>\n<v>  Visibility | db.txt e.g., <v><v>\n"; }  cout << "<ms:1><,1><sleep:1>  1ms sleep\n<,>  " << CommaSleep << "ms sleep | se.txt e.g., CommaSleep:150 | db.txt e.g., <test><,><,*3>\n<xy:0,0>  Move pointer (P + ESC to get)\n<xy>  Print\n<x:><y:>  Current position +/- value. E.g., <x:-1>\n<rp>  Return pointer\n<XY:><XY>  Set, return pointer. E.g., <XY:0,0><XY>\n<~><~~>  Manual set, return pointer\n<~m><~~m>  Disable, enable MultiStrand\n<lc><rc><mc><lh><rh><mh><lr><rr><mr>  LEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<sl><su><sr><sd>  SCROLL LEFT, UP, RIGHT, DOWN\n<ctrl><shift><alt><win>  Hold key\n<ctrl-><shift-><alt-><win->  Release key\n<up><right><down><left><delete><esc><bs><home><end><space><tab><enter><pause><caps>  Press key\n<bs*2>  Press twice\n<menu>  Press MENU key\n<ins>  Press INSERT\n<ps>  Press PRINT_SCREEN\n<pu><pd>  Press PAGE_UP, PAGE_DOWN\n<f1>  Press F1 (F1-F12)\n<app:TITLE,*,ms,else->  Set app to foreground. E.g., <app:Calculator>\n<App:>  Continue if app in foreground.\n<app>  Print\n<yesno:>  Verify message. E.g., <yesno:Continue?>\n<beep>  Alert sound\n<a:>  ALT codes. E.g., <a:9201>\n<speed:>  Output. E.g., <speed:150>\n<+:><-:><*:></:><%:>  Calc. E.g., <+:1>, <+:-1>\n<+>  Clone. E.g., <*:7><+>\n<'><''><'''>  Ignore. E.g., <'bs><''rest of line><'''rest of db>\n<rgb:red green blue x y,*,ms,false:>  Continue if rgbxy true (xy optional). Use <rgb:r g b,*,m,true: false:> to connect. Use <rgb:r g b,*,m,<t: <f:> to reconnect. Use <rgb:r g b,> <rgb:r g b,*,m,:> or <rgb:r g b,*,m,-> to loop. Use <rgb:r g b,*,m,> to run once then continue. R + ESC to get. E.g., <xy:0,0><rgb:255 255 255><+:1> or <rgb:255 255 255 0 0>1\n<RGB:>  Continue if RGB in XY location. db.txt e.g., test-><XY:0 0><RGB:255 255 255>1\n<rgb>  Print\n<rand:><Rand><rand><Rand:>  Print random #, A-Z, a-z, or A-Za-z. E.g. <rand:0,1><rand:>, <Rand>, <rand>, <Rand:>\n<cb:>  Copy to clipboard. E.g. <cb:Test>\n<ifcb:><ifcb!:><ifcbg:><ifcbge:><ifcbl:><ifcble:><ifcbf:><ifcbF:><ifcblen:><ifcbS:><ifcbE:><ifcba:0 1 x><ifcbA:1 x>  Continue if cb. Cb operator (==, !=, g, g=, <, <=, regex find, find, length, starts with, ends with, substr, find + offset)\n<replace:>  Regex replace cb. E.g. <replace:t,T>\n<time><time:>  Print timestamp\n<dna>  Init.\n<ift:>  If time, hour, min, or sec. E.g. <ift:12:05:00> <ifh:12>. Loop: <ifm:5,1,1000,:> <ifs+:5> <ifs:+5,>. Syntax: ==, !=, <, <=, g, g=, +. E.g. <ifh<=:5>\n<ifcblen:>  If clipboard length (==, !=, <, <=, g, g=)\n<<:>  Output msg. (\\n newline, \\t tab, \\T time, \\' blank, \\c cb, \\g \">\", \\1-9 color, \\a beep) E.g. <<:\\T <test\\g>\n<db:><se:>  Switch db, se. <db:c:/dna/d.txt>"; //api
-	if (showIntro) cout << "\n\nAPI's are placed to right of the first :, -, >, ->, or :> of each line in db.txt\ndb.txt e.g., test-<enter>\nSave example to db.txt then clear strand by toggling RIGHT_CTRL, BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK. Inside a text area, press T E S T to run (strand: test).\n";
-	cout << endl;
-}
-
-void printStockCtrls() {
-	if (StockInterfaceControls) {
-		cout << "Stock interface controls" << endl;
-		if (!ignoreSpace) {
-			cout << "<s s:  Toggle ShowStrand: " << showStrand << endl;
-			cout << "<s o:  Toggle ShowOuts: " << showOuts << endl;
-			cout << "<q s:  Toggle < scan only | CtrlScanOnlyMode: " << qScanOnly << endl;
-			cout << "<c q:  Toggle CloseCtrlMode: " << close_ctrl_mode << endl;
-			cout << "<q k:  Change < key | CtrlKey: " << cKey << endl;
-			if (!qScanOnly) {
-				cout << "<s lm:  Toggle StrandLengthMode: " << strandLengthMode << endl;
-				if (strandLengthMode) cout << "<s le:  Change StrandLength: " << strandLength << endl;
-			}
-			cout << "<r e:  Change RepeatKey: " << reKey << endl;
-			//cout << "<f r:  Change frequency: " << frequency << endl;
-			wcout << "<d b:  Change Database: " << database << endl;
-		}
-		cout << "Hold RIGHT_CTRL or LEFT_CTRL on startup:  Change < key" << endl;
-		cout << "Hold O on startup:  ShowStrand, ShowOuts: 1" << endl;
-		//cout << "Hold Q on startup:  CtrlScanOnlyMode: 1" << endl;
-		//cout << "Hold S on startup:  ShowStrand: 1" << endl;
-		cout << endl;
-	}
-}
-
-void printSe() {
+ void printSe() {
 	loadSe();
 	if (showSettings) {
 		wcout << settings << endl;  ifstream f(settings); if (f.fail()) { wcout << "Copy to " << settings; cout << endl; }
@@ -683,8 +646,6 @@ void printSe() {
 		cout << "Ignore_Tab: " << ignoreTab << endl;
 		//cout << "Ignore_MediaKeys: " << ignoreMediaKeys << endl;
 		cout << "StartHidden: " << startHidden << endl;
-		cout << "StockInterfaceControls: " << StockInterfaceControls << endl;
-		cout << "ClearStrandAfterStockCtrls: " << clear_after_stock << endl;
 		cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << endl;
 		cout << "CommaSleep: " << CommaSleep << endl;
 		cout << "BackslashLogicals: " << BackslashLogicals << endl;
@@ -1171,7 +1132,7 @@ void scanDb() {
 												if (t > L"") q = a.substr(j, 1);
 												a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); } if (multiStrand) { multi.setApp(a); }
 												if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
-												if (a[0] == ' ' && a != L" ") { a = a.substr(1); if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); } //!\0
+												if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1);//!\0
 												sifapp(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
 												if (!multi.br) {
 													if (q == L"&") {
@@ -1206,8 +1167,6 @@ void scanDb() {
 										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
-
-								//if (a == L"") break;
 
 								if (multiStrand) {
 									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
@@ -1427,7 +1386,7 @@ void scanDb() {
 														if (t > L"") q = a.substr(j, 1);
 														a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); } if (multiStrand) { multi.setApp(a); }
 														if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
-														if (a[0] == ' ' && a != L" ") { a = a.substr(1); if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); } //!\0
+														if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); //!\0
 														sifcb(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
 														if (!multi.br) {
 															if (q == L"&") {
@@ -1467,7 +1426,7 @@ void scanDb() {
 									if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 								}
 							}
-							//if (a == L"") break;
+							
 							if (multiStrand) {
 								i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
 							}
@@ -1819,7 +1778,7 @@ void scanDb() {
 									if (multiStrand) { r = multi.getRGBr(); g = multi.getRGBg(); b = multi.getRGBb(); }
 									color = qqC[1] == 'R' ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
 									ReleaseDC(NULL, hDC);
-									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b)) {
+									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0,b.find(L" ")))) {
 										multi.setBreak();
 									}
 								};
@@ -1844,8 +1803,8 @@ void scanDb() {
 												b = a.substr(a.find(L" ") + 1);
 												g = b.substr(0, b.find(L" "));
 												b = b.substr(b.find(L" ") + 1);
-
-												if (b.find(L" ")) {
+												if (multiStrand) { multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); }
+												if (b.find(L" ") != string::npos) {//X Y
 													auto sx = b.substr(b.find(L" ") + 1);
 													auto sy = sx.substr(sx.find(L" ") + 1);
 													sx = sx.substr(0, sx.find(L" "));
@@ -1855,8 +1814,6 @@ void scanDb() {
 													}
 													else SetCursorPos(stoi(sx), stoi(sy));
 												}
-
-												if (multiStrand) { multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); }
 												sifrgb();
 												if (!multi.br) {
 													if (q == L"&") {
@@ -1886,11 +1843,10 @@ void scanDb() {
 										if (sor && sand) multi.br = 1;
 									}
 									else {
-										if (b.find(L" ")) {//X Y
-											auto sx = b.substr(b.find(L" ")+ 1);
+										if (b.find(L" ") != string::npos) {//X Y
+											auto sx = b.substr(b.find(L" ") + 1);
 											auto sy = sx.substr(sx.find(L" ") + 1);
 											sx = sx.substr(0, sx.find(L" "));
-											b = b.substr(0, b.find(L" "));
 											if (qqC[1] == 'R') {
 												qxc = stoi(sx); qyc = stoi(sy);
 											}
@@ -1907,8 +1863,6 @@ void scanDb() {
 										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
-
-								//if (a == L"") break;
 
 								if (multiStrand) {
 									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
@@ -2092,33 +2046,13 @@ void printXy() {
 	else { out(L"<bs*2>"); out(L"><shift>,<shift->xy:" + to_wstring(pt.x) + L"," + to_wstring(pt.y) + L">"); }
 }
 
-void printInterfaceCtrls() {
-	wstring c; if (cKey == VK_CONTROL) c = L"CTRL"; else if (cKey == VK_LCONTROL) c = L"LEFT_CTRL"; else if (cKey == VK_RCONTROL) c = L"RIGHT_CTRL"; else if (cKey == VK_ESCAPE) c = L"ESC";
-	cout << "Interface" << endl;
-	if (StockInterfaceControls) {
-		wstring se = qScanOnly ? L"<se" : L"S E"; wcout << se << ":  Settings (Press " << (qScanOnly ? c + L" S E" : L"S E") << " to load " << settings << ")\n";
-		if (qScanOnly)se = L"<db"; else se = L"D B"; wcout << se << ":  Database" << endl;
-	}
-	cout << "ESC:  Stop" << endl;
-	if (enableEscX) cout << "X + ESC or CTRL + C:  Exit" << endl;
-	cout << "H + ESC:  Toggle visibility" << endl;
-	wcout << c << " or COMMA + ESC:  Toggle <" << endl;
-	wcout << "LEFT_SHIFT + " << c << ":  <" << endl;
-	cout << "PAUSE_BREAK:  Reset strand | Pause/Resume" << endl;
-	cout << "LEFT_SHIFT + PAUSE_BREAK:  Clear strand" << endl;
-	if (StockInterfaceControls) { wcout << "<odb:  Open database: " << database << endl; wcout << "<ose:  Open settings: " << settings << endl; }
-	(StockInterfaceControls) ? cout << "<xy or P + ESC" : cout << "P + ESC"; cout << ":  <xy:>" << endl;
-	cout << "A + ESC:  <app:>" << endl;
-	cout << "R + ESC:  <rgb:>" << endl;
-	(reKey == 145) ? c = L"SCROLL_LOCK" : c = L"RepeatKey: " + reKey; wcout << c << " or EQUAL + ESC:  Repeat" << endl;
-	cout << endl;
+void printCtrls() {
+	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC\t\t\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m><~~m>\t\tDisable, enable MultiStrand (no repeat)\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<bs*2>\t\t\tPress (BACKSPACE) key twice\n<win1>\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc.\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tClone\n\t\t\t<test-><*:7><+>\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<cb:>\t\t\tSet clipboard\n\t\t\t<test-><cb:Test>\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tcolor\n\t\t\t\\n\tnewline\n\t\t\t\\t\ttab\n\t\t\t\\T\ttime\n\t\t\t\\'\tblank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tcb\n\t\t\t\\a\tbeep\n\t\t\t<test-><<:<test-\\g>\n<db:>\t\t\tSwitch db, se.\n<se:>\t\t\t<test-><db:c:\\dna\\d.txt>\n\n";
 }
 
 void printIntro() {
 	if (showIntro) {
-		printInterfaceCtrls();		
-		printStockCtrls();
-		printApi();
+		printCtrls();		
 		printSe();
 		printDb();
 	}
@@ -2130,26 +2064,7 @@ void key(wstring k) {
 	prints();
 	if (close_ctrl_mode && strand.find(L">") != std::string::npos && strand.substr(strand.length() - 1) != L">") { strand.clear(); prints(); return; }
 	scanDb();
-	if (strand > L"" && StockInterfaceControls) {
-		if (strand == L"db" || strand == L"<db") { printDb(); if (clear_after_stock)strand.clear(); }
-		if (strand == L"se" || strand == L"<se") { printSe(); if (clear_after_stock)strand.clear(); }
-		if (strand == L"x" || strand == L"<xy") { printXy(); }
-		if (strand == L"<odb") { out(L"<win>r<win-><,>" + database + L"<enter>"); }
-		if (strand == L"<ose") { out(L"<win>r<win-><,>" + settings + L"<enter>"); }
-		if (!ignoreSpace) {
-			if (strand == L"<q s") { qScanOnly = !qScanOnly; cout << "<q s: " << qScanOnly << endl; strand.clear(); }
-			if (strand == L"<s lm") { strandLengthMode = !strandLengthMode; cout << "Strand length mode: " << strandLengthMode << endl; strand.clear(); if (strandLengthMode) { cout << "Strand length: " << strandLength << endl; } }
-			if (strand == L"<s le") { kb(VK_ESCAPE); int sl; cout << "Enter new strand length:" << endl;  cin >> sl; if (sl > 0) { strandLength = sl; } else { return; } clearAllKeys(); cout << "strand length: " << strandLength << endl; strand.clear(); }
-			if (strand == L"<r e") { kb(VK_ESCAPE); int sl; cout << "Enter new repeat key:" << endl;  cin >> sl; if (sl > 0) { reKey = sl; } else { return; } clearAllKeys(); cout << "repeat key: " << reKey << endl; strand.clear(); }
-			if (strand == L"<q k") { kb(VK_ESCAPE); int sl; cout << "Enter new < key:" << endl;  cin >> sl; if (sl > 0) { cKey = sl; } else { return; } clearAllKeys(); cout << "< key: " << cKey << endl; strand.clear(); }
-			if (strand == L"<f r") { kb(VK_ESCAPE); int sl; cout << "Enter new frequency:" << endl;  cin >> sl; if (sl > 0) { frequency = sl; } else { return; } clearAllKeys(); cout << "frequency: " << frequency << endl; strand.clear(); }
-			if (strand == L"<d b") { kb(VK_ESCAPE); wstring sl; cout << "Enter new database:" << endl;  wcin >> sl; if (sl > L"") { database = sl; } else { return; } clearAllKeys(); wcout << "database: " << database << endl; strand.clear(); }
-			if (strand == L"<s s") { showStrand = !showStrand; cout << "<s s: " << showStrand << endl; strand.clear(); }
-			if (strand == L"<c q") { close_ctrl_mode = !close_ctrl_mode; cout << "<c q: " << close_ctrl_mode << endl; strand.clear(); }
-			if (strand == L"<s o") { showOuts = !showOuts; cout << "<s o: " << showOuts << endl; strand.clear(); }
-		}
-	}
-	else if (strand == L"") prints();
+	if (strand == L"") prints();
 }
 
 void repeat() {
@@ -2167,20 +2082,15 @@ int main() {//cout << "@dnaspider\n\n";
 		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; ++i) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
 		database = c + L"\\db.txt"; settings = c + L"\\se.txt";
 		if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
-			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;StockInterfaceControls=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
+			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 			wcout << database << " not found.\nPress [1] to auto create.\n\n";
 			for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\nGetting Started:\nPress H (strand: h),\nRIGHT_CTRL E (strand: <e), \nLEFT_SHIFT + RIGHT_CTRL X, or\nCOMMA + ESC X (strand: <x)\nin a text area to run.\n\nTip:\nClear strand first by toggling\nRIGHT_CTRL, BACKSPACE, or \nLEFT_SHIFT + PAUSE_BREAK.\n\nPress keys separately\n(RIGHT_CTRL, release RIGHT_CTRL, X)."; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nStockInterfaceControls: 1\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nClearStrandAfterStockCtrls: 1\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 		}
 	}
 	loadSe();
 	if (Unicode) SetConsoleOutputCP(CP_UTF8);
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
-	if (GetAsyncKeyState(81)) qScanOnly = true; //q
-	if (GetAsyncKeyState(83)) showStrand = true; //s
-	if (GetAsyncKeyState(79)) { showOuts = true; showStrand = true; }//o
-	if (GetAsyncKeyState(VK_RCONTROL)) cKey = VK_RCONTROL;
-	if (GetAsyncKeyState(VK_LCONTROL)) cKey = VK_LCONTROL;
 	printIntro();
 	strand = L"<dna>"; scanDb(); strand.clear();//run @ startup
 #pragma endregion
@@ -2284,6 +2194,7 @@ int main() {//cout << "@dnaspider\n\n";
 				if (showStrand && !qScanOnly) wcout << OutsTemplate << strand << '\n'; 
 				continue; 
 			}
+			GetAsyncKeyState(VK_OEM_2); if (GetAsyncKeyState(VK_OEM_2)) { printCtrls(); continue; } //? + esc
 			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(L"~"); }
 			continue;
 		}
