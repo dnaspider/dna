@@ -681,7 +681,7 @@ wstring getAppT() {
 	int l = GetWindowTextLength(h);
 	wstring title(l, 0);
 	GetWindowTextW(h, &title[0], l + 1);
-	title = regex_replace(title, wregex(L","), L"\\,");	if (!BackslashLogicals) title = regex_replace(title, wregex(L"|"), L"\\|") = regex_replace(title, wregex(L"&"), L"\\&");
+	title = regex_replace(title, wregex(L","), L"\\,");	if (!BackslashLogicals) { title = regex_replace(title, wregex(L"\\|"), L"\\|"); title = regex_replace(title, wregex(L"&"), L"\\&"); }
 	return title;
 }
 
