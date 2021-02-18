@@ -892,7 +892,7 @@ void scanDb() {
 				if (re[0] == '>') {
 					if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; linkr = L""; if (showStrand) { wcout << OutsTemplate << L"<xy:" + xy + L">\n"; } }
 					else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); linkr = L""; if (showStrand) { wcout << OutsTemplate << "<" << tail.substr(16, tail.length()) << endl; } mainn.t.clear(); }
-					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt->"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + L">"; }
+					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt-><,1>"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + L">"; }
 				}
 			}
 			tail = re > L"" && strand == L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
