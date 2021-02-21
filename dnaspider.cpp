@@ -2068,6 +2068,7 @@ void key(wstring k) {
 }
 
 void repeat() {
+	kbRelease(reKey);
 	if (multiStrand) {
 		thread thread(out, reTail); thread.detach();
 	}
