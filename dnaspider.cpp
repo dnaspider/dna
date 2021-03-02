@@ -451,21 +451,18 @@ wstring loadVar(wstring q = L"") {
 	wstring cell; while (getline(f, cell)) {
 		if (cell[0] == ' ') continue;
 		wstring se = cell.substr(0, q.length());
-		wstring c = L":"; switch (q[q.length() - 1]) {
+		int x{0}, xx{0};
+		for (size_t i = 0; i <= se.length(); ++i) x += se[i];
+		for (size_t i = 0; i <= q.length() - (q[q.length() - 1] != ':'); ++i) xx += q[i];//{}:
+		if (xx == x) {
+			wstring c = L":"; switch (q[q.length() - 1]) {
 			case '>': c = L">"; break;
 			case '-': c = L"-"; break;
-		}
-		wstring v = (cell.substr(cell.find(c) + 1)); if (v[0] == ' ' && c == L":") v = v.substr(1);
-		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		auto er = [se, v]() { wcout << "Error in " << variables << " [" << se << " " << v << "]\n"; };
-		if (q > L"") {//{}:
-			int xx{};
-			for (size_t i = 0; i <= q.length() - (q[q.length() - 1] != ':'); ++i) { xx += q[i]; };
-			if (xx == x) {
-				q = v;
-				f.close();
-				return q;
 			}
+			wstring v = (cell.substr(cell.find(c) + 1)); if (v[0] == ' ' && c == L":") v = v.substr(1);
+			q = v;
+			f.close();
+			return q;
 		}
 	}
 	q = L"";
@@ -480,7 +477,7 @@ void loadSe() {
 		wstring se = cell.substr(0, cell.find(L":") + 1);
 		wstring v = (cell.substr(cell.find(L":") + 1));	if (v[0] == ' ') v = v.substr(1);
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		auto er = [se, v]() { wcout << "Error in " << settings << " [" << se << " " << v << "]" << endl; };
+		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
 			case 1780://BackslashLogicals:
 				{ if (v == L"1" || v == L"0") BackslashLogicals = stoi(v); else er(); } break;
@@ -767,7 +764,9 @@ auto cbGet(wstring cb = L"") {
 wstring isVar(wstring q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
 	if (q.find(L"{") != string::npos) {
 		wstring tqg = q, tq{};
+		GetAsyncKeyState(VK_ESCAPE);
 		while (tqg.find(L"{") != string::npos) {
+			if (GetAsyncKeyState(VK_ESCAPE)) break;
 			q = q.substr(q.find(L"{") + 1, q.find(L"}", q.find(L"{")) - q.find(L"{") - 1); tq = q;
 			if (q > L"") q = loadVar(q);
 			if (q == L"") {
