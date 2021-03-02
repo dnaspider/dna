@@ -372,6 +372,49 @@ void printDb() {
 	f.close(); cout << endl;
 }
 
+wstring loadVar(wstring q = L"") {
+	wifstream f(variables); if (!f) { showOutsMsg(L"\n", variables, L" not found!", 0); return q; }
+	wstring cell; while (getline(f, cell)) {
+		if (cell[0] == ' ') continue;
+		wstring se = cell.substr(0, q.length());
+		int x{ 0 }, xx{ 0 };
+		for (size_t i = 0; i <= se.length(); ++i) x += se[i];
+		for (size_t i = 0; i <= q.length() - (q[q.length() - 1] != ':'); ++i) xx += q[i];//{}:
+		if (xx == x) {
+			wstring c = L":"; switch (q[q.length() - 1]) {
+			case '>': c = L">"; break;
+			case '-': c = L"-"; break;
+			}
+			wstring v = (cell.substr(cell.find(c) + 1)); if (v[0] == ' ' && c == L":") v = v.substr(1);
+			q = v;
+			f.close();
+			return q;
+		}
+	}
+	q = L"";
+	f.close();
+	return q;
+}
+
+wstring isVar(wstring q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
+	if (q.find(L"{") != string::npos) {
+		wstring tqg = q, tq{};
+		GetAsyncKeyState(VK_ESCAPE);
+		while (tqg.find(L"{") != string::npos) {
+			if (GetAsyncKeyState(VK_ESCAPE)) break;
+			q = q.substr(q.find(L"{") + 1, q.find(L"}", q.find(L"{")) - q.find(L"{") - 1); tq = q;
+			if (q > L"") q = loadVar(q);
+			if (q == L"") {
+				tqg.replace(tqg.find(L"{"), 1, L"::_::"); q = tqg;
+				continue;
+			}
+			tqg = regex_replace(tqg, wregex(L"\\{" + tq + L"\\}"), q); q = tqg;
+		}
+		tqg = regex_replace(tqg, wregex(L"::_::"), L"{"); q = tqg;
+	}
+	return q;
+}
+
 void scanDb(); void conn() {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find(L">") + 1);
 	if (qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
@@ -387,6 +430,7 @@ void scanDb(); void conn() {//<connect:>
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
 				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());
 				if (relink) tail = x; else tail = x + xx;
+				tail = isVar(tail);
 				if (SlightPauseInBetweenConnects) Sleep(150);
 				f.close(); i = -1;
 				if (speed > 0) sleep = 0;
@@ -444,30 +488,6 @@ void calc() {
 	if (speed > 0) sleep = 0;
 	re = L" ";
 	tail = qq;
-}
-
-wstring loadVar(wstring q = L"") {
-	wifstream f(variables); if (!f) { showOutsMsg(L"\n", variables, L" not found!", 0); return q; }
-	wstring cell; while (getline(f, cell)) {
-		if (cell[0] == ' ') continue;
-		wstring se = cell.substr(0, q.length());
-		int x{0}, xx{0};
-		for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		for (size_t i = 0; i <= q.length() - (q[q.length() - 1] != ':'); ++i) xx += q[i];//{}:
-		if (xx == x) {
-			wstring c = L":"; switch (q[q.length() - 1]) {
-			case '>': c = L">"; break;
-			case '-': c = L"-"; break;
-			}
-			wstring v = (cell.substr(cell.find(c) + 1)); if (v[0] == ' ' && c == L":") v = v.substr(1);
-			q = v;
-			f.close();
-			return q;
-		}
-	}
-	q = L"";
-	f.close();
-	return q;
 }
 
 void loadSe() {
@@ -759,25 +779,6 @@ auto cbGet(wstring cb = L"") {
 	}
 	CloseClipboard();
 	return cb;
-}
-
-wstring isVar(wstring q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
-	if (q.find(L"{") != string::npos) {
-		wstring tqg = q, tq{};
-		GetAsyncKeyState(VK_ESCAPE);
-		while (tqg.find(L"{") != string::npos) {
-			if (GetAsyncKeyState(VK_ESCAPE)) break;
-			q = q.substr(q.find(L"{") + 1, q.find(L"}", q.find(L"{")) - q.find(L"{") - 1); tq = q;
-			if (q > L"") q = loadVar(q);
-			if (q == L"") {
-				tqg.replace(tqg.find(L"{"), 1, L"::_::"); q = tqg;
-				continue; 
-			}
-			tqg = regex_replace(tqg, wregex(L"\\{" + tq + L"\\}"), q); q = tqg;
-		}
-		tqg = regex_replace(tqg, wregex(L"::_::"), L"{"); q = tqg;
-	}
-	return q;
 }
 
 void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
