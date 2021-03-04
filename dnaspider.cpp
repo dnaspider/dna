@@ -377,15 +377,8 @@ wstring loadVar(wstring q = L"") {
 	wstring cell; while (getline(f, cell)) {
 		if (cell[0] == ' ') continue;
 		wstring se = cell.substr(0, q.length());
-		int x{ 0 }, xx{ 0 };
-		for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		for (size_t i = 0; i <= q.length() - (q[q.length() - 1] != ':'); ++i) xx += q[i];//{}:
-		if (xx == x) {
-			wstring c = L":"; switch (q[q.length() - 1]) {
-			case '>': c = L">"; break;
-			case '-': c = L"-"; break;
-			}
-			wstring v = (cell.substr(cell.find(c) + 1)); if (v[0] == ' ' && c == L":") v = v.substr(1);
+		if (se == q) {
+			wstring v = cell.substr(q.length()); if (v[0] == '>') v = v.substr(1);
 			q = v;
 			f.close();
 			return q;
