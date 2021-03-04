@@ -374,11 +374,11 @@ void printDb() {
 
 wstring loadVar(wstring q = L"") {
 	wifstream f(variables); if (!f) { showOutsMsg(L"\n", variables, L" not found!", 0); return q; }
-	wstring cell; while (getline(f, cell)) {
+	wstring cell, se; while (getline(f, cell)) {
 		if (cell[0] == ' ') continue;
-		wstring se = cell.substr(0, q.length());
+		se = cell.substr(0, q.length());
 		if (se == q) {
-			wstring v = cell.substr(q.length()); if (v[0] == '>') v = v.substr(1);
+			wstring v = cell.substr(q.length());
 			q = v;
 			f.close();
 			return q;
