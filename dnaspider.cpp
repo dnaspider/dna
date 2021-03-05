@@ -722,7 +722,7 @@ wstring getAppT() {
 	int l = GetWindowTextLength(h);
 	wstring title(l, 0);
 	GetWindowTextW(h, &title[0], l + 1);
-	title = regex_replace(title, wregex(L","), L"\\,");	if (!BackslashLogicals) { title = regex_replace(title, wregex(L"\\|"), L"\\|"); title = regex_replace(title, wregex(L"&"), L"\\&"); }
+	title = regex_replace(title, wregex(L","), L"\\,"); title = regex_replace(title, wregex(L">"), L"\\g");	if (!BackslashLogicals) { title = regex_replace(title, wregex(L"\\|"), L"\\|"); title = regex_replace(title, wregex(L"&"), L"\\&"); }
 	return title;
 }
 
@@ -1141,7 +1141,8 @@ void scanDb() {
 									}
 									if (check_if_num(x) == L"") { printq(); break; }
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
-								if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
+								a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
+								a = regex_replace(a, wregex(L"\\\\g"), L">");
 								HWND h{}, h1{}; DWORD pid{};
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find(L">") + 1), L"", 0); } };
@@ -1264,6 +1265,7 @@ void scanDb() {
 						else if (qqb(L"<ctrl")) kbPress(L"<ctrl", VK_CONTROL);
 						else if (qqb(L"<caps")) kbPress(L"<caps", VK_CAPITAL);
 						else if (testqqb(L"<cb:")) {
+							qp = regex_replace(qp, wregex(L"\\\\g"), L">");
 							cbSet(qp); rei();
 						}
 						else conn();
@@ -1981,6 +1983,8 @@ void scanDb() {
 											qx = regex_replace(qx, wregex(L"\\\\,"), L",");// \,
 										}
 									}
+									qx = regex_replace(qx, wregex(L"\\\\g"), L">");
+									qy = regex_replace(qy, wregex(L"\\\\g"), L">");
 									wstring c = regex_replace(cbGet(), wregex(qx), qy);
 									cbSet(c);
 								}
