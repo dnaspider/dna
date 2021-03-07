@@ -332,8 +332,10 @@ bool testqqb(const wstring s) {
 void clearAllKeys() {
 	if (!ignoreAZ) for (int i = 65; i <= 90; ++i) { GetAsyncKeyState(i); }
 	if (!ignore09) for (int i = 48; i <= 57; ++i) { GetAsyncKeyState(i); }
-	GetAsyncKeyState(cKey);
 	GetAsyncKeyState(reKey);
+	GetAsyncKeyState(cKey);
+	GetAsyncKeyState(VK_RSHIFT);
+	GetAsyncKeyState(VK_LSHIFT);
 	GetAsyncKeyState(VK_BACK);
 	GetAsyncKeyState(VK_ESCAPE);
 	GetAsyncKeyState(VK_PAUSE);
@@ -341,8 +343,6 @@ void clearAllKeys() {
 	if (!ignoreF1s) { GetAsyncKeyState(VK_F1); GetAsyncKeyState(VK_F2); GetAsyncKeyState(VK_F3); GetAsyncKeyState(VK_F4); GetAsyncKeyState(VK_F5); GetAsyncKeyState(VK_F6); GetAsyncKeyState(VK_F7); GetAsyncKeyState(VK_F8); GetAsyncKeyState(VK_F9); GetAsyncKeyState(VK_F10); GetAsyncKeyState(VK_F11); GetAsyncKeyState(VK_F12); }
 	if (!ignoreArrows) { GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_DOWN); }
 	if (!ignoreTab)GetAsyncKeyState(VK_TAB);
-	if (!ignoreLShift)GetAsyncKeyState(VK_LSHIFT);
-	if (!ignoreRShift)GetAsyncKeyState(VK_RSHIFT);
 	if (!ignoreLAlt)GetAsyncKeyState(VK_LMENU);
 	if (!ignoreRAlt)GetAsyncKeyState(VK_RMENU);
 	if (!ignoreLCtrl)GetAsyncKeyState(VK_LCONTROL);
@@ -2192,8 +2192,8 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && GetAsyncKeyState(cKey) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
-			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && GetAsyncKeyState(cKey) && cKey != VK_RSHIFT) { clearAllKeys(); if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; strand = L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; strand = L""; } prints(); continue; }
+			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
+			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { clearAllKeys(); if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; strand = L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; strand = L""; } prints(); continue; }
 			if (strand.substr(0, 1) == L"<") {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(L">") != std::string::npos) strand.clear();
