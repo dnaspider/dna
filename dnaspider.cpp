@@ -646,6 +646,7 @@ void printSe() {
 		cout << "ShowOuts: " << showOuts << '\n';
 		wcout << "OutsTemplate: " << OutsTemplate << '\n';
 		wcout << "OutTabs: " << OutTabs << '\n';
+		wcout << "Settings: " << settings << '\n';
 		wcout << "Database: " << database << '\n';
 		wcout << "Variables: " << variables << '\n';
 		cout << "CtrlKey: " << cKey << '\n';
