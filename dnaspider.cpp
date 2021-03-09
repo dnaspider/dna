@@ -389,7 +389,7 @@ wstring loadVar(wstring q = L"") {
 	return q;
 }
 
-wstring isVar(wstring q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
+wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
 	if (q.find(L"{") != string::npos) {
 		wstring tqg = q, tq{};
 		GetAsyncKeyState(VK_ESCAPE);
@@ -2193,7 +2193,7 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
 			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
-			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { clearAllKeys(); if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; strand = L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; strand = L""; } prints(); Sleep(150); continue; }
+			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); Sleep(150); continue; }
 			if (strand.substr(0, 1) == L"<") {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(L">") != std::string::npos) strand.clear();
