@@ -2250,7 +2250,7 @@ int main() {//cout << "@dnaspider\n\n";
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
 				else { clearAllKeys(); strand = L"<"; }
 			}
-			prints(); continue;
+			prints(); Sleep(150); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
