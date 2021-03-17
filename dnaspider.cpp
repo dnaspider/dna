@@ -1043,11 +1043,10 @@ void scanDb() {
 							SetCursorPos(qxcc, qycc); rei();
 						}
 						else if (qqb(L"<~m>")) {//disable
-							multiStrand = 0; rei();
-							multiblock = 1;	wstring t = codes; out(tail.substr(i + 1)); multiblock = 0; reTail = t; return;
+							multiStrand = 0; multiblock = 1; rei();
 						}
 						else if (qqb(L"<~~m>")) {//enable
-							multiStrand = 1; rei();
+							multiStrand = 1; multiblock = 0; rei();
 						}
 						else conn();
 						break;
