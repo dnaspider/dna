@@ -13,6 +13,7 @@ using namespace std;
 using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
+bool multiLine = 1; wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
 bool multiblock = 0; //<~m>
 bool replacer = 1; //{}
 bool BackslashLogicals = 0; //<ifcb:a\|b\|c><ifcb:a|b|c>
@@ -377,8 +378,9 @@ void printDb() {
 wstring loadVar(wstring q = L"") {
 	wifstream f(variables); if (!f) { showOutsMsg(L"\n", variables, L" not found!", 0); return q; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
-	wstring cell, se; while (getline(f, cell)) {
-		if (cell[0] == ' ') continue;
+	wstring cell, se; GetAsyncKeyState(VK_ESCAPE); while (getline(f, cell, multiLineDelim[0])) {
+		if (GetAsyncKeyState(VK_ESCAPE) || cell.substr(0, 4) == L"<'''") break;
+		if (cell[0] == 0 || cell[0] == '\n' || cell[0] == ' ') continue;
 		se = cell.substr(0, q.length());
 		if (se == q) {
 			wstring v = cell.substr(q.length());
@@ -400,7 +402,10 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
 		while (tqg.find(L"{") != string::npos) {
 			if (GetAsyncKeyState(VK_ESCAPE)) break;
 			q = q.substr(q.find(L"{") + 1, q.find(L"}", q.find(L"{")) - q.find(L"{") - 1); tq = q;
-			if (q > L"") q = loadVar(q);
+			if (q > L"") { 
+				if (multiLine) { q = regex_replace(q, wregex(L"\n"), L""); q = regex_replace(q, wregex(L"\t"), L""); }
+				q = loadVar(q);
+			}
 			if (q == L"") {
 				tqg.replace(tqg.find(L"{"), 1, L"::_::"); q = tqg;
 				continue;
@@ -439,7 +444,7 @@ void scanDb(); void conn() {//<connect:>
 	if (con) {
 		wifstream f(database); wstring cell;
 		if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));//properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-		while (getline(f, cell)) {
+		while (getline(f, cell, multiLineDelim[0])) {
 			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
 				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());
@@ -506,6 +511,7 @@ void calc() {
 
 void loadSe() {
 	wifstream f(settings); if (!f) { showOutsMsg(L"\n", settings, L" not found!", 0); return; }
+	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));//
 	wstring cell; while (getline(f, cell)) {
 		if (cell[0] == ' ') continue;
 		wstring se = cell.substr(0, cell.find(L":") + 1);
@@ -513,6 +519,12 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
+			case 2066://DbMultiLineDelimiter:
+				if (v.length() > 0 && v[0] != '\\') {
+					multiLine = 1; multiLineDelim = v[0];
+				}
+				else { multiLine = 0; multiLineDelim = L'\n'; }
+				break;
 			case 872://Replacer:
 				{ if (v == L"1" || v == L"0") replacer = stoi(v); else er(); } break;
 			case 1780://BackslashLogicals:
@@ -671,6 +683,7 @@ void printSe() {
 		wcout << "OutTabs: " << OutTabs << '\n';
 		wcout << "Settings: " << settings << '\n';
 		wcout << "Database: " << database << '\n';
+		cout << "DbMultiLineDelimiter: "; if (multiLineDelim[0] == '\n') cout << "\\n\n"; else showOutsMsg(L"", multiLineDelim, L"\n", 1);
 		wcout << "Variables: " << variables << '\n';
 		cout << "CtrlKey: " << cKey << '\n';
 		cout << "CloseCtrlMode: " << close_ctrl_mode << '\n';
@@ -815,6 +828,7 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	wcout << s;
 
 	for (; x < w.length(); ++x) {
+		if (multiLine) { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
 		if (b && w[x] == '\\') {
 			t = 0;
 			switch (w[x + 1]) {
@@ -954,10 +968,11 @@ void scanDb() {
 		}
 	}
 	wifstream f(database); if (!f) { showOutsMsg(L"\n", database, L" not found!", 0); return; }
+	wstring sv = strand;
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell)) { //cout << cell << endl;
+	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
-		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, strand.length()) == strand || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L":" || cell.substr(0, strand.length()) == strand.substr(0, strand.length() - 1) + L"-" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L":>" || cell.substr(0, strand.length() + 1) == strand.substr(0, strand.length() - 1) + L"->") || cell.substr(0, strand.length() + 1) == strand + L">" || cell.substr(0, strand.length() + 1) == strand + L":" || cell.substr(0, strand.length() + 1) == strand + L"-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell[0] != '<') || close_ctrl_mode && strandLengthMode && strand[0] != '<' && cell.substr(0, strand.length() - 1) == strand.substr(0, strand.length() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
+		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, sv.size()) == strand || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L":" || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L"-" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L":>" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L"->") || cell.substr(0, sv.size() + 1) == strand + L">" || cell.substr(0, sv.size() + 1) == strand + L":" || cell.substr(0, sv.size() + 1) == strand + L"-" || (strandLengthMode && cell.substr(0, strandLength) == strand && cell[0] != '<') || close_ctrl_mode && strandLengthMode && strand[0] != '<' && cell.substr(0, sv.size() - 1) == sv.substr(0, sv.size() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o || io || io
 			if (toggledCC) { toggledCC = 0; if (!ToggleKeep) close_ctrl_mode = !close_ctrl_mode; } if (toggledCSO) { toggledCSO = 0; if (!ToggleKeep) qScanOnly = !qScanOnly; } if (flipd) { flipd = 0; if (ToggleCloseCtrl) { if (close_ctrl_mode && strand[strand.length() - 1] == '>') { strand = strand.substr(0, strand.length() - 1); } close_ctrl_mode = 0; } if (ToggleCtrlScanOnly) qScanOnly = 0; }
 			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
@@ -1153,6 +1168,7 @@ void scanDb() {
 							break;
 						case 'p':
 							if (testqqb(L"<app:") || testqqb(L"<App:")) {//app activate, if app in foreground
+								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link = L"";//<app:a,x,ms,link>
 								if (a.find(L"\\,") != wstring::npos) {// \,
 									wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -1351,6 +1367,7 @@ void scanDb() {
 						break;
 					case'i':
 						if (testqqb(L"<ifcb")) {//Clipboard ==, !=, <, <=, g, g=, (f)ind, (F)ind, (n)ot
+							if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 							wstring a = qp, x = L"1", ms = L"0", linkC; link = L"";//<ifcb:a,x,ms,link>
 							if (a.find(L"\\,") != wstring::npos) {// \,
 								wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -1549,7 +1566,8 @@ void scanDb() {
 							if (qp == to_wstring(ic)) { speed = 0; return; } else rei();
 						}
 						else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge) | <ifs:+5,>
-							wstring a = qp; if (a == L"") { conn(); break; }
+						if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+						wstring a = qp; if (a == L"") { conn(); break; }
 							a = a.substr(0, a.find(L","));
 							wstring x = L"1", ms = L"0", linkC; link = L"";//<app:a,x,ms,link>
 							if (qp.find(L",") != string::npos) {
@@ -1840,6 +1858,7 @@ void scanDb() {
 						case 'G':
 						case 'g':
 							if (testqqb(L"<RGB:") || testqqb(L"<rgb:")) { //<rgb:r,g,b,x,ms,link>
+								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring r, g, b, a = qp, x = L"1", ms = L"0", linkC; link = L"";
 								r = qp.substr(0, qp.find(L" "));
 								b = qp.substr(qp.find(L" ") + 1);
@@ -2145,6 +2164,7 @@ void scanDb() {
 					}//<x>
 					break;
 				default:
+					if (multiLine) { if (ctail[0] == '\t' || ctail[0] == '\n') continue; }
 					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 90) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if !"#$%& ()*+ : > ?&AZ ^ _ {|}~
 					if (shft) kbHold(VK_LSHIFT);
 					kb(ctail[0]);
@@ -2207,7 +2227,7 @@ int main() {//cout << "@dnaspider\n\n";
 			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 			wcout << database << " not found.\nPress [1] to auto create.\n\n";
 			for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nVariables: " << variables << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nReplacer: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nVariables: " << variables << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nReplacer: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 		}
 	}
 	loadSe();
