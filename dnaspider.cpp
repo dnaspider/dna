@@ -1316,6 +1316,7 @@ void scanDb() {
 						else if (qqb(L"<ctrl")) kbPress(L"<ctrl", VK_CONTROL);
 						else if (testqqb(L"<CB:") || testqqb(L"<cb:")) {
 							qp = regex_replace(qp, wregex(L"\\\\g"), L">");
+							cbSet(qp);
 							if (qq[1] == 'C') { kbHold(VK_CONTROL); kb('v'); kbRelease(VK_CONTROL); }
 							rei();
 						}
