@@ -515,8 +515,8 @@ void loadSe() {
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));//
 	wstring cell; while (getline(f, cell)) {
 		if (cell[0] == ' ') continue;
-		wstring se = cell.substr(0, cell.find(L":") + 1);
-		wstring v = (cell.substr(cell.find(L":") + 1));	if (v[0] == ' ') v = v.substr(1);
+		wstring se = cell.substr(0, cell.find_first_of(L":\t ")); se += ':';
+		wstring v = (cell.substr(cell.find_first_of(L":\t ") + 1)); v = v.substr(v.find_first_not_of(L"\t"));
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
