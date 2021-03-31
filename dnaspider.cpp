@@ -1324,12 +1324,13 @@ void scanDb() {
 							else conn();
 							break;
 						case 'B':
+						case 'b':
 							if (testqqb(L"<CB:") || testqqb(L"<cb:")) {
-							qp = regex_replace(qp, wregex(L"\\\\g"), L">");
-							cbSet(qp);
-							if (qq[1] == 'C') { kbHold(VK_CONTROL); kb('v'); kbRelease(VK_CONTROL); }
-							rei();
-						}
+								qp = regex_replace(qp, wregex(L"\\\\g"), L">");
+								cbSet(qp);
+								if (qq[1] == 'C') { kbHold(VK_CONTROL); kb('v'); kbRelease(VK_CONTROL); }
+								rei();
+							}
 							else conn();
 							break;
 						case 'a':
@@ -1346,13 +1347,13 @@ void scanDb() {
 						case 'B':
 						case 'b':
 							if (testqqb(L"<DB:") || testqqb(L"<db:")) {//.h Database:
-							if (qq[1] == 'D') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
-							qp = regex_replace(qp, wregex(L"/"), L"\\");
-							database = qp;
-							db = database.substr(database.find_last_of('\\') + 1) + L" - ";
-							rei();
-							break;
-						}
+								if (qq[1] == 'D') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
+								qp = regex_replace(qp, wregex(L"/"), L"\\");
+								database = qp;
+								db = database.substr(database.find_last_of('\\') + 1) + L" - ";
+								rei();
+								break;
+							}
 							else conn();
 							break;
 						case 'd':
