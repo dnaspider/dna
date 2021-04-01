@@ -1636,7 +1636,7 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<if+:")) {//<if+:> | stop if <+>
-								if (qp == to_wstring(ic)) { speed = 0; if (!noClearStrand) { strand.clear(); } return; } else rei();
+								if (qp == to_wstring(ic)) { speed = 0; clearAllKeys(); if (!noClearStrand) { strand.clear(); } return; } else rei();
 							}
 							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge) | <ifs:+5,>
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
