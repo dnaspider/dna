@@ -1354,10 +1354,7 @@ void scanDb() {
 								rei();
 								break;
 							}
-							else conn();
-							break;
-						case 'd':
-							if (qqb(L"<db>")) { printDb(); rei(); }
+							else if (qqb(L"<db>")) { printDb(); rei(); }
 							else conn();
 							break;
 						case 'o':
