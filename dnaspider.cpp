@@ -1025,16 +1025,18 @@ void scanDb() {
 					if (showOuts) showOutsMsg(L"qq: " + OutTab + OutTab, qq);
 					if (qq.substr(0, qq.find(L">")).find(L":") != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
-						if (qp[0] == ' ') qp = qp.substr(1);
-						if (qp.find(L",") != string::npos) {
-							qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
-							qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
+						if (qp[0] > 0) {
+							if (qp[0] == ' ') qp = qp.substr(1);
+							if (qp.find(L",") != string::npos) {
+								qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
+								qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
+							}
+							else if (qp.find(L" ") != string::npos) {
+								qx = qp.substr(0, qp.find(L" "));//x <xy:# #>
+								qy = qp.substr(qp.find(L" ") + 1, qp.find(L">") - qp.find(L" ") - 1);
+							}
+							else { qx.clear(), qy.clear(); } //wcout << "qp: " << qp  << "\nqx: " << qx << "\nqy: " << qy << endl;
 						}
-						else if (qp.find(L" ") != string::npos) {
-							qx = qp.substr(0, qp.find(L" "));//x <xy:# #>
-							qy = qp.substr(qp.find(L" ") + 1, qp.find(L">") - qp.find(L" ") - 1);
-						}
-						else { qx.clear(), qy.clear(); } //wcout << "qp: " << qp  << "\nqx: " << qx << "\nqy: " << qy << endl;
 					}
 					switch (qq[1]) {
 					case '<'://cout
@@ -1636,7 +1638,9 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<if+")) {//<if+:> | stop if <+>
-								bool b = 0; int q = stoi(qp); if (check_if_num(qp) == L"") { printq(); break; }
+								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								bool b = 0; int q = stoi(qp); if (check_if_num(qp) == L"") { conn(); break; }
+								wstring l = L""; if (qp.find(L" ") != string::npos) l = qp.substr(qp.find(L" ") + 1);//<if+:# true:>
 								switch (qq[4]) {
 									default:
 									case ':': //==
@@ -1662,7 +1666,12 @@ void scanDb() {
 										} //if+ge >=/g=
 										else if (ic > q) b = 1;
 									}
-								if (b) { speed = 0; clearAllKeys(); if (!noClearStrand) { strand.clear(); } return; } else rei();
+								if (b) { 
+									if (l > L"") {
+										tail = l[0] == '<' ? l + L">" + qq.substr(qq.find(L">") + 1) : L"<" + l + L">";//<if+:# link->
+										if (speed > 0) sleep = 0; re = L" "; i = -1; break;
+									}
+									speed = 0; clearAllKeys(); if (!noClearStrand) { strand.clear(); } return; } else rei();
 							}
 							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge) | <ifs:+5,>
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
