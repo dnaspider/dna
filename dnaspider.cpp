@@ -833,7 +833,9 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			t = 0;
 			switch (w[x + 1]) {
 			case'd': //out <+>
-				{ wstring t = qq; out(to_wstring(ic)); reTail = tail = t; i = 0; } //append <+>
+				{ size_t x = i; wstring t = tail, c = codes;
+				out(to_wstring(ic));
+				tail = t; i = x; re = L" "; codes = c; }
 				write(L""); break;
 			case'+':
 				{ write(ic); } break; //<+>
@@ -1638,8 +1640,8 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<if+")) {//<if+:> | stop if <+>
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
-								bool b = 0; if (check_if_num(qp) == L"" || qp == L"") { conn(); break; } int q = stoi(qp);
+								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (check_if_num(qp) == L"" || qp[0] == 0) { conn(); break; }
+								bool b = 0; int q = stoi(qp);
 								wstring l = L""; if (qp.find(L" ") != string::npos) l = qp.substr(qp.find(L" ") + 1);//<if+:# true:>
 								switch (qq[4]) {
 									default:
@@ -1666,12 +1668,14 @@ void scanDb() {
 										} //if+ge >=/g=
 										else if (ic > q) b = 1;
 									}
-								if (b) { 
+								if (b) {
 									if (l > L"") {
-										tail = l[0] == '<' ? l + L">" + qq.substr(qq.find(L">") + 1) : L"<" + l + L">";//<if+:# link->
+										tail = l[0] == '<' ? l + L">" + qq.substr(qq.find(L">") + 1) : L"<" + l + L">";//<if+:# true->
 										if (speed > 0) sleep = 0; re = L" "; i = -1; break;
 									}
-									speed = 0; clearAllKeys(); if (!noClearStrand) { strand.clear(); } return; } else rei();
+									i = tail.size(); break;
+								}
+								else rei();
 							}
 							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge) | <ifs:+5,>
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
