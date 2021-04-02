@@ -1639,7 +1639,7 @@ void scanDb() {
 							}
 							else if (testqqb(L"<if+")) {//<if+:> | stop if <+>
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
-								bool b = 0; int q = stoi(qp); if (check_if_num(qp) == L"") { conn(); break; }
+								bool b = 0; if (check_if_num(qp) == L"" || qp == L"") { conn(); break; } int q = stoi(qp);
 								wstring l = L""; if (qp.find(L" ") != string::npos) l = qp.substr(qp.find(L" ") + 1);//<if+:# true:>
 								switch (qq[4]) {
 									default:
