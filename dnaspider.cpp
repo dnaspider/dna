@@ -72,7 +72,7 @@ bool ignoreCaps = true;
 bool strandLengthMode = false;
 int strandLength = 3;
 bool qScanOnly = false;
-wstring database, settings, variables;//R"(C:\dna\se.txt)";
+wstring database, settings, replacerDb;
 int frequency = 150; //>> ms response -> vk_
 int speed = 0; //<< 
 short reKey = VK_SCROLL; //repeat
@@ -377,7 +377,7 @@ void printDb() {
 }
 
 wstring loadVar(wstring q = L"") {
-	wifstream f(variables); if (!f) { showOutsMsg(L"\n", variables, L" not found!", 0); return q; }
+	wifstream f(replacerDb); if (!f) { showOutsMsg(L"\n", replacerDb, L" not found!", 0); return q; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	wstring cell, se; GetAsyncKeyState(VK_ESCAPE); while (getline(f, cell, multiLineDelim[0])) {
 		if (GetAsyncKeyState(VK_ESCAPE) || cell.substr(0, 4) == L"<'''") break;
@@ -395,7 +395,7 @@ wstring loadVar(wstring q = L"") {
 	return q;
 }
 
-wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <v:>
+wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 	if (!replacer) return q;
 	if (q.find(L"{") != string::npos) {
 		wstring tqg = q, tq{};
@@ -554,8 +554,8 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") showStrand = stoi(v); else er(); } break;
 			case 847://Database:
 				{ if (v.length() > 0) { database = v.substr(0); database = regex_replace(database, wregex(L"/"), L"\\"); db = database.substr(database.find_last_of('\\') + 1) + L" - "; } else er(); } break;
-			case 979://Variables:
-				{ if (v.length() > 0) { variables = v.substr(0); } else er(); } break;
+			case 1038://ReplacerDb:
+				{ if (v.length() > 0) { replacerDb = v.substr(0); } else er(); } break;
 			case 1313://OutsTemplate:
 				OutsTemplate = v.substr(0); break;
 			case 1354://CloseCtrlMode:
@@ -685,7 +685,8 @@ void printSe() {
 		wcout << "Settings: " << settings << '\n';
 		wcout << "Database: " << database << '\n';
 		cout << "DbMultiLineDelimiter: "; if (multiLineDelim[0] == '\n') cout << "\\n\n"; else showOutsMsg(L"", multiLineDelim, L"\n", 1);
-		wcout << "Variables: " << variables << '\n';
+		cout << "Replacer: " << replacer << '\n';
+		wcout << "ReplacerDb: " << replacerDb << '\n';
 		cout << "CtrlKey: " << cKey << '\n';
 		cout << "CloseCtrlMode: " << close_ctrl_mode << '\n';
 		cout << "RSHIFT+CtrlKey_ToggleCloseCtrlMode: " << ToggleCloseCtrl << '\n';
@@ -739,7 +740,6 @@ void printSe() {
 		cout << "SeDbClearStrand_CtrlS: " << SeDbClearStrand_CtrlS << '\n';
 		cout << "Assume: " << assume << '\n';
 		cout << "Unicode: " << Unicode << '\n';
-		cout << "Replacer: " << replacer << '\n';
 		wcout << "Editor: " << editor << '\n';
 		wcout << "Editor1: " << editor1 << '\n';
 		cout << "Exit_EscX: " << enableEscX << '\n';
@@ -989,7 +989,7 @@ void scanDb() {
 			}
 			tail = re > L"" && strand == L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
 			if (multiStrand) mainn.getStrand(cell);
-			tail = isVar(tail); //<v:>
+			tail = isVar(tail); //<r:>
 			switch (tail[0]) {//set_tail
 			case ':':
 				tail = tail.substr(1, tail.length());
@@ -1968,6 +1968,15 @@ void scanDb() {
 					case'R':
 					case'r':
 						switch (qq[2]) {
+						case ':':
+							if (testqqb(L"<R:") || testqqb(L"<r:")) {//.h ReplacerDb:
+								if (qq[1] == 'R') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
+								qp = regex_replace(qp, wregex(L"/"), L"\\");
+								replacerDb = qp;
+								rei();
+							}
+							else conn();
+							break;
 						case 'p':
 							if (qqb(L"<rp>")) {//return pointer
 								SetCursorPos(qxc, qyc);
@@ -2299,15 +2308,7 @@ void scanDb() {
 						else conn();
 						break;
 					case 'v':
-					case 'V':
-						if (testqqb(L"<V:") || testqqb(L"<v:")) {//.h Variables
-							if (qq[1] == 'V') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
-							qp = regex_replace(qp, wregex(L"/"), L"\\");
-							variables = qp;
-							rei();
-							break;
-						}
-						else if (qqb(L"<v>")) { toggle_visibility(); rei(); }
+						if (qqb(L"<v>")) { toggle_visibility(); rei(); }
 						else conn();
 						break;
 					case'w':
@@ -2403,7 +2404,7 @@ void scanDb() {
 }
 
 void printCtrls() {
-	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC\t\t\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m><~~m>\t\tDisable, enable MultiStrand (No repeat)\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+>\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3><test->\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tcolor\n\t\t\t\\n\tnewline\n\t\t\t\\t\ttab\n\t\t\t\\T\ttime\n\t\t\t\\'\tblank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tcb\n\t\t\t\\a\tbeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tToggle settings back after next run (For RSHIFT + RCTRL)\n<db:>\t\t\tSwitch db, se, v\n<se:>\t\t\t<test-><DB:c:\\dna\\d.txt>\n<v:>\t\t\t(se.txt Variables | Db for replacer)\n{}\t\t\tReplacer (se.txt Replacer: 1)\n\t\t\t<test-><v:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n\n";
+	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC\t\t\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m><~~m>\t\tDisable, enable MultiStrand (No repeat)\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+>\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3><test->\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tcolor\n\t\t\t\\n\tnewline\n\t\t\t\\t\ttab\n\t\t\t\\T\ttime\n\t\t\t\\'\tblank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tcb\n\t\t\t\\a\tbeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tToggle settings back after next run (For RSHIFT + RCTRL)\n<db:>\t\t\tSwitch db, se, r\n<se:>\t\t\t<test-><DB:c:\\dna\\d.txt>\n<r:>\t\t\t(se.txt ReplacerDb)\n{}\t\t\tReplacer (se.txt Replacer: 1)\n\t\t\t<test-><r:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n\n";
 }
 
 void printIntro() {
@@ -2439,12 +2440,12 @@ int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	{
 		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; ++i) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
-		database = c + L"\\db.txt"; settings = c + L"\\se.txt"; variables = database;
+		database = c + L"\\db.txt"; settings = c + L"\\se.txt"; replacerDb = database;
 		if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
 			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 			wcout << database << " not found.\nPress [1] to auto create.\n\n";
 			for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nVariables: " << variables << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nReplacer: 0\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 		}
 	}
 	loadSe();
