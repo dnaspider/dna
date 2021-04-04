@@ -1177,6 +1177,7 @@ void scanDb() {
 						case 'p':
 							if (testqqb(L"<app:") || testqqb(L"<App:")) {//app activate, if app in foreground
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (qp == L"") { conn(); break; }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link = L"";//<app:a,x,ms,link>
 								if (a.find(L"\\,") != wstring::npos) {// \,
 									wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -1188,6 +1189,7 @@ void scanDb() {
 								}
 								else a = a.substr(0, a.find(L","));
 								if (qp.find(L",") != string::npos) {
+									if (a == L"") { printq(); break; }
 									ms = L"333";
 									x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
 									if (x.find(L",") != string::npos) {
@@ -1222,7 +1224,7 @@ void scanDb() {
 									}
 								};
 
-								wstring tar = a;
+								wstring tar = a, app = a;
 								for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
@@ -1238,7 +1240,7 @@ void scanDb() {
 											if (tar[j] == '|' && (!BackslashLogicals ? 1 : tar[j - 1] == '\\') || tar[j] == '&' && (!BackslashLogicals ? 1 : tar[j - 1] == '\\') || j == a.length() - 1) {
 												t = a.substr(ta.length());
 												if (t > L"") q = a.substr(j, 1);
-												a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); } if (multiStrand) { multi.setApp(a); }
+												a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); }
 												if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
 												if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1);//!\0
 												sifapp(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
@@ -1259,7 +1261,7 @@ void scanDb() {
 												if (!BackslashLogicals) { tar = regex_replace(a, wregex(L"\\\\\\|"), L"  "); tar = regex_replace(tar, wregex(L"\\\\\\&"), L"  "); }
 											}
 										}
-										a = L" ";
+										if (!multiStrand) a = app;
 										if (sor && sand) multi.br = 1; //sifapp
 									}
 									else {
@@ -1267,9 +1269,7 @@ void scanDb() {
 										sifapp();
 									}
 									if (multi.getBreak()) break;
-									if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
-
-									if (!multi.getBreak()) {
+									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
 										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
@@ -1445,6 +1445,7 @@ void scanDb() {
 						case 'f':
 							if (testqqb(L"<ifcb")) {//Clipboard ==, !=, <, <=, g, g=, (f)ind, (F)ind, (n)ot
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (qp == L"") { conn(); break; }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link = L"";//<ifcb:a,x,ms,link>
 								if (a.find(L"\\,") != wstring::npos) {// \,
 									wstring t = a.substr(a.find_last_of(L"\\") + 2);
@@ -1456,7 +1457,9 @@ void scanDb() {
 								}
 								else a = a.substr(0, a.find(L","));
 								if (a.find(L"\\,") != wstring::npos) a = regex_replace(a, wregex(L"\\\\,"), L",");// \,
+								wstring app = a;
 								if (qp.find(L",") != string::npos) {
+									if (a == L"") { printq(); break; }
 									ms = L"333";
 									x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
 									if (x.find(L",") != string::npos) {
@@ -1569,7 +1572,7 @@ void scanDb() {
 														if (tar[j] == '|' && (!BackslashLogicals ? 1 : tar[j - 1] == '\\') || tar[j] == '&' && (!BackslashLogicals ? 1 : tar[j - 1] == '\\') || j == a.length() - 1) {
 															t = a.substr(ta.length());
 															if (t > L"") q = a.substr(j, 1);
-															a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); } if (multiStrand) { multi.setApp(a); }
+															a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); }
 															if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
 															if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); //!\0
 															sifcb(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
@@ -1590,7 +1593,6 @@ void scanDb() {
 															if (!BackslashLogicals) { tar = regex_replace(a, wregex(L"\\\\\\|"), L"  "); tar = regex_replace(tar, wregex(L"\\\\\\&"), L"  "); }
 														}
 													}
-													a = L" ";
 													if (sor && sand) multi.br = 1;
 												}
 												else {
@@ -1598,10 +1600,8 @@ void scanDb() {
 													sifcb();
 												}
 											}
-
+											tar = a = app;
 											if (multi.getBreak()) break;
-
-											if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
 										}
 									}
 									CloseClipboard();
@@ -1677,12 +1677,13 @@ void scanDb() {
 								}
 								else rei();
 							}
-							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge) | <ifs:+5,>
+							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge, <ift+:5> | <ifs:+5,> (MultiStrand:1)
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
-								wstring a = qp; if (a == L"") { conn(); break; }
-								a = a.substr(0, a.find(L","));
-								wstring x = L"1", ms = L"0", linkC; link = L"";//<app:a,x,ms,link>
+								if (qp == L"") { conn(); break; }
+								wstring a = qp; a = a.substr(0, a.find(L","));
+								wstring app = a, x = L"1", ms = L"0", linkC; link = L"";//<ift:a,x,ms,link>
 								if (qp.find(L",") != string::npos) {
+									if (a == L"") { printq(); break; }
 									ms = L"333";
 									x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
 									if (x.find(L",") != string::npos) {
@@ -1705,7 +1706,7 @@ void scanDb() {
 								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
 								int noq = 0; auto pe = [&a, &noq, qqC](int q) {//+= min, sec. <ifm:+5>
 									if (a > L"" && a[0] == '+') {
-										if (a.at(0) == '+') a = a.substr(1);
+										if (a[0] == '+') a = a.substr(1);
 										int x = stoi(a);
 										x += noq;
 										if (x >= q) {//24|60
@@ -1745,16 +1746,14 @@ void scanDb() {
 										noq = stoi(w.substr(4, 2));
 										pe(60);
 									}
-									if (a == L"" || check_if_num(a) == L"") { conn(); mF = 1; multi.setBreak(); }
 									if (multiStrand) multi.setApp(a);
-									if (noq == 0) multi.setBreak();
 									int ans = 0, aa = stoi(a);
 									switch (qqC[4]) {
 									case '+': //+= hr, min, sec <ifm+:5>
 										multi.setMS(L"0");
 										{ int t = aa;
-										if (qqC.at(3) == 'm' || qqC.at(3) == 'h') t *= 60;
-										if (qqC.at(3) == 'h') t *= t;
+										if (qqC[3] == 'm' || qqC[3] == 'h') t *= 60;
+										if (qqC[3] == 'h') t *= t;
 										Sleep(t * 1000);
 										ans = 1; }
 										break;
@@ -1779,16 +1778,16 @@ void scanDb() {
 										else if (noq > aa) ans = 1;
 										break;
 									}
-									if (ans == 1 || noq == 0) multi.setBreak();
+									if (ans == 1) multi.setBreak();
 								};
 							
 								for (; size < length; ++size) { //cout << size << " iftime:" << a << " *" << x << " " << ms << "ms" << endl;
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
-								
 
-									if (multiStrand) { a = multi.getApp(); } if (a.find(L"|") != string::npos || a.find(L"&") != string::npos) {//<t-<ifh:a|a|a,*,ms, T: F:>
+									if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
+									if (a.find(L"|") != string::npos || a.find(L"&") != string::npos) {//<t-<ifh:a|a|a,*,ms, T: F:>
 										wstring t = L"", ta = L"", q = L""; bool sor = 1, sand = 1;
 										for (size_t j = 0; j < a.length(); ++j) {// | &
 											ta += a[j];
@@ -1796,7 +1795,7 @@ void scanDb() {
 												t = a.substr(ta.length());
 												if (t > L"") q = a.substr(j, 1);
 												a = t > L"" ? ta.substr(0, ta.length() - 1 - (a.find(L"\\") != string::npos && BackslashLogicals)) : ta;
-												if (a[0] == ' ') a = a.substr(1); if (multiStrand) { multi.setApp(a); }
+												if (a[0] == ' ') a = a.substr(1);
 												sif();
 												if (!multi.br) {
 													if (q == L"&") { sand = 0; 
@@ -1813,21 +1812,17 @@ void scanDb() {
 													sor = 1; break;
 												}
 
-												//wcout << a << "\t(" << multi.br << ")\t"; if (j != a.length() - 1) wcout << q << endl;
 												multi.br = 0;
 												a = t; j = -1;
 												ta.clear();
 											}
 										}
-										a = L" ";
 										if (sor && sand) multi.br = 1;
 									}
 									else sif();
+									if (!multiStrand) a = app;
 									if (multi.getBreak()) break;
-									if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
-
-								
-									if (!multi.getBreak()) {
+									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
 										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
@@ -2047,6 +2042,7 @@ void scanDb() {
 						case 'g':
 							if (testqqb(L"<RGB:") || testqqb(L"<rgb:")) { //<rgb:r,g,b,x,ms,link>
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (qp == L"") { conn(); break; }
 								wstring r, g, b, a = qp, x = L"1", ms = L"0", linkC; link = L"";
 								r = qp.substr(0, qp.find(L" "));
 								b = qp.substr(qp.find(L" ") + 1);
@@ -2067,6 +2063,7 @@ void scanDb() {
 									if (check_if_num(x) == L"") { printq(); break; }
 								}//cout << r << " " << g << " " << b << " " << x << " " << ms << " " << link << endl;
 								a = r + L" " + g + L" " + b;
+								wstring app = a;
 								if (check_if_num(r) == L"" || check_if_num(g) == L"" || b.find(L" ") == string::npos && check_if_num(b) == L"") { printq(); break; }
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
@@ -2079,7 +2076,7 @@ void scanDb() {
 									if (multiStrand) { r = multi.getRGBr(); g = multi.getRGBg(); b = multi.getRGBb(); }
 									color = qqC[1] == 'R' ? GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout) : GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout);//<RGB> get xy from <XY:> or current
 									ReleaseDC(NULL, hDC);
-									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0,b.find(L" ")))) {
+									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0, b.find(L" ")))) {
 										multi.setBreak();
 									}
 								};
@@ -2091,7 +2088,8 @@ void scanDb() {
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
 										
 
-									if (multiStrand) { a = multi.getApp(); } if (a.find(L"|") != string::npos || a.find(L"&") != string::npos) {//<t-<rgb:a|a|a,*,ms, T: F:>
+									if (multiStrand) a = multi.getApp();
+									if (a.find(L"|") != string::npos || a.find(L"&") != string::npos) {//<t-<rgb:a|a|a,*,ms, T: F:>
 										wstring t = L"", ta = L"", q = L""; bool sor = 1, sand = 1;
 										for (size_t j = 0; j < a.length(); ++j) {
 											ta += a[j]; //build ta
@@ -2099,7 +2097,7 @@ void scanDb() {
 												t = a.substr(ta.length());
 												if (t > L"") q = a.substr(j, 1);
 												a = t > L"" ? ta.substr(0, ta.length() - 1 - (a.find(L"\\") != string::npos && BackslashLogicals)) : ta; 
-												if (a[0] == ' ') a = a.substr(1); if (multiStrand) { multi.setApp(a); }
+												if (a[0] == ' ') a = a.substr(1);
 												r = a.substr(0, a.find(L" "));
 												b = a.substr(a.find(L" ") + 1);
 												g = b.substr(0, b.find(L" "));
@@ -2134,13 +2132,12 @@ void scanDb() {
 													sor = 1; break;
 												}
 
-												//wcout << a << "\t(" << multi.br << ")\t"; if (j != a.length() - 1) wcout << q << endl;
 												multi.br = 0;
 												a = t; j = -1;
 												ta.clear();
 											}
 										}
-										a = L" ";
+										if (!multiStrand) a = app;
 										if (sor && sand) multi.br = 1;
 									}
 									else {
@@ -2156,9 +2153,7 @@ void scanDb() {
 										sifrgb();
 									}
 									if (multi.getBreak()) break;
-									if (a == L"") { conn(); mF = 1; multi.setBreak(); break; }
-
-									if (!multi.getBreak()) {
+									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
 										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
