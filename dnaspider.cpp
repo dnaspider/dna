@@ -2106,12 +2106,14 @@ void scanDb() {
 												if (b.find(L" ") != string::npos) {//X Y
 													auto sx = b.substr(b.find(L" ") + 1);
 													auto sy = sx.substr(sx.find(L" ") + 1);
-													sx = sx.substr(0, sx.find(L" "));
-													b = b.substr(0, b.find(L" "));
-													if (qqC[1] == 'R') {
-														qxc = stoi(sx); qyc = stoi(sy);
+													if (sx != L"" && sy != L"") {
+														sx = sx.substr(0, sx.find(L" "));
+														b = b.substr(0, b.find(L" "));
+														if (qqC[1] == 'R') {
+															qxc = stoi(sx); qyc = stoi(sy);
+														}
+														else SetCursorPos(stoi(sx), stoi(sy));
 													}
-													else SetCursorPos(stoi(sx), stoi(sy));
 												}
 												sifrgb();
 												if (!multi.br) {
