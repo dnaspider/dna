@@ -2097,7 +2097,7 @@ void scanDb() {
 												t = a.substr(ta.length());
 												if (t > L"") q = a.substr(j, 1);
 												a = t > L"" ? ta.substr(0, ta.length() - 1 - (a.find(L"\\") != string::npos && BackslashLogicals)) : ta; 
-												if (a[0] == ' ') a = a.substr(1);
+												if (a[0] == ' ') a = a.substr(a.find_first_not_of(' '));
 												r = a.substr(0, a.find(L" "));
 												b = a.substr(a.find(L" ") + 1);
 												g = b.substr(0, b.find(L" "));
