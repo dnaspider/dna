@@ -403,9 +403,9 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 		while (tqg.find(L"{") != string::npos) {
 			if (GetAsyncKeyState(VK_ESCAPE)) break;
 			q = q.substr(q.find(L"{") + 1, q.find(L"}", q.find(L"{")) - q.find(L"{") - 1); tq = q;
-			if (q[0] == '\'') { tqg.replace(tqg.find(L"{"), 2 + q.length(), L""); continue; } //{'ignore}
 			if (q > L"") {
 				if (multiLine) { q = regex_replace(q, wregex(L"\n"), L""); q = regex_replace(q, wregex(L"\t"), L""); }
+				if (q[0] == '\'') { tqg.replace(tqg.find(L"{"), 2 + q.length(), L""); q = tqg; continue; } //{'ignore}
 				q = loadVar(q);
 			}
 			if (q == L"") {
