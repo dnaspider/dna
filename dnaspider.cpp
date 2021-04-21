@@ -13,6 +13,16 @@ using namespace std;
 using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
+bool Ignore_Print_Screen = 1, Ignore_Insert = 1, Ignore_Delete = 1, Ignore_Home = 1, Ignore_End = 1, Ignore_PgUp = 1, Ignore_PgDn = 1;
+wstring
+	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L"q", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
+	Kb_Key_0 = L"0", Kb_Key_1 = L"1", Kb_Key_2 = L"2", Kb_Key_3 = L"3", Kb_Key_4 = L"4", Kb_Key_5 = L"5", Kb_Key_6 = L"6", Kb_Key_7 = L"7", Kb_Key_8 = L"8", Kb_Key_9 = L"9",
+	Kb_Key_F1 = L"!", Kb_Key_F2 = L"@", Kb_Key_F3 = L"#", Kb_Key_F4 = L"$", Kb_Key_F5 = L"%", Kb_Key_F6 = L"^", Kb_Key_F7 = L"&", Kb_Key_F8 = L"*", Kb_Key_F9 = L"(", Kb_Key_F10 = L")", Kb_Key_F11 = L"_", Kb_Key_F12 = L"+",
+	Kb_Key_Left = L"L", Kb_Key_Up = L"U", Kb_Key_Right = L"R", Kb_Key_Down = L"D",
+	Kb_Key_Space = L" ", Kb_Key_Tab = L"T", Kb_Key_Left_Shift = L"S", Kb_Key_Right_Shift = L"H", Kb_Key_Left_Alt = L"A", Kb_Key_Right_Alt = L"M", Kb_Key_Left_Ctrl = L"C", Kb_Key_Right_Ctrl = L"O", Kb_Key_Enter = L"E", Kb_Key_Caps = L"P", Kb_Key_Grave_Accent = L"`", Kb_Key_Minus = L"-", Kb_Key_Equal = L"=", Kb_Key_Left_Bracket = L"[", Kb_Key_Right_Bracket = L"]", Kb_Key_Backslash = L"\\",  Kb_Key_Semicolon = L";", Kb_Key_Quote = L"'", Kb_Key_Comma = L",", Kb_Key_Period = L".", Kb_Key_Forwardslash = L"/", Kb_Key_Menu = L"?",
+	Kb_Key_Print_Screen = L"?", Kb_Key_Insert = L"?", Kb_Key_Delete = L"?", Kb_Key_Home = L"?", Kb_Key_End = L"?", Kb_Key_PgUp = L"?", Kb_Key_PgDn = L"?",
+	Kb_Key_Numpad_0 = L"Z", Kb_Key_Numpad_1 = L"Q", Kb_Key_Numpad_2 = L"V", Kb_Key_Numpad_3 = L"W", Kb_Key_Numpad_4 = L"X", Kb_Key_Numpad_5 = L"Y", Kb_Key_Numpad_6 = L"B", Kb_Key_Numpad_7 = L"F", Kb_Key_Numpad_8 = L"G", Kb_Key_Numpad_9 = L"I", Kb_Key_Numlock = L"N", Kb_Key_Numpad_Divide = L"J", Kb_Key_Numpad_Multiply = L"K", Kb_Key_Numpad_Minus = L"{", Kb_Key_Numpad_Add = L"}", Kb_Key_Numpad_Period = L"\\", Kb_Key_Numpad_Enter = L":"
+;
 bool noClearStrand = 0; //<!>
 bool multiLine = 1; wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
 bool multiblock = 0; //<~m>
@@ -68,7 +78,6 @@ bool ignoreLCtrl = true;
 bool ignoreRCtrl = true;
 bool ignoreEnter = true;
 bool ignoreCaps = true;
-//bool ignorePrintScreen = false; string PrintScreen_Key = "?";
 bool strandLengthMode = false;
 int strandLength = 3;
 bool qScanOnly = false;
@@ -517,15 +526,226 @@ void loadSe() {
 	wstring cell; while (getline(f, cell)) {
 		if (cell[0] == 0 || cell[0] == ' ') continue;
 		wstring se = cell.substr(0, cell.find_first_of(L":\t ")); se += ':';
-		wstring v = (cell.substr(cell.find_first_of(L":\t ") + 1)); if (v.find_first_not_of(L"\t ") == string::npos) { if (se == L"OutsTemplate:") { OutsTemplate = L""; } continue; } v = v.substr(v.find_first_not_of(L"\t "));
+		wstring v = (cell.substr(cell.find_first_of(L":\t ") + 1)); if (v.find_first_not_of(L"\t ") == string::npos) { if (se == L"OutsTemplate:") { OutsTemplate = L""; } else if (se == L"Kb_Key_Space:") { Kb_Key_Space = L" "; } continue; } v = v.substr(v.find_first_not_of(L"\t "));
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
+			case 1993://Ignore_Print_Screen:
+				{ if (v == L"1" || v == L"0") Ignore_Print_Screen = stoi(v); else er(); } break;
+			case 1946://Kb_Key_Print_Screen::
+				{ if (v.length() > 0) Kb_Key_Print_Screen = v.substr(0); else er(); } break;
+			case 1394://Ignore_Insert:
+				{ if (v == L"1" || v == L"0") Ignore_Insert = stoi(v); else er(); } break;
+			case 1360://Ignore_Delete:
+				{ if (v == L"1" || v == L"0") Ignore_Delete = stoi(v); else er(); } break;
+			case 1158://Ignore_Home:
+				{ if (v == L"1" || v == L"0") Ignore_Home = stoi(v); else er(); } break;
+			case 1044://Ignore_End: | Ignore_Tab:
+				{ if (v == L"1" || v == L"0") {
+					if (se == L"Ignore_End:") Ignore_End = stoi(v);
+					else if (se == L"Ignore_Tab:") ignoreTab = stoi(v);
+				} else er(); } break;
+			case 1145://Ignore_PgUp:
+				{ if (v == L"1" || v == L"0") Ignore_PgUp = stoi(v); else er(); } break;
+			case 783://Kb_Key_A:
+				{ if (v.length() > 0) Kb_Key_A = v.substr(0); else er(); } break;
+			case 784://Kb_Key_B:
+				{ if (v.length() > 0)Kb_Key_B = v.substr(0); else er(); } break;
+			case 785://Kb_Key_C:
+				{ if (v.length() > 0) Kb_Key_C = v.substr(0); else er(); } break;
+			case 786://Kb_Key_D:
+				{ if (v.length() > 0) Kb_Key_D = v.substr(0); else er(); } break;
+			case 787://Kb_Key_E:
+				{ if (v.length() > 0) Kb_Key_E = v.substr(0); else er(); } break;
+			case 788://Kb_Key_F:
+				{ if (v.length() > 0) Kb_Key_F = v.substr(0); else er(); } break;
+			case 789://Kb_Key_G:
+				{ if (v.length() > 0) Kb_Key_G = v.substr(0); else er(); } break;
+			case 790://Kb_Key_H:
+				{ if (v.length() > 0) Kb_Key_H = v.substr(0); else er(); } break;
+			case 791://Kb_Key_I:
+				{ if (v.length() > 0) Kb_Key_I = v.substr(0); else er(); } break;
+			case 792://Kb_Key_J:
+				{ if (v.length() > 0) Kb_Key_J = v.substr(0); else er(); } break;
+			case 793://Kb_Key_K:
+				{ if (v.length() > 0) Kb_Key_K = v.substr(0); else er(); } break;
+			case 794://Kb_Key_L:
+				{ if (v.length() > 0) Kb_Key_L = v.substr(0); else er(); } break;
+			case 795://Kb_Key_M:
+				{ if (v.length() > 0) Kb_Key_M = v.substr(0); else er(); } break;
+			case 796://Kb_Key_N:
+				{ if (v.length() > 0) Kb_Key_N = v.substr(0); else er(); } break;
+			case 797://Kb_Key_O:
+				{ if (v.length() > 0) Kb_Key_O = v.substr(0); else er(); } break;
+			case 798://Kb_Key_P:
+				{ if (v.length() > 0) Kb_Key_P = v.substr(0); else er(); } break;
+			case 799://Kb_Key_Q:
+				{ if (v.length() > 0) Kb_Key_Q = v.substr(0); else er(); } break;
+			case 800://Kb_Key_R:
+				{ if (v.length() > 0) Kb_Key_R = v.substr(0); else er(); } break;
+			case 801://Kb_Key_S:
+				{ if (v.length() > 0) Kb_Key_S = v.substr(0); else er(); } break;
+			case 802://Kb_Key_T:
+				{ if (v.length() > 0) Kb_Key_T = v.substr(0); else er(); } break;
+			case 803://Kb_Key_U:
+				{ if (v.length() > 0) Kb_Key_U = v.substr(0); else er(); } break;
+			case 804://Kb_Key_V:
+				{ if (v.length() > 0) Kb_Key_V = v.substr(0); else er(); } break;
+			case 805://Kb_Key_W:
+				{ if (v.length() > 0) Kb_Key_W = v.substr(0); else er(); } break;
+			case 806://Kb_Key_X:
+				{ if (v.length() > 0) Kb_Key_X = v.substr(0); else er(); } break;
+			case 807://Kb_Key_Y:
+				{ if (v.length() > 0) Kb_Key_Y = v.substr(0); else er(); } break;
+			case 808://Kb_Key_Z:
+				{ if (v.length() > 0) Kb_Key_Z = v.substr(0); else er(); } break;
+			case 766://Kb_Key_0:
+				{ if (v.length() > 0) Kb_Key_0 = v.substr(0); else er(); } break;
+			case 767://Kb_Key_1:
+				{ if (v.length() > 0) Kb_Key_1 = v.substr(0); else er(); } break;
+			case 768://Kb_Key_2:
+				{ if (v.length() > 0) Kb_Key_2 = v.substr(0); else er(); } break;
+			case 769://Unicode: | //Kb_Key_3:
+				{ if (se == L"Unicode:") { if (v == L"1" || v == L"0") Unicode = stoi(v); else er(); }
+				else if (se == L"Kb_Key_3:") { if (v.length() > 0) Kb_Key_3 = v.substr(0); else er(); }
+				} break;
+			case 770://Kb_Key_4:
+				{ if (v.length() > 0) Kb_Key_4 = v.substr(0); else er(); } break;
+			case 771://Kb_Key_5:
+				{ if (v.length() > 0) Kb_Key_5 = v.substr(0); else er(); } break;
+			case 772://Kb_Key_6:
+				{ if (v.length() > 0) Kb_Key_6 = v.substr(0); else er(); } break;
+			case 773://Kb_Key_7:
+				{ if (v.length() > 0) Kb_Key_7 = v.substr(0); else er(); } break;
+			case 774://Kb_Key_8:
+				{ if (v.length() > 0) Kb_Key_8 = v.substr(0); else er(); } break;
+			case 775://Kb_Key_9:
+				{ if (v.length() > 0) Kb_Key_9 = v.substr(0); else er(); } break;
+			case 837://Kb_Key_F1:
+				{ if (v.length() > 0) Kb_Key_F1 = v.substr(0); else er(); } break;
+			case 838://Kb_Key_F2:
+				{ if (v.length() > 0) Kb_Key_F2 = v.substr(0); else er(); } break;
+			case 839://Kb_Key_F3:
+				{ if (v.length() > 0) Kb_Key_F3 = v.substr(0); else er(); } break;
+			case 840://Kb_Key_F4:
+				{ if (v.length() > 0) Kb_Key_F4 = v.substr(0); else er(); } break;
+			case 841://Kb_Key_F5:
+				{ if (v.length() > 0) Kb_Key_F5 = v.substr(0); else er(); } break;
+			case 842://Kb_Key_F6:
+				{ if (v.length() > 0) Kb_Key_F6 = v.substr(0); else er(); } break;
+			case 843://Kb_Key_F7:
+				{ if (v.length() > 0) Kb_Key_F7 = v.substr(0); else er(); } break;
+			case 844://Kb_Key_F8:
+				{ if (v.length() > 0) Kb_Key_F8 = v.substr(0); else er(); } break;
+			case 845://Kb_Key_F9:
+				{ if (v.length() > 0) Kb_Key_F9 = v.substr(0); else er(); } break;
+			case 885://Kb_Key_F10:
+				{ if (v.length() > 0) Kb_Key_F10 = v.substr(0); else er(); } break;
+			case 886://Kb_Key_F11:
+				{ if (v.length() > 0) Kb_Key_F11 = v.substr(0); else er(); } break;
+			case 887://Kb_Key_F12:
+				{ if (v.length() > 0) Kb_Key_F12 = v.substr(0); else er(); } break;
+			case 1113://Kb_Key_Left:
+				{ if (v.length() > 0) Kb_Key_Left = v.substr(0); else er(); } break;
+			case 1126://Kb_Key_Down: | Ignore_PgDn:
+				{ if (se == L"Kb_Key_Down:") { if (v.length() > 0) Kb_Key_Down = v.substr(0); else er(); }
+				else if (se == L"Ignore_PgDn:") { if (v == L"1" || v == L"0") Ignore_PgDn = stoi(v); else er(); }
+				} break;
+			case 1210://Kb_Key_Space:
+				{ if (v.length() > 0) Kb_Key_Space = v.substr(0); } break;
+			case 1718://Kb_Key_Left_Shift:
+				{ if (v.length() > 0) Kb_Key_Left_Shift = v.substr(0); else er(); } break;
+			case 1833://Kb_Key_Right_Shift:
+				{ if (v.length() > 0) Kb_Key_Right_Shift = v.substr(0); else er(); } break;
+			case 1497://Kb_Key_Left_Alt:
+				{ if (v.length() > 0) Kb_Key_Left_Alt = v.substr(0); else er(); } break;
+			case 1612://Kb_Key_Right_Alt:
+				{ if (v.length() > 0) Kb_Key_Right_Alt = v.substr(0); else er(); } break;
+			case 1613://Kb_Key_Left_Ctrl:
+				{ if (v.length() > 0) Kb_Key_Left_Ctrl = v.substr(0); else er(); } break;
+			case 1728://Kb_Key_Right_Ctrl:
+				{ if (v.length() > 0) Kb_Key_Right_Ctrl = v.substr(0); else er(); } break;
+			case 1228://Kb_Key_Enter: | Kb_Key_Right:
+				{ if (v.length() > 0) {
+					if (se == L"Kb_Key_Enter:") Kb_Key_Enter = v.substr(0);
+					else if (se == L"Kb_Key_Right:") Kb_Key_Right = v.substr(0);
+				} else er(); } break;
+			case 1109://Kb_Key_Caps:
+				{ if (v.length() > 0) Kb_Key_Caps = v.substr(0); else er(); } break;
+			case 1904://Kb_Key_Grave_Accent:
+				{ if (v.length() > 0) Kb_Key_Grave_Accent = v.substr(0); else er(); } break;
+			case 1242://Kb_Key_Minus:
+				{ if (v.length() > 0) Kb_Key_Minus = v.substr(0); else er(); } break;
+			case 1222://Kb_Key_Equal:
+				{ if (v.length() > 0) Kb_Key_Equal = v.substr(0); else er(); } break;
+			case 1908://Kb_Key_Left_Bracket:
+				{ if (v.length() > 0) Kb_Key_Left_Bracket = v.substr(0); else er(); } break;
+			case 1626://Kb_Key_Backslash:
+				{ if (v.length() > 0) Kb_Key_Backslash = v.substr(0); else er(); } break;
+			case 1655://Kb_Key_Semicolon:
+				{ if (v.length() > 0) Kb_Key_Semicolon = v.substr(0); else er(); } break;
+			case 1244://Kb_Key_Quote:
+				{ if (v.length() > 0) Kb_Key_Quote = v.substr(0); else er(); } break;
+			case 1211://Kb_Key_Comma:
+				{ if (v.length() > 0) Kb_Key_Comma = v.substr(0); else er(); } break;
+			case 1329://Kb_Key_Period:
+				{ if (v.length() > 0) Kb_Key_Period = v.substr(0); else er(); } break;
+			case 1982://Kb_Key_Forwardslash:
+				{ if (v.length() > 0) Kb_Key_Forwardslash = v.substr(0); else er(); } break;
+			case 1123://Kb_Key_Menu:
+				{ if (v.length() > 0) Kb_Key_Menu = v.substr(0); else er(); } break;
+			case 1347://Kb_Key_Insert:
+				{ if (v.length() > 0) Kb_Key_Insert = v.substr(0); else er(); } break;
+			case 1111://Kb_Key_Home:
+				{ if (v.length() > 0) Kb_Key_Home = v.substr(0); else er(); } break;
+			case 997://Kb_Key_End: | Kb_Key_Tab:
+				{ if (v.length() > 0) {
+					if (se == L"Kb_Key_End:") Kb_Key_End = v.substr(0);
+					else if (se == L"Kb_Key_Tab:") Kb_Key_Tab = v.substr(0);
+				 } else er(); } break;
+			case 1079://Kb_Key_PgDn:
+				{ if (v.length() > 0) Kb_Key_PgDn = v.substr(0); else er(); } break;
+			case 1474://Kb_Key_Numpad_0:
+				{ if (v.length() > 0) Kb_Key_Numpad_0 = v.substr(0); else er(); } break;
+			case 1475://Kb_Key_Numpad_1:
+				{ if (v.length() > 0) Kb_Key_Numpad_1 = v.substr(0); else er(); } break;
+			case 1476://Kb_Key_Numpad_2:
+				{ if (v.length() > 0) Kb_Key_Numpad_2 = v.substr(0); else er(); } break;
+			case 1477://Kb_Key_Numpad_3:
+				{ if (v.length() > 0) Kb_Key_Numpad_3 = v.substr(0); else er(); } break;
+			case 1478://Kb_Key_Numpad_4:
+				{ if (v.length() > 0) Kb_Key_Numpad_4 = v.substr(0); else er(); } break;
+			case 1479://Kb_Key_Numpad_5:
+				{ if (v.length() > 0) Kb_Key_Numpad_5 = v.substr(0); else er(); } break;
+			case 1480://Kb_Key_Numpad_6:
+				{ if (v.length() > 0) Kb_Key_Numpad_6 = v.substr(0); else er(); } break;
+			case 1481://Kb_Key_Numpad_7:
+				{ if (v.length() > 0) Kb_Key_Numpad_7 = v.substr(0); else er(); } break;
+			case 1482://Kb_Key_Numpad_8:
+				{ if (v.length() > 0) Kb_Key_Numpad_8 = v.substr(0); else er(); } break;
+			case 1483://Kb_Key_Numpad_9:
+				{ if (v.length() > 0) Kb_Key_Numpad_9 = v.substr(0); else er(); } break;
+			case 1447://Kb_Key_Numlock:
+				{ if (v.length() > 0) Kb_Key_Numlock = v.substr(0); else er(); } break;
+			case 2023://Kb_Key_Numpad_Divide: | Kb_Key_Right_Bracket:
+				{ if (v.length() > 0) {
+					if (se == L"Kb_Key_Numpad_Divide:") Kb_Key_Numpad_Divide = v.substr(0);
+					else if (se == L"Kb_Key_Right_Bracket:") Kb_Key_Right_Bracket = v.substr(0);
+				} else er(); } break;
+			case 2290://Kb_Key_Numpad_Multiply:
+				{ if (v.length() > 0) Kb_Key_Numpad_Multiply = v.substr(0); else er(); } break;
+			case 1950://Kb_Key_Numpad_Minus:
+				{ if (v.length() > 0) Kb_Key_Numpad_Minus = v.substr(0); else er(); } break;
+			case 1691://Kb_Key_Numpad_Add:
+				{ if (v.length() > 0) Kb_Key_Numpad_Add = v.substr(0); else er(); } break;
+			case 2037://Kb_Key_Numpad_Period:
+				{ if (v.length() > 0) Kb_Key_Numpad_Period = v.substr(0); else er(); } break;
+			case 1936://Kb_Key_Numpad_Enter:
+				{ if (v.length() > 0) Kb_Key_Numpad_Enter = v.substr(0); else er(); } break;
 			case 2066://DbMultiLineDelimiter:
 				if (v.length() > 0 && v[0] != '\\') {
 					multiLine = 1; multiLineDelim = v[0];
-				}
-				else { multiLine = 0; multiLineDelim = L'\n'; }
+				} else { multiLine = 0; multiLineDelim = L'\n'; }
 				break;
 			case 872://Replacer:
 				{ if (v == L"1" || v == L"0") replacer = stoi(v); else er(); } break;
@@ -537,8 +757,6 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") ToggleCloseCtrl = stoi(v); else er(); } break;
 			case 2361://RSHIFT+CtrlKey_ToggleKeep:
 				{ if (v == L"1" || v == L"0") ToggleKeep = stoi(v); else er(); } break;
-			case 769://Unicode:
-				{ if (v == L"1" || v == L"0") Unicode = stoi(v); else er(); } break;
 			case 764://OutTabs:
 				{ if (v == L"1" || v == L"0") { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
 			case 1462://ClearStrandKey:
@@ -557,8 +775,10 @@ void loadSe() {
 				{ if (v.length() > 0) { database = v.substr(0); database = regex_replace(database, wregex(L"/"), L"\\"); db = database.substr(database.find_last_of('\\') + 1) + L" - "; } else er(); } break;
 			case 1038://ReplacerDb:
 				{ if (v.length() > 0) { replacerDb = v.substr(0); } else er(); } break;
-			case 1313://OutsTemplate:
-				OutsTemplate = v.substr(0); break;
+			case 1313://OutsTemplate: | Kb_Key_Delete:
+				{ if (se == L"OutsTemplate:") OutsTemplate = v.substr(0);
+				else if (se == L"Kb_Key_Delete:") { if (v.length() > 0) Kb_Key_Delete = v.substr(0); else er(); }
+				} break;
 			case 1354://CloseCtrlMode:
 				{ if (v == L"1" || v == L"0") close_ctrl_mode = stoi(v); else er(); } break;
 			case 1659://CtrlScanOnlyMode:
@@ -569,8 +789,10 @@ void loadSe() {
 				{ if (check_if_num(v) != L"") strandLength = stoi(v); else er(); } break;
 			case 965://Ignore_A-Z:
 				{ if (v == L"1" || v == L"0") ignoreAZ = stoi(v); else er(); } break;
-			case 915://Ignore_0-9:
-				{ if (v == L"1" || v == L"0") ignore09 = stoi(v); else er(); } break;
+			case 915://Ignore_0-9: | Kb_Key_Up:
+				{ if (se == L"Ignore_0-9:") { if (v == L"1" || v == L"0") ignore09 = stoi(v); else er(); }
+				else if (se == L"Kb_Key_Up:"){ if (v.length() > 0) Kb_Key_Up = v.substr(0); else er(); }
+				} break;
 			case 1172://StartHidden:
 				{ if (v == L"1" || v == L"0") startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey:
@@ -597,12 +819,10 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") multiStrand = stoi(v); else er(); } break;
 			case 1618://ShowMultiStrand:
 				{ if (v == L"1" || v == L"0") showMultiStrand = stoi(v); else er(); } break;
-			case 1098://AutoBs_EscH: //Ignore_F1-F12:
-				{	if (v == L"1" || v == L"0") {
-						if (se == L"AutoBs_EscH:") EscHAutoBs = stoi(v);
-						else if (se == L"Ignore_F1-F12:") ignoreF1s = stoi(v);
-					}
-					else er();
+			case 1098://AutoBs_EscH: | Ignore_F1-F12: | Kb_Key_PgUp:
+				{ if (se == L"AutoBs_EscH:") { if (v == L"1" || v == L"0") EscHAutoBs = stoi(v); else er(); }
+				else if (se == L"Ignore_F1-F12:") { if (v == L"1" || v == L"0") ignoreF1s = stoi(v); else er(); }
+				else if (se == L"Kb_Key_PgUp:") { if (v.length() > 0) Kb_Key_PgUp = v.substr(0); else er(); }
 				} break;
 			case 1519://AutoBs_EscComma:
 				{ if (v == L"1" || v == L"0") EscCommaAutoBs = stoi(v); else er(); } break;
@@ -618,8 +838,6 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") ignoreArrows = stoi(v); else er(); } break;
 			case 1048://Ignore_Esc:
 				{ if (v == L"1" || v == L"0") ignoreEsc = stoi(v); else er(); } break;
-			case 1044://Ignore_Tab:
-				{ if (v == L"1" || v == L"0") ignoreTab = stoi(v); else er(); } break;
 			case 1275://Ignore_Enter:
 				{ if (v == L"1" || v == L"0") ignoreEnter = stoi(v); else er(); } break;
 			case 1156://Ignore_Caps:
@@ -664,7 +882,6 @@ void loadSe() {
 				{ if (v == L"1" || v == L"0") ignoreNumPad = stoi(v); else er(); } break;
 			case 934://Exit_EscX:
 				{ if (v == L"1" || v == L"0") enableEscX = stoi(v); else er(); } break;
-			//case 1657://Ignore_MediaKeys:
 		}
 	}
 	f.close();
@@ -701,34 +918,138 @@ void printSe() {
 		cout << "RgbScaleLayout: " << RgbScaleLayout << '\n';
 		cout << "Frequency: " << frequency << '\n';
 		cout << "Ignore_0-9: " << ignore09 << '\n';
+		wcout << "Kb_Key_0: " << Kb_Key_0 << '\n';
+		wcout << "Kb_Key_1: " << Kb_Key_1 << '\n';
+		wcout << "Kb_Key_2: " << Kb_Key_2 << '\n';
+		wcout << "Kb_Key_3: " << Kb_Key_3 << '\n';
+		wcout << "Kb_Key_4: " << Kb_Key_4 << '\n';
+		wcout << "Kb_Key_5: " << Kb_Key_5 << '\n';
+		wcout << "Kb_Key_6: " << Kb_Key_6 << '\n';
+		wcout << "Kb_Key_7: " << Kb_Key_7 << '\n';
+		wcout << "Kb_Key_8: " << Kb_Key_8 << '\n';
+		wcout << "Kb_Key_9: " << Kb_Key_9 << '\n';
 		cout << "Ignore_A-Z: " << ignoreAZ << '\n';
+		wcout << "Kb_Key_A: " << Kb_Key_A << '\n';
+		wcout << "Kb_Key_B: " << Kb_Key_B << '\n';
+		wcout << "Kb_Key_C: " << Kb_Key_C << '\n';
+		wcout << "Kb_Key_D: " << Kb_Key_D << '\n';
+		wcout << "Kb_Key_E: " << Kb_Key_E << '\n';
+		wcout << "Kb_Key_F: " << Kb_Key_F << '\n';
+		wcout << "Kb_Key_G: " << Kb_Key_G << '\n';
+		wcout << "Kb_Key_H: " << Kb_Key_H << '\n';
+		wcout << "Kb_Key_I: " << Kb_Key_I << '\n';
+		wcout << "Kb_Key_J: " << Kb_Key_J << '\n';
+		wcout << "Kb_Key_K: " << Kb_Key_K << '\n';
+		wcout << "Kb_Key_L: " << Kb_Key_L << '\n';
+		wcout << "Kb_Key_M: " << Kb_Key_M << '\n';
+		wcout << "Kb_Key_N: " << Kb_Key_N << '\n';
+		wcout << "Kb_Key_O: " << Kb_Key_O << '\n';
+		wcout << "Kb_Key_P: " << Kb_Key_P << '\n';
+		wcout << "Kb_Key_Q: " << Kb_Key_Q << '\n';
+		wcout << "Kb_Key_R: " << Kb_Key_R << '\n';
+		wcout << "Kb_Key_S: " << Kb_Key_S << '\n';
+		wcout << "Kb_Key_T: " << Kb_Key_T << '\n';
+		wcout << "Kb_Key_U: " << Kb_Key_U << '\n';
+		wcout << "Kb_Key_V: " << Kb_Key_V << '\n';
+		wcout << "Kb_Key_W: " << Kb_Key_W << '\n';
+		wcout << "Kb_Key_X: " << Kb_Key_X << '\n';
+		wcout << "Kb_Key_Y: " << Kb_Key_Y << '\n';
+		wcout << "Kb_Key_Z: " << Kb_Key_Z << '\n';
 		cout << "Ignore_Arrows: " << ignoreArrows << '\n';
+		wcout << "Kb_Key_Left: " << Kb_Key_Left << '\n';
+		wcout << "Kb_Key_Up: " << Kb_Key_Up << '\n';
+		wcout << "Kb_Key_Right: " << Kb_Key_Right << '\n';
+		wcout << "Kb_Key_Down: " << Kb_Key_Down << '\n';
 		cout << "Ignore_Backslash: " << ignoreBackslash << '\n';
+		wcout << "Kb_Key_Backslash: " << Kb_Key_Backslash << '\n';
 		cout << "Ignore_Caps: " << ignoreCaps << '\n';
+		wcout << "Kb_Key_Caps: " << Kb_Key_Caps << '\n';
 		cout << "Ignore_Comma: " << ignoreComma << '\n';
+		wcout << "Kb_Key_Comma: " << Kb_Key_Comma << '\n';
+		cout << "Ignore_Delete: " << Ignore_Delete << '\n';
+		wcout << "Kb_Key_Delete: " << Kb_Key_Delete << '\n';
+		cout << "Ignore_End: " << Ignore_End << '\n';
+		wcout << "Kb_Key_End: " << Kb_Key_End << '\n';
 		cout << "Ignore_Enter: " << ignoreEnter << '\n';
+		wcout << "Kb_Key_Enter: " << Kb_Key_Enter << '\n';
 		cout << "Ignore_Equal: " << ignoreEqual << '\n';
+		wcout << "Kb_Key_Equal: " << Kb_Key_Equal << '\n';
 		cout << "Ignore_Esc: " << ignoreEsc << '\n';
 		cout << "Ignore_F1-F12: " << ignoreF1s << '\n';
+		wcout << "Kb_Key_F1: " << Kb_Key_F1 << '\n';
+		wcout << "Kb_Key_F2: " << Kb_Key_F2 << '\n';
+		wcout << "Kb_Key_F3: " << Kb_Key_F3 << '\n';
+		wcout << "Kb_Key_F4: " << Kb_Key_F4 << '\n';
+		wcout << "Kb_Key_F5: " << Kb_Key_F5 << '\n';
+		wcout << "Kb_Key_F6: " << Kb_Key_F6 << '\n';
+		wcout << "Kb_Key_F7: " << Kb_Key_F7 << '\n';
+		wcout << "Kb_Key_F8: " << Kb_Key_F8 << '\n';
+		wcout << "Kb_Key_F9: " << Kb_Key_F9 << '\n';
+		wcout << "Kb_Key_F10: " << Kb_Key_F10 << '\n';
+		wcout << "Kb_Key_F11: " << Kb_Key_F11 << '\n';
+		wcout << "Kb_Key_F12: " << Kb_Key_F12 << '\n';
+		cout << "Ignore_Print_Screen: " << Ignore_Print_Screen << '\n';
+		wcout << "Kb_Key_Print_Screen: " << Kb_Key_Print_Screen << '\n';
 		cout << "Ignore_Forwardslash: " << ignoreForwardslash << '\n';
+		wcout << "Kb_Key_Forwardslash: " << Kb_Key_Forwardslash << '\n';
 		cout << "Ignore_GraveAccent: " << ignoreGraveAccent << '\n';
+		wcout << "Kb_Key_Grave_Accent: " << Kb_Key_Grave_Accent << '\n';
+		cout << "Ignore_Home: " << Ignore_Home << '\n';
+		wcout << "Kb_Key_Home: " << Kb_Key_Home << '\n';
+		cout << "Ignore_Insert: " << Ignore_Insert << '\n';
+		wcout << "Kb_Key_Insert: " << Kb_Key_Insert << '\n';
 		cout << "Ignore_LAlt: " << ignoreLAlt << '\n';
+		wcout << "Kb_Key_Left_Alt: " << Kb_Key_Left_Alt << '\n';
 		cout << "Ignore_LBracket: " << ignoreLBracket << '\n';
+		wcout << "Kb_Key_Left_Bracket: " << Kb_Key_Left_Bracket << '\n';
 		cout << "Ignore_LCtrl: " << ignoreLCtrl << '\n';
+		wcout << "Kb_Key_Left_Ctrl: " << Kb_Key_Left_Ctrl << '\n';
 		cout << "Ignore_LShift: " << ignoreLShift << '\n';
+		wcout << "Kb_Key_Left_Shift: " << Kb_Key_Left_Shift << '\n';
 		cout << "Ignore_Menu: " << ignoreMenuKey << '\n';
+		wcout << "Kb_Key_Menu: " << Kb_Key_Menu << '\n';
 		cout << "Ignore_Minus: " << ignoreMinus << '\n';
+		wcout << "Kb_Key_Minus: " << Kb_Key_Minus << '\n';
 		cout << "Ignore_NumPad: " << ignoreNumPad << '\n';
+		wcout << "Kb_Key_Numpad_0: " << Kb_Key_Numpad_0 << '\n';
+		wcout << "Kb_Key_Numpad_1: " << Kb_Key_Numpad_1 << '\n';
+		wcout << "Kb_Key_Numpad_2: " << Kb_Key_Numpad_2 << '\n';
+		wcout << "Kb_Key_Numpad_3: " << Kb_Key_Numpad_3 << '\n';
+		wcout << "Kb_Key_Numpad_4: " << Kb_Key_Numpad_4 << '\n';
+		wcout << "Kb_Key_Numpad_5: " << Kb_Key_Numpad_5 << '\n';
+		wcout << "Kb_Key_Numpad_6: " << Kb_Key_Numpad_6 << '\n';
+		wcout << "Kb_Key_Numpad_7: " << Kb_Key_Numpad_7 << '\n';
+		wcout << "Kb_Key_Numpad_8: " << Kb_Key_Numpad_8 << '\n';
+		wcout << "Kb_Key_Numpad_9: " << Kb_Key_Numpad_9 << '\n';
+		wcout << "Kb_Key_Numlock: " << Kb_Key_Numlock << '\n';
+		wcout << "Kb_Key_Numpad_Divide: " << Kb_Key_Numpad_Divide << '\n';
+		wcout << "Kb_Key_Numpad_Multiply: " << Kb_Key_Numpad_Multiply << '\n';
+		wcout << "Kb_Key_Numpad_Minus: " << Kb_Key_Numpad_Minus << '\n';
+		wcout << "Kb_Key_Numpad_Add: " << Kb_Key_Numpad_Add << '\n';
+		wcout << "Kb_Key_Numpad_Period: " << Kb_Key_Numpad_Period << '\n';
+		wcout << "Kb_Key_Numpad_Enter: " << Kb_Key_Numpad_Enter << '\n';
 		cout << "Ignore_Period: " << ignorePeriod << '\n';
+		wcout << "Kb_Key_Period: " << Kb_Key_Period << '\n';
+		cout << "Ignore_PgDn: " << Ignore_PgDn << '\n';
+		wcout << "Kb_Key_PgDn: " << Kb_Key_PgDn << '\n';
+		cout << "Ignore_PgUp: " << Ignore_PgUp << '\n';
+		wcout << "Kb_Key_PgUp: " << Kb_Key_PgUp << '\n';
 		cout << "Ignore_Quote: " << ignoreQuote << '\n';
+		wcout << "Kb_Key_Quote: " << Kb_Key_Quote << '\n';
 		cout << "Ignore_RAlt: " << ignoreRAlt << '\n';
+		wcout << "Kb_Key_Right_Alt: " << Kb_Key_Right_Alt << '\n';
 		cout << "Ignore_RBracket: " << ignoreRBracket << '\n';
+		wcout << "Kb_Key_Right_Bracket: " << Kb_Key_Right_Bracket << '\n';
 		cout << "Ignore_RCtrl: " << ignoreRCtrl << '\n';
+		wcout << "Kb_Key_Right_Ctrl: " << Kb_Key_Right_Ctrl << '\n';
 		cout << "Ignore_RShift: " << ignoreRShift << '\n';
+		wcout << "Kb_Key_Right_Shift: " << Kb_Key_Right_Shift << '\n';
 		cout << "Ignore_Semicolon: " << ignoreSemicolon << '\n';
+		wcout << "Kb_Key_Semicolon: " << Kb_Key_Semicolon << '\n';
 		cout << "Ignore_Space: " << ignoreSpace << '\n';
+		wcout << "Kb_Key_Space: " << Kb_Key_Space << '\n';
 		cout << "Ignore_Tab: " << ignoreTab << '\n';
-		//cout << "Ignore_MediaKeys: " << ignoreMediaKeys << '\n';
+		wcout << "Kb_Key_Tab: " << Kb_Key_Tab << '\n';
 		cout << "StartHidden: " << startHidden << '\n';
 		cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << '\n';
 		cout << "CommaSleep: " << CommaSleep << '\n';
@@ -2443,7 +2764,7 @@ int main() {//cout << "@dnaspider\n\n";
 			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 			wcout << database << " not found.\nPress [1] to auto create.\n\n";
 			for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nIgnore_A-Z: 0\nIgnore_Arrows: 1\nIgnore_Backslash: 1\nIgnore_Caps: 1\nIgnore_Comma: 1\nIgnore_Enter: 1\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nIgnore_Forwardslash: 1\nIgnore_GraveAccent: 1\nIgnore_LAlt: 1\nIgnore_LBracket: 1\nIgnore_LCtrl: 1\nIgnore_LShift: 1\nIgnore_Menu: 1\nIgnore_Minus: 1\nIgnore_NumPad: 1\nIgnore_Period: 1\nIgnore_Quote: 1\nIgnore_RAlt: 1\nIgnore_RBracket: 1\nIgnore_RCtrl: 1\nIgnore_RShift: 1\nIgnore_Semicolon: 1\nIgnore_Space: 0\nIgnore_Tab: 1\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl: 1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>" + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>" + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 		}
 	}
 	loadSe();
@@ -2555,118 +2876,115 @@ int main() {//cout << "@dnaspider\n\n";
 			if (!ignoreEsc) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(L"~"); }
 			continue;
 		}
-		//if (!ignorePrintScreen)if (GetAsyncKeyState(VK_SNAPSHOT)) { key(PrintScreen_Key); continue; }
 		if (qScanOnly && strand[0] != '<') continue;
 #pragma region input_strand
 		if (!ignoreAZ) {
-			if (GetAsyncKeyState(0x41)) { key(L"a"); continue; }
-			if (GetAsyncKeyState(0x42)) { key(L"b"); continue; }
-			if (GetAsyncKeyState(0x43)) { key(L"c"); continue; }
-			if (GetAsyncKeyState(0x44)) { key(L"d"); continue; }
-			if (GetAsyncKeyState(0x45)) { key(L"e"); continue; }
-			if (GetAsyncKeyState(0x46)) { key(L"f"); continue; }
-			if (GetAsyncKeyState(0x47)) { key(L"g"); continue; }
-			if (GetAsyncKeyState(0x48)) { key(L"h"); continue; }
-			if (GetAsyncKeyState(0x49)) { key(L"i"); continue; }
-			if (GetAsyncKeyState(0x4A)) { key(L"j"); continue; }
-			if (GetAsyncKeyState(0x4B)) { key(L"k"); continue; }
-			if (GetAsyncKeyState(0x4C)) { key(L"l"); continue; }
-			if (GetAsyncKeyState(0x4D)) { key(L"m"); continue; }
-			if (GetAsyncKeyState(0x4E)) { key(L"n"); continue; }
-			if (GetAsyncKeyState(0x4F)) { key(L"o"); continue; }
-			if (GetAsyncKeyState(0x50)) { key(L"p"); continue; }
-			if (GetAsyncKeyState(0x51)) { key(L"q"); continue; }
-			if (GetAsyncKeyState(0x52)) { key(L"r"); continue; }
-			if (GetAsyncKeyState(0x53)) { key(L"s"); continue; }
-			if (GetAsyncKeyState(0x54)) { key(L"t"); continue; }
-			if (GetAsyncKeyState(0x55)) { key(L"u"); continue; }
-			if (GetAsyncKeyState(0x56)) { key(L"v"); continue; }
-			if (GetAsyncKeyState(0x57)) { key(L"w"); continue; }
-			if (GetAsyncKeyState(0x58)) { key(L"x"); continue; }
-			if (GetAsyncKeyState(0x59)) { key(L"y"); continue; }
-			if (GetAsyncKeyState(0x5A)) { key(L"z"); continue; }
+			if (GetAsyncKeyState(0x41)) { key(Kb_Key_A); continue; }
+			if (GetAsyncKeyState(0x42)) { key(Kb_Key_B); continue; }
+			if (GetAsyncKeyState(0x43)) { key(Kb_Key_C); continue; }
+			if (GetAsyncKeyState(0x44)) { key(Kb_Key_D); continue; }
+			if (GetAsyncKeyState(0x45)) { key(Kb_Key_E); continue; }
+			if (GetAsyncKeyState(0x46)) { key(Kb_Key_F); continue; }
+			if (GetAsyncKeyState(0x47)) { key(Kb_Key_G); continue; }
+			if (GetAsyncKeyState(0x48)) { key(Kb_Key_H); continue; }
+			if (GetAsyncKeyState(0x49)) { key(Kb_Key_I); continue; }
+			if (GetAsyncKeyState(0x4A)) { key(Kb_Key_J); continue; }
+			if (GetAsyncKeyState(0x4B)) { key(Kb_Key_K); continue; }
+			if (GetAsyncKeyState(0x4C)) { key(Kb_Key_L); continue; }
+			if (GetAsyncKeyState(0x4D)) { key(Kb_Key_M); continue; }
+			if (GetAsyncKeyState(0x4E)) { key(Kb_Key_N); continue; }
+			if (GetAsyncKeyState(0x4F)) { key(Kb_Key_O); continue; }
+			if (GetAsyncKeyState(0x50)) { key(Kb_Key_P); continue; }
+			if (GetAsyncKeyState(0x51)) { key(Kb_Key_Q); continue; }
+			if (GetAsyncKeyState(0x52)) { key(Kb_Key_R); continue; }
+			if (GetAsyncKeyState(0x53)) { key(Kb_Key_S); continue; }
+			if (GetAsyncKeyState(0x54)) { key(Kb_Key_T); continue; }
+			if (GetAsyncKeyState(0x55)) { key(Kb_Key_U); continue; }
+			if (GetAsyncKeyState(0x56)) { key(Kb_Key_V); continue; }
+			if (GetAsyncKeyState(0x57)) { key(Kb_Key_W); continue; }
+			if (GetAsyncKeyState(0x58)) { key(Kb_Key_X); continue; }
+			if (GetAsyncKeyState(0x59)) { key(Kb_Key_Y); continue; }
+			if (GetAsyncKeyState(0x5A)) { key(Kb_Key_Z); continue; }
 		}
 		if (!ignore09) {
-			if (GetAsyncKeyState(0x30)) { key(L"0"); continue; }
-			if (GetAsyncKeyState(0x31)) { key(L"1"); continue; }
-			if (GetAsyncKeyState(0x32)) { key(L"2"); continue; }
-			if (GetAsyncKeyState(0x33)) { key(L"3"); continue; }
-			if (GetAsyncKeyState(0x34)) { key(L"4"); continue; }
-			if (GetAsyncKeyState(0x35)) { key(L"5"); continue; }
-			if (GetAsyncKeyState(0x36)) { key(L"6"); continue; }
-			if (GetAsyncKeyState(0x37)) { key(L"7"); continue; }
-			if (GetAsyncKeyState(0x38)) { key(L"8"); continue; }
-			if (GetAsyncKeyState(0x39)) { key(L"9"); continue; }
+			if (GetAsyncKeyState(0x30)) { key(Kb_Key_0); continue; }
+			if (GetAsyncKeyState(0x31)) { key(Kb_Key_1); continue; }
+			if (GetAsyncKeyState(0x32)) { key(Kb_Key_2); continue; }
+			if (GetAsyncKeyState(0x33)) { key(Kb_Key_3); continue; }
+			if (GetAsyncKeyState(0x34)) { key(Kb_Key_4); continue; }
+			if (GetAsyncKeyState(0x35)) { key(Kb_Key_5); continue; }
+			if (GetAsyncKeyState(0x36)) { key(Kb_Key_6); continue; }
+			if (GetAsyncKeyState(0x37)) { key(Kb_Key_7); continue; }
+			if (GetAsyncKeyState(0x38)) { key(Kb_Key_8); continue; }
+			if (GetAsyncKeyState(0x39)) { key(Kb_Key_9); continue; }
 		}
 		if (!ignoreF1s) {
-			if (GetAsyncKeyState(0x70)) { key(L"!"); continue; } //VK_F1
-			if (GetAsyncKeyState(0x71)) { key(L"@"); continue; }
-			if (GetAsyncKeyState(0x72)) { key(L"#"); continue; }
-			if (GetAsyncKeyState(0x73)) { key(L"$"); continue; }
-			if (GetAsyncKeyState(0x74)) { key(L"%"); continue; }
-			if (GetAsyncKeyState(0x75)) { key(L"^"); continue; }
-			if (GetAsyncKeyState(0x76)) { key(L"&"); continue; }
-			if (GetAsyncKeyState(0x77)) { key(L"*"); continue; }
-			if (GetAsyncKeyState(0x78)) { key(L"("); continue; }
-			if (GetAsyncKeyState(0x79)) { key(L")"); continue; }
-			if (GetAsyncKeyState(0x7A)) { key(L"_"); continue; }
-			if (GetAsyncKeyState(0x7B)) { key(L"+"); continue; }
+			if (GetAsyncKeyState(0x70)) { key(Kb_Key_F1); continue; }
+			if (GetAsyncKeyState(0x71)) { key(Kb_Key_F2); continue; }
+			if (GetAsyncKeyState(0x72)) { key(Kb_Key_F3); continue; }
+			if (GetAsyncKeyState(0x73)) { key(Kb_Key_F4); continue; }
+			if (GetAsyncKeyState(0x74)) { key(Kb_Key_F5); continue; }
+			if (GetAsyncKeyState(0x75)) { key(Kb_Key_F6); continue; }
+			if (GetAsyncKeyState(0x76)) { key(Kb_Key_F7); continue; }
+			if (GetAsyncKeyState(0x77)) { key(Kb_Key_F8); continue; }
+			if (GetAsyncKeyState(0x78)) { key(Kb_Key_F9); continue; }
+			if (GetAsyncKeyState(0x79)) { key(Kb_Key_F10); continue; }
+			if (GetAsyncKeyState(0x7A)) { key(Kb_Key_F11); continue; }
+			if (GetAsyncKeyState(0x7B)) { key(Kb_Key_F12); continue; }
 		}
 		if (!ignoreArrows) {
-			if (GetAsyncKeyState(VK_LEFT)) { key(L"L"); continue; }
-			if (GetAsyncKeyState(VK_UP)) { key(L"U"); continue; }
-			if (GetAsyncKeyState(VK_RIGHT)) { key(L"R"); continue; }
-			if (GetAsyncKeyState(VK_DOWN)) { key(L"D"); continue; }
+			if (GetAsyncKeyState(VK_LEFT)) { key(Kb_Key_Left); continue; }
+			if (GetAsyncKeyState(VK_UP)) { key(Kb_Key_Up); continue; }
+			if (GetAsyncKeyState(VK_RIGHT)) { key(Kb_Key_Right); continue; }
+			if (GetAsyncKeyState(VK_DOWN)) { key(Kb_Key_Down); continue; }
 		}
-		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(L" "); continue; }
-		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key(L"T"); continue; }
-		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { key(L"S"); continue; }
-		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { key(L"H"); continue; }
-		if (!ignoreLAlt && GetAsyncKeyState(VK_LMENU)) { key(L"A"); continue; }
-		if (!ignoreRAlt && GetAsyncKeyState(VK_RMENU)) { key(L"M"); continue; }
-		if (!ignoreLCtrl && GetAsyncKeyState(VK_LCONTROL)) { key(L"C"); continue; }
-		if (!ignoreRCtrl && GetAsyncKeyState(VK_RCONTROL)) { key(L"O"); continue; }
-		if (!ignoreEnter && GetAsyncKeyState(VK_RETURN)) { key(L"E"); continue; }
-		if (!ignoreCaps && GetAsyncKeyState(VK_CAPITAL)) { key(L"P"); continue; }
-		if (!ignoreGraveAccent && GetAsyncKeyState(VK_OEM_3)) { key(L"`"); continue; }
-		if (!ignoreMinus && GetAsyncKeyState(VK_OEM_MINUS)) { key(L"-"); continue; }
-		if (!ignoreEqual && GetAsyncKeyState(VK_OEM_PLUS)) { key(L"="); continue; }
-		if (!ignoreLBracket && GetAsyncKeyState(VK_OEM_4)) { key(L"["); continue; }
-		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { key(L"]"); continue; }
-		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { key(L"\\"); continue; }
-		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { key(L";"); continue; }
-		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key(L"'"); continue; }
-		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(L","); continue; }
-		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key(L"."); continue; }
-		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key(L"/"); continue; }
-		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key(L"?"); continue; }
-		/*if (!ignoreMediaKeys) {
-			if (GetAsyncKeyState(VK_INSERT)) { key(L"?"); continue; }
-			if (GetAsyncKeyState(VK_DELETE)) { key(L"?"); continue; }
-			if (GetAsyncKeyState(VK_HOME)) { key(L"?"); continue; }
-			if (GetAsyncKeyState(VK_END)) { key(L"?"); continue; }
-			if (GetAsyncKeyState(VK_PRIOR)) { key(L"?"); continue; }
-			if (GetAsyncKeyState(VK_NEXT)) { key(L"?"); continue; }
-		}
-		if (GetAsyncKeyState(JOY_BUTTON1)) { key(L"?"); continue; }*/
+		if (!Ignore_Print_Screen && GetAsyncKeyState(VK_SNAPSHOT)) { key(Kb_Key_Print_Screen); continue; }
+		if (!ignoreSpace && GetAsyncKeyState(VK_SPACE)) { key(Kb_Key_Space); continue; }
+		if (!ignoreTab && GetAsyncKeyState(VK_TAB)) { key(Kb_Key_Tab); continue; }
+		if (!ignoreLShift && GetAsyncKeyState(VK_LSHIFT)) { key(Kb_Key_Left_Shift); continue; }
+		if (!ignoreRShift && GetAsyncKeyState(VK_RSHIFT)) { key(Kb_Key_Right_Shift); continue; }
+		if (!ignoreRAlt && GetAsyncKeyState(VK_LMENU)) { key(Kb_Key_Left_Alt); continue; }
+		if (!ignoreRAlt && GetAsyncKeyState(VK_RMENU)) { key(Kb_Key_Right_Alt); continue; }
+		if (!ignoreLCtrl && GetAsyncKeyState(VK_LCONTROL)) { key(Kb_Key_Left_Ctrl); continue; }
+		if (!ignoreRCtrl && GetAsyncKeyState(VK_RCONTROL)) { key(Kb_Key_Right_Ctrl); continue; }
+		if (!ignoreEnter && GetAsyncKeyState(VK_RETURN)) { key(Kb_Key_Enter); continue; }
+		if (!ignoreCaps && GetAsyncKeyState(VK_CAPITAL)) { key(Kb_Key_Caps); continue; }
+		if (!ignoreGraveAccent && GetAsyncKeyState(VK_OEM_3)) { key(Kb_Key_Grave_Accent); continue; }
+		if (!ignoreMinus && GetAsyncKeyState(VK_OEM_MINUS)) { key(Kb_Key_Minus); continue; }
+		if (!ignoreEqual && GetAsyncKeyState(VK_OEM_PLUS)) { key(Kb_Key_Equal); continue; }
+		if (!ignoreLBracket && GetAsyncKeyState(VK_OEM_4)) { key(Kb_Key_Left_Bracket); continue; }
+		if (!ignoreRBracket && GetAsyncKeyState(VK_OEM_6)) { key(Kb_Key_Right_Bracket); continue; }
+		if (!ignoreBackslash && GetAsyncKeyState(VK_OEM_5)) { key(Kb_Key_Backslash); continue; }
+		if (!ignoreSemicolon && GetAsyncKeyState(VK_OEM_1)) { key(Kb_Key_Semicolon); continue; }
+		if (!ignoreQuote && GetAsyncKeyState(VK_OEM_7)) { key(Kb_Key_Quote); continue; }
+		if (!ignoreComma && GetAsyncKeyState(VK_OEM_COMMA)) { key(Kb_Key_Comma); continue; }
+		if (!ignorePeriod && GetAsyncKeyState(VK_OEM_PERIOD)) { key(Kb_Key_Period); continue; }
+		if (!ignoreForwardslash && GetAsyncKeyState(VK_OEM_2)) { key(Kb_Key_Forwardslash); continue; }
+		if (!ignoreMenuKey) if (GetAsyncKeyState(VK_APPS)) { key(Kb_Key_Menu); continue; }
+		if (!Ignore_Insert && GetAsyncKeyState(VK_INSERT)) { key(Kb_Key_Insert); continue; }
+		if (!Ignore_Delete && GetAsyncKeyState(VK_DELETE)) { key(Kb_Key_Delete); continue; }
+		if (!Ignore_Home && GetAsyncKeyState(VK_HOME)) { key(Kb_Key_Home); continue; }
+		if (!Ignore_End && GetAsyncKeyState(VK_END)) { key(Kb_Key_End); continue; }
+		if (!Ignore_PgUp && GetAsyncKeyState(VK_PRIOR)) { key(Kb_Key_PgUp); continue; }
+		if (!Ignore_PgDn && GetAsyncKeyState(VK_NEXT)) { key(Kb_Key_PgDn); continue; }
 		if (!ignoreNumPad) {
-			if (GetAsyncKeyState(VK_NUMPAD0)) { key(L"Z"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD1)) { key(L"Q"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD2)) { key(L"V"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD3)) { key(L"W"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD4)) { key(L"X"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD5)) { key(L"Y"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD6)) { key(L"B"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD7)) { key(L"F"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD8)) { key(L"G"); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD9)) { key(L"I"); continue; }
-			if (GetAsyncKeyState(VK_NUMLOCK)) { key(L"N"); continue; }
-			if (GetAsyncKeyState(VK_DIVIDE)) { key(L"J"); continue; }
-			if (GetAsyncKeyState(VK_MULTIPLY)) { key(L"K"); continue; }
-			if (GetAsyncKeyState(VK_SUBTRACT)) { key(L"{"); continue; }
-			if (GetAsyncKeyState(VK_ADD)) { key(L"}"); continue; }
-			if (GetAsyncKeyState(VK_DECIMAL)) { key(L"\""); continue; }
-			if (GetAsyncKeyState(VK_RETURN)) { key(L":"); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD0)) { key(Kb_Key_Numpad_0); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD1)) { key(Kb_Key_Numpad_1); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD2)) { key(Kb_Key_Numpad_2); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD3)) { key(Kb_Key_Numpad_3); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD4)) { key(Kb_Key_Numpad_4); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD5)) { key(Kb_Key_Numpad_5); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD6)) { key(Kb_Key_Numpad_6); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD7)) { key(Kb_Key_Numpad_7); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD8)) { key(Kb_Key_Numpad_8); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD9)) { key(Kb_Key_Numpad_9); continue; }
+			if (GetAsyncKeyState(VK_NUMLOCK)) { key(Kb_Key_Numlock); continue; }
+			if (GetAsyncKeyState(VK_DIVIDE)) { key(Kb_Key_Numpad_Divide); continue; }
+			if (GetAsyncKeyState(VK_MULTIPLY)) { key(Kb_Key_Numpad_Multiply); continue; }
+			if (GetAsyncKeyState(VK_SUBTRACT)) { key(Kb_Key_Numpad_Minus); continue; }
+			if (GetAsyncKeyState(VK_ADD)) { key(Kb_Key_Numpad_Add); continue; }
+			if (GetAsyncKeyState(VK_DECIMAL)) { key(Kb_Key_Numpad_Period); continue; }
+			if (GetAsyncKeyState(VK_RETURN)) { key(Kb_Key_Numpad_Enter); continue; }
 		}
 #pragma endregion
 	}
