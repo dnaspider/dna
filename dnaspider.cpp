@@ -1212,7 +1212,7 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 		if (w[x] > 127) { cout << "[?]"; continue; } //ignore > 127
 		wcout << w[x];
 	}
-	wcout << s1;
+	wcout << s1; if (wcout.fail()) { wcout.imbue(locale()); wcout.clear(); wcout << L"[?]\n"; }
 	if (!b) cout << '\n';
 }
 
