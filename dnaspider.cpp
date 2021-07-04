@@ -1630,7 +1630,7 @@ void scanDb() {
 									linkC = linkC.substr(0, linkC.find(L" "));
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
 									if (linkC[0] == '<') relink = 0;
-									if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
+									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
 								}
 								if (!multiStrand) rei();
 								break;
@@ -1686,6 +1686,7 @@ void scanDb() {
 							if (testqqb(L"<DB:") || testqqb(L"<db:")) {//.h Database:
 								if (qq[1] == 'D') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
 								qp = regex_replace(qp, wregex(L"/"), L"\\");
+								wifstream f(qp); if (!f) { showOutsMsg(L"\n", qp, L" not found!", 0); return; }
 								database = qp;
 								db = database.substr(database.find_last_of('\\') + 1) + L" - ";
 								rei();
@@ -1971,7 +1972,7 @@ void scanDb() {
 									linkC = linkC.substr(0, linkC.find(L" "));
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";
 									if (linkC[0] == '<') relink = 0;
-									if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
+									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
 								}
 								if (!multiStrand) rei();
 								break;
@@ -2186,7 +2187,7 @@ void scanDb() {
 									linkC = linkC.substr(0, linkC.find(L" "));
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";
 									if (linkC[0] == '<') relink = 0;
-									if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
+									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
 								}
 								if (!multiStrand) rei();
 								break;
@@ -2520,7 +2521,7 @@ void scanDb() {
 									linkC = linkC.substr(0, linkC.find(L" "));
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
 									if (linkC[0] == '<') relink = 0;
-									if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
+									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
 								}
 								if (!multiStrand) rei();
 								break;
@@ -2584,7 +2585,8 @@ void scanDb() {
 							if (testqqb(L"<SE:") || testqqb(L"<se:")) {//.h Switch Settings: file
 								if (qq[1] == 'S') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
 								qp = regex_replace(qp, wregex(L"/"), L"\\");
-								settings = qp; 
+								wifstream f(qp); if (!f) { showOutsMsg(L"\n", qp, L" not found!", 0); return; }
+								settings = qp;
 								se = settings.substr(settings.find_last_of('\\') + 1) + L" - ";
 								loadSe();
 								rei();
