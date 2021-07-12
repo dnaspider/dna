@@ -895,7 +895,8 @@ void loadSe() {
 void printSe() {
 	loadSe();
 	if (showSettings) {
-		wcout << settings << '\n';  ifstream f(settings); if (f.fail()) { showOutsMsg(L"Copy to ", settings, L"\n", 1); }
+		auto print = [](wstring s) { if (s[0] > 127) { SetConsoleOutputCP(CP_UTF7); } wcout << s << '\n'; SetConsoleOutputCP(CP_UTF8); };
+		wcout << settings << '\n'; ifstream f(settings); if (f.fail()) { showOutsMsg(L"Copy to ", settings, L"\n", 1); }
 		cout << "ShowSettings: " << showSettings << '\n';
 		cout << "ShowIntro: " << showIntro << '\n';
 		cout << "ShowStrand: " << showStrand << '\n';
@@ -923,139 +924,139 @@ void printSe() {
 		cout << "RgbScaleLayout: " << RgbScaleLayout << '\n';
 		cout << "Frequency: " << frequency << '\n';
 		cout << "Ignore_0-9: " << ignore09 << '\n';
-		wcout << "Kb_Key_0: " << Kb_Key_0 << '\n';
-		wcout << "Kb_Key_1: " << Kb_Key_1 << '\n';
-		wcout << "Kb_Key_2: " << Kb_Key_2 << '\n';
-		wcout << "Kb_Key_3: " << Kb_Key_3 << '\n';
-		wcout << "Kb_Key_4: " << Kb_Key_4 << '\n';
-		wcout << "Kb_Key_5: " << Kb_Key_5 << '\n';
-		wcout << "Kb_Key_6: " << Kb_Key_6 << '\n';
-		wcout << "Kb_Key_7: " << Kb_Key_7 << '\n';
-		wcout << "Kb_Key_8: " << Kb_Key_8 << '\n';
-		wcout << "Kb_Key_9: " << Kb_Key_9 << '\n';
+		wcout << "Kb_Key_0: "; print(Kb_Key_0);
+		wcout << "Kb_Key_1: "; print(Kb_Key_1);
+		wcout << "Kb_Key_2: "; print(Kb_Key_2);
+		wcout << "Kb_Key_3: "; print(Kb_Key_3);
+		wcout << "Kb_Key_4: "; print(Kb_Key_4);
+		wcout << "Kb_Key_5: "; print(Kb_Key_5);
+		wcout << "Kb_Key_6: "; print(Kb_Key_6);
+		wcout << "Kb_Key_7: "; print(Kb_Key_7);
+		wcout << "Kb_Key_8: "; print(Kb_Key_8);
+		wcout << "Kb_Key_9: "; print(Kb_Key_9);
 		cout << "Ignore_A-Z: " << ignoreAZ << '\n';
-		wcout << "Kb_Key_A: " << Kb_Key_A << '\n';
-		wcout << "Kb_Key_B: " << Kb_Key_B << '\n';
-		wcout << "Kb_Key_C: " << Kb_Key_C << '\n';
-		wcout << "Kb_Key_D: " << Kb_Key_D << '\n';
-		wcout << "Kb_Key_E: " << Kb_Key_E << '\n';
-		wcout << "Kb_Key_F: " << Kb_Key_F << '\n';
-		wcout << "Kb_Key_G: " << Kb_Key_G << '\n';
-		wcout << "Kb_Key_H: " << Kb_Key_H << '\n';
-		wcout << "Kb_Key_I: " << Kb_Key_I << '\n';
-		wcout << "Kb_Key_J: " << Kb_Key_J << '\n';
-		wcout << "Kb_Key_K: " << Kb_Key_K << '\n';
-		wcout << "Kb_Key_L: " << Kb_Key_L << '\n';
-		wcout << "Kb_Key_M: " << Kb_Key_M << '\n';
-		wcout << "Kb_Key_N: " << Kb_Key_N << '\n';
-		wcout << "Kb_Key_O: " << Kb_Key_O << '\n';
-		wcout << "Kb_Key_P: " << Kb_Key_P << '\n';
-		wcout << "Kb_Key_Q: " << Kb_Key_Q << '\n';
-		wcout << "Kb_Key_R: " << Kb_Key_R << '\n';
-		wcout << "Kb_Key_S: " << Kb_Key_S << '\n';
-		wcout << "Kb_Key_T: " << Kb_Key_T << '\n';
-		wcout << "Kb_Key_U: " << Kb_Key_U << '\n';
-		wcout << "Kb_Key_V: " << Kb_Key_V << '\n';
-		wcout << "Kb_Key_W: " << Kb_Key_W << '\n';
-		wcout << "Kb_Key_X: " << Kb_Key_X << '\n';
-		wcout << "Kb_Key_Y: " << Kb_Key_Y << '\n';
-		wcout << "Kb_Key_Z: " << Kb_Key_Z << '\n';
+		wcout << "Kb_Key_A: "; print(Kb_Key_A);
+		wcout << "Kb_Key_B: "; print(Kb_Key_B);
+		wcout << "Kb_Key_C: "; print(Kb_Key_C);
+		wcout << "Kb_Key_D: "; print(Kb_Key_D);
+		wcout << "Kb_Key_E: "; print(Kb_Key_E);
+		wcout << "Kb_Key_F: "; print(Kb_Key_F);
+		wcout << "Kb_Key_G: "; print(Kb_Key_G);
+		wcout << "Kb_Key_H: "; print(Kb_Key_H);
+		wcout << "Kb_Key_I: "; print(Kb_Key_I);
+		wcout << "Kb_Key_J: "; print(Kb_Key_J);
+		wcout << "Kb_Key_K: "; print(Kb_Key_K);
+		wcout << "Kb_Key_L: "; print(Kb_Key_L);
+		wcout << "Kb_Key_M: "; print(Kb_Key_M);
+		wcout << "Kb_Key_N: "; print(Kb_Key_N);
+		wcout << "Kb_Key_O: "; print(Kb_Key_O);
+		wcout << "Kb_Key_P: "; print(Kb_Key_P);
+		wcout << "Kb_Key_Q: "; print(Kb_Key_Q);
+		wcout << "Kb_Key_R: "; print(Kb_Key_R);
+		wcout << "Kb_Key_S: "; print(Kb_Key_S);
+		wcout << "Kb_Key_T: "; print(Kb_Key_T);
+		wcout << "Kb_Key_U: "; print(Kb_Key_U);
+		wcout << "Kb_Key_V: "; print(Kb_Key_V);
+		wcout << "Kb_Key_W: "; print(Kb_Key_W);
+		wcout << "Kb_Key_X: "; print(Kb_Key_X);
+		wcout << "Kb_Key_Y: "; print(Kb_Key_Y);
+		wcout << "Kb_Key_Z: "; print(Kb_Key_Z);
 		cout << "Ignore_Arrows: " << ignoreArrows << '\n';
-		wcout << "Kb_Key_Left: " << Kb_Key_Left << '\n';
-		wcout << "Kb_Key_Up: " << Kb_Key_Up << '\n';
-		wcout << "Kb_Key_Right: " << Kb_Key_Right << '\n';
-		wcout << "Kb_Key_Down: " << Kb_Key_Down << '\n';
+		wcout << "Kb_Key_Left: "; print(Kb_Key_Left);
+		wcout << "Kb_Key_Up: "; print(Kb_Key_Up);
+		wcout << "Kb_Key_Right: "; print(Kb_Key_Right);
+		wcout << "Kb_Key_Down: "; print(Kb_Key_Down);
 		cout << "Ignore_Backslash: " << ignoreBackslash << '\n';
-		wcout << "Kb_Key_Backslash: " << Kb_Key_Backslash << '\n';
+		wcout << "Kb_Key_Backslash: "; print(Kb_Key_Backslash);
 		cout << "Ignore_Caps: " << ignoreCaps << '\n';
-		wcout << "Kb_Key_Caps: " << Kb_Key_Caps << '\n';
+		wcout << "Kb_Key_Caps: "; print(Kb_Key_Caps);
 		cout << "Ignore_Comma: " << ignoreComma << '\n';
-		wcout << "Kb_Key_Comma: " << Kb_Key_Comma << '\n';
+		wcout << "Kb_Key_Comma: "; print(Kb_Key_Comma);
 		cout << "Ignore_Delete: " << Ignore_Delete << '\n';
-		wcout << "Kb_Key_Delete: " << Kb_Key_Delete << '\n';
+		wcout << "Kb_Key_Delete: "; print(Kb_Key_Delete);
 		cout << "Ignore_End: " << Ignore_End << '\n';
-		wcout << "Kb_Key_End: " << Kb_Key_End << '\n';
+		wcout << "Kb_Key_End: "; print(Kb_Key_End);
 		cout << "Ignore_Enter: " << ignoreEnter << '\n';
-		wcout << "Kb_Key_Enter: " << Kb_Key_Enter << '\n';
+		wcout << "Kb_Key_Enter: "; print(Kb_Key_Enter);
 		cout << "Ignore_Equal: " << ignoreEqual << '\n';
-		wcout << "Kb_Key_Equal: " << Kb_Key_Equal << '\n';
+		wcout << "Kb_Key_Equal: "; print(Kb_Key_Equal);
 		cout << "Ignore_Esc: " << ignoreEsc << '\n';
-		wcout << "Kb_Key_Esc: " << Kb_Key_Esc << '\n';
+		wcout << "Kb_Key_Esc: "; print(Kb_Key_Esc);
 		cout << "Ignore_F1-F12: " << ignoreF1s << '\n';
-		wcout << "Kb_Key_F1: " << Kb_Key_F1 << '\n';
-		wcout << "Kb_Key_F2: " << Kb_Key_F2 << '\n';
-		wcout << "Kb_Key_F3: " << Kb_Key_F3 << '\n';
-		wcout << "Kb_Key_F4: " << Kb_Key_F4 << '\n';
-		wcout << "Kb_Key_F5: " << Kb_Key_F5 << '\n';
-		wcout << "Kb_Key_F6: " << Kb_Key_F6 << '\n';
-		wcout << "Kb_Key_F7: " << Kb_Key_F7 << '\n';
-		wcout << "Kb_Key_F8: " << Kb_Key_F8 << '\n';
-		wcout << "Kb_Key_F9: " << Kb_Key_F9 << '\n';
-		wcout << "Kb_Key_F10: " << Kb_Key_F10 << '\n';
-		wcout << "Kb_Key_F11: " << Kb_Key_F11 << '\n';
-		wcout << "Kb_Key_F12: " << Kb_Key_F12 << '\n';
+		wcout << "Kb_Key_F1: "; print(Kb_Key_F1);
+		wcout << "Kb_Key_F2: "; print(Kb_Key_F2);
+		wcout << "Kb_Key_F3: "; print(Kb_Key_F3);
+		wcout << "Kb_Key_F4: "; print(Kb_Key_F4);
+		wcout << "Kb_Key_F5: "; print(Kb_Key_F5);
+		wcout << "Kb_Key_F6: "; print(Kb_Key_F6);
+		wcout << "Kb_Key_F7: "; print(Kb_Key_F7);
+		wcout << "Kb_Key_F8: "; print(Kb_Key_F8);
+		wcout << "Kb_Key_F9: "; print(Kb_Key_F9);
+		wcout << "Kb_Key_F10: "; print(Kb_Key_F10);
+		wcout << "Kb_Key_F11: "; print(Kb_Key_F11);
+		wcout << "Kb_Key_F12: "; print(Kb_Key_F12);
 		cout << "Ignore_Print_Screen: " << Ignore_Print_Screen << '\n';
-		wcout << "Kb_Key_Print_Screen: " << Kb_Key_Print_Screen << '\n';
+		wcout << "Kb_Key_Print_Screen: "; print(Kb_Key_Print_Screen);
 		cout << "Ignore_Forwardslash: " << ignoreForwardslash << '\n';
-		wcout << "Kb_Key_Forwardslash: " << Kb_Key_Forwardslash << '\n';
+		wcout << "Kb_Key_Forwardslash: "; print(Kb_Key_Forwardslash);
 		cout << "Ignore_GraveAccent: " << ignoreGraveAccent << '\n';
-		wcout << "Kb_Key_Grave_Accent: " << Kb_Key_Grave_Accent << '\n';
+		wcout << "Kb_Key_Grave_Accent: "; print(Kb_Key_Grave_Accent);
 		cout << "Ignore_Home: " << Ignore_Home << '\n';
-		wcout << "Kb_Key_Home: " << Kb_Key_Home << '\n';
+		wcout << "Kb_Key_Home: "; print(Kb_Key_Home);
 		cout << "Ignore_Insert: " << Ignore_Insert << '\n';
-		wcout << "Kb_Key_Insert: " << Kb_Key_Insert << '\n';
+		wcout << "Kb_Key_Insert: "; print(Kb_Key_Insert);
 		cout << "Ignore_LAlt: " << ignoreLAlt << '\n';
-		wcout << "Kb_Key_Left_Alt: " << Kb_Key_Left_Alt << '\n';
+		wcout << "Kb_Key_Left_Alt: "; print(Kb_Key_Left_Alt);
 		cout << "Ignore_LBracket: " << ignoreLBracket << '\n';
-		wcout << "Kb_Key_Left_Bracket: " << Kb_Key_Left_Bracket << '\n';
+		wcout << "Kb_Key_Left_Bracket: "; print(Kb_Key_Left_Bracket);
 		cout << "Ignore_LCtrl: " << ignoreLCtrl << '\n';
-		wcout << "Kb_Key_Left_Ctrl: " << Kb_Key_Left_Ctrl << '\n';
+		wcout << "Kb_Key_Left_Ctrl: "; print(Kb_Key_Left_Ctrl);
 		cout << "Ignore_LShift: " << ignoreLShift << '\n';
-		wcout << "Kb_Key_Left_Shift: " << Kb_Key_Left_Shift << '\n';
+		wcout << "Kb_Key_Left_Shift: "; print(Kb_Key_Left_Shift);
 		cout << "Ignore_Menu: " << ignoreMenuKey << '\n';
-		wcout << "Kb_Key_Menu: " << Kb_Key_Menu << '\n';
+		wcout << "Kb_Key_Menu: "; print(Kb_Key_Menu);
 		cout << "Ignore_Minus: " << ignoreMinus << '\n';
-		wcout << "Kb_Key_Minus: " << Kb_Key_Minus << '\n';
+		wcout << "Kb_Key_Minus: "; print(Kb_Key_Minus);
 		cout << "Ignore_NumPad: " << ignoreNumPad << '\n';
-		wcout << "Kb_Key_Numpad_0: " << Kb_Key_Numpad_0 << '\n';
-		wcout << "Kb_Key_Numpad_1: " << Kb_Key_Numpad_1 << '\n';
-		wcout << "Kb_Key_Numpad_2: " << Kb_Key_Numpad_2 << '\n';
-		wcout << "Kb_Key_Numpad_3: " << Kb_Key_Numpad_3 << '\n';
-		wcout << "Kb_Key_Numpad_4: " << Kb_Key_Numpad_4 << '\n';
-		wcout << "Kb_Key_Numpad_5: " << Kb_Key_Numpad_5 << '\n';
-		wcout << "Kb_Key_Numpad_6: " << Kb_Key_Numpad_6 << '\n';
-		wcout << "Kb_Key_Numpad_7: " << Kb_Key_Numpad_7 << '\n';
-		wcout << "Kb_Key_Numpad_8: " << Kb_Key_Numpad_8 << '\n';
-		wcout << "Kb_Key_Numpad_9: " << Kb_Key_Numpad_9 << '\n';
-		wcout << "Kb_Key_Numlock: " << Kb_Key_Numlock << '\n';
-		wcout << "Kb_Key_Numpad_Divide: " << Kb_Key_Numpad_Divide << '\n';
-		wcout << "Kb_Key_Numpad_Multiply: " << Kb_Key_Numpad_Multiply << '\n';
-		wcout << "Kb_Key_Numpad_Minus: " << Kb_Key_Numpad_Minus << '\n';
-		wcout << "Kb_Key_Numpad_Add: " << Kb_Key_Numpad_Add << '\n';
-		wcout << "Kb_Key_Numpad_Period: " << Kb_Key_Numpad_Period << '\n';
-		wcout << "Kb_Key_Numpad_Enter: " << Kb_Key_Numpad_Enter << '\n';
+		wcout << "Kb_Key_Numpad_0: "; print(Kb_Key_Numpad_0);
+		wcout << "Kb_Key_Numpad_1: "; print(Kb_Key_Numpad_1);
+		wcout << "Kb_Key_Numpad_2: "; print(Kb_Key_Numpad_2);
+		wcout << "Kb_Key_Numpad_3: "; print(Kb_Key_Numpad_3);
+		wcout << "Kb_Key_Numpad_4: "; print(Kb_Key_Numpad_4);
+		wcout << "Kb_Key_Numpad_5: "; print(Kb_Key_Numpad_5);
+		wcout << "Kb_Key_Numpad_6: "; print(Kb_Key_Numpad_6);
+		wcout << "Kb_Key_Numpad_7: "; print(Kb_Key_Numpad_7);
+		wcout << "Kb_Key_Numpad_8: "; print(Kb_Key_Numpad_8);
+		wcout << "Kb_Key_Numpad_9: "; print(Kb_Key_Numpad_9);
+		wcout << "Kb_Key_Numlock: "; print(Kb_Key_Numlock);
+		wcout << "Kb_Key_Numpad_Divide: "; print(Kb_Key_Numpad_Divide);
+		wcout << "Kb_Key_Numpad_Multiply: "; print(Kb_Key_Numpad_Multiply);
+		wcout << "Kb_Key_Numpad_Minus: "; print(Kb_Key_Numpad_Minus);
+		wcout << "Kb_Key_Numpad_Add: "; print(Kb_Key_Numpad_Add);
+		wcout << "Kb_Key_Numpad_Period: "; print(Kb_Key_Numpad_Period);
+		wcout << "Kb_Key_Numpad_Enter: "; print(Kb_Key_Numpad_Enter);
 		cout << "Ignore_Period: " << ignorePeriod << '\n';
-		wcout << "Kb_Key_Period: " << Kb_Key_Period << '\n';
+		wcout << "Kb_Key_Period: "; print(Kb_Key_Period);
 		cout << "Ignore_PgDn: " << Ignore_PgDn << '\n';
-		wcout << "Kb_Key_PgDn: " << Kb_Key_PgDn << '\n';
+		wcout << "Kb_Key_PgDn: "; print(Kb_Key_PgDn);
 		cout << "Ignore_PgUp: " << Ignore_PgUp << '\n';
-		wcout << "Kb_Key_PgUp: " << Kb_Key_PgUp << '\n';
+		wcout << "Kb_Key_PgUp: "; print(Kb_Key_PgUp);
 		cout << "Ignore_Quote: " << ignoreQuote << '\n';
-		wcout << "Kb_Key_Quote: " << Kb_Key_Quote << '\n';
+		wcout << "Kb_Key_Quote: "; print(Kb_Key_Quote);
 		cout << "Ignore_RAlt: " << ignoreRAlt << '\n';
-		wcout << "Kb_Key_Right_Alt: " << Kb_Key_Right_Alt << '\n';
+		wcout << "Kb_Key_Right_Alt: "; print(Kb_Key_Right_Alt);
 		cout << "Ignore_RBracket: " << ignoreRBracket << '\n';
-		wcout << "Kb_Key_Right_Bracket: " << Kb_Key_Right_Bracket << '\n';
+		wcout << "Kb_Key_Right_Bracket: "; print(Kb_Key_Right_Bracket);
 		cout << "Ignore_RCtrl: " << ignoreRCtrl << '\n';
-		wcout << "Kb_Key_Right_Ctrl: " << Kb_Key_Right_Ctrl << '\n';
+		wcout << "Kb_Key_Right_Ctrl: "; print(Kb_Key_Right_Ctrl);
 		cout << "Ignore_RShift: " << ignoreRShift << '\n';
-		wcout << "Kb_Key_Right_Shift: " << Kb_Key_Right_Shift << '\n';
+		wcout << "Kb_Key_Right_Shift: "; print(Kb_Key_Right_Shift);
 		cout << "Ignore_Semicolon: " << ignoreSemicolon << '\n';
-		wcout << "Kb_Key_Semicolon: " << Kb_Key_Semicolon << '\n';
+		wcout << "Kb_Key_Semicolon: "; print(Kb_Key_Semicolon);
 		cout << "Ignore_Space: " << ignoreSpace << '\n';
-		wcout << "Kb_Key_Space: " << Kb_Key_Space << '\n';
+		wcout << "Kb_Key_Space: "; print(Kb_Key_Space);
 		cout << "Ignore_Tab: " << ignoreTab << '\n';
-		wcout << "Kb_Key_Tab: " << Kb_Key_Tab << '\n';
+		wcout << "Kb_Key_Tab: "; print(Kb_Key_Tab);
 		cout << "StartHidden: " << startHidden << '\n';
 		cout << "SlightPauseInBetweenConnects: " << SlightPauseInBetweenConnects << '\n';
 		cout << "CommaSleep: " << CommaSleep << '\n';
@@ -1152,7 +1153,8 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	HANDLE hC = GetStdHandle(STD_OUTPUT_HANDLE);
 	size_t x = 0; bool t = 0;
 	if (multiLine) { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
-	auto write = [&x, &t](auto w) { 
+	auto write = [&x, &t](wstring w) {
+		if (w[0] > 127) SetConsoleOutputCP(CP_UTF7);
 		wcout << w; ++x; t = 1;
 	};
 	auto color = [&x, &t, w, hC](WORD n) { 
@@ -1170,9 +1172,9 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 				tail = t; i = x; re = L" "; codes = c; }
 				write(L""); break;
 			case'+':
-				{ write(ic); } break; //<+>
+				{ wstring a = to_wstring(ic); write(a); } break; //<+>
 			case'a':
-				{ write('\a'); } break; //beep
+				{ write(L"\a"); } break; //beep
 			case'1':
 			case'B':
 				color(1); break; //blu
@@ -1195,7 +1197,7 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			case'9':
 				color(9); break;
 			case '\\':
-				{ write('\\'); }
+				{ write(L"\\"); }
 				break;
 			case '\'':
 				x = w.length() - 1;
@@ -1204,26 +1206,30 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			case 'c':
 				{ write(cbGet()); }
 				break;
+			case 'm':
+				{ write(multiLineDelim); }
+				break;
 			case 'n':
-				{ write('\n'); }
+				{ write(L"\n"); }
 				break;
 			case 'T':
 				{ wstring w{}; getTime(w); write(w); }
 				break;
 			case 't':
-				{ write('\t'); }
+				{ write(L"\t"); }
 				break;
 			case 'g':
-				{ write('>'); }
+				{ write(L">"); }
 				break;
 			}
 			if (t) continue;
 		}
-		if (w[x] > 127) { cout << "[?]"; continue; } //ignore > 127
-		wcout << w[x];
+		if (w[x] > 127) SetConsoleOutputCP(CP_UTF7);
+		wcout << w[x]; if (wcout.fail()) { wcout.imbue(locale()); wcout.clear(); wcout << L"[?]"; }
 	}
-	wcout << s1; if (wcout.fail()) { wcout.imbue(locale()); wcout.clear(); wcout << L"[?]\n"; }
+	SetConsoleOutputCP(CP_UTF7); wcout << s1; if (wcout.fail()) { wcout.imbue(locale()); wcout.clear(); wcout << L"[?]\n"; }
 	if (!b) cout << '\n';
+	SetConsoleOutputCP(CP_UTF8);
 }
 
 void rei() { i += qq.find(L">"); }
@@ -2740,7 +2746,7 @@ void scanDb() {
 }
 
 void printCtrls() {
-	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nF11\t\t\tFullscreen\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC (LSHIFT)\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND: RGBXY&RGBXY\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tFlip, then toggle settings back after next run (For RSHIFT + RCTRL)\n<db:>\t\t\tSwitch (se.txt Database)\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><DB:c:\\dna\\d.txt>\n{}\t\t\tReplacer (se.txt Replacer: 1)\n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n\n";
+	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nF11\t\t\tFullscreen\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC (LSHIFT)\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND: RGBXY&RGBXY\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t\\m\t<ml>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tFlip, then toggle settings back after next run (For RSHIFT + RCTRL)\n<db:>\t\t\tSwitch (se.txt Database)\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><DB:c:\\dna\\d.txt>\n{}\t\t\tReplacer (se.txt Replacer: 1)\n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n\n";
 }
 
 void printIntro() {
@@ -2773,6 +2779,7 @@ void repeat() {
 #pragma endregion
 
 int main() {//cout << "@dnaspider\n\n";
+	wcout.imbue(locale()); wcout.clear();
 #pragma region initial_startup
 	{
 		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; ++i) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
@@ -2785,7 +2792,7 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 	}
 	loadSe();
-	if (Unicode) SetConsoleOutputCP(CP_UTF8);
+	//if (Unicode) SetConsoleOutputCP(CP_UTF8);
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
 	printIntro(); strand = L"<dna>"; scanDb(); strand.clear();//run @ startup
 #pragma endregion
