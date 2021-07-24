@@ -333,7 +333,7 @@ void shftRelease() {
 
 void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
-void prints() { if (showStrand) showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); }
+void prints(bool clear = 0) { if (clear) strand.clear(); if (showStrand) showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); }
 
 bool qqb(const wstring s) {
 	return qq.substr(0, s.length()) == s && qq.find(L">") != string::npos;
@@ -1473,7 +1473,7 @@ void scanDb() {
 								multi.t = tail;
 								if (qq[2] == '*') {
 									GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_PAUSE); for (int j = 0; j < stoi(s); ++j) {//sleep150ms*?
-										if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
+										if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); if (showStrand) { cout << '\n'; } return; }//stop
 										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 										if (pause_resume) { --j; Sleep(frequency); continue; }
 										Sleep(CommaSleep);
@@ -1565,7 +1565,7 @@ void scanDb() {
 
 								wstring tar = a, app = a;
 								for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
-									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (pause_resume) { --size; Sleep(frequency); continue; }
 									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
@@ -1669,7 +1669,7 @@ void scanDb() {
 						case 'B':
 						case 'b':
 							if (testqqb(L"<CB:") || testqqb(L"<cb:")) {
-								qp = regex_replace(qp, wregex(L"\\\\g"), L">");
+								qp = regex_replace(qp, wregex(L"\\\\g"), L">"); qp = regex_replace(qp, wregex(L"\\\\m"), multiLineDelim);
 								cbSet(qp);
 								if (qq[1] == 'C') { kbHold(VK_CONTROL); kb('v'); kbRelease(VK_CONTROL); }
 								rei();
@@ -1895,7 +1895,7 @@ void scanDb() {
 							
 								wstring tar = a;
 								for (; size < length; ++size) { //cout << size << " ifcb:" << a << " *" << x << " " << ms << "ms" << endl;
-									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); prints(1); return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (pause_resume) { --size; Sleep(frequency); continue; }
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
@@ -2126,7 +2126,7 @@ void scanDb() {
 								};
 							
 								for (; size < length; ++size) { //cout << size << " iftime:" << a << " *" << x << " " << ms << "ms" << endl;
-									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); return; }//stop
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); prints(1); return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
 
@@ -2426,7 +2426,7 @@ void scanDb() {
 								};
 									
 								for (; size < length; ++size) {
-									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
 									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE);  kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
 									if (pause_resume) { --size; Sleep(frequency); continue; }
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
@@ -2570,8 +2570,8 @@ void scanDb() {
 											qx = regex_replace(qx, wregex(L"\\\\,"), L",");// \,
 										}
 									}
-									qx = regex_replace(qx, wregex(L"\\\\g"), L">");
-									qy = regex_replace(qy, wregex(L"\\\\g"), L">");
+									qx = regex_replace(qx, wregex(L"\\\\g"), L">"); qx = regex_replace(qx, wregex(L"\\\\m"), multiLineDelim);
+									qy = regex_replace(qy, wregex(L"\\\\g"), L">"); qy = regex_replace(qy, wregex(L"\\\\m"), multiLineDelim);
 									wstring c = regex_replace(cbGet(), wregex(qx), qy);
 									cbSet(c);
 								}
@@ -2763,7 +2763,7 @@ void key(wstring k) {
 	if (strandLengthMode && static_cast<int>(strand.length()) > strandLength && strand[0] != '<') strand = strand.substr(strand.length() - strandLength);
 	prints();
 	if (close_ctrl_mode && strand.find(L">") != std::string::npos && strand[strand.length() - 1] != '>') { strand.clear(); prints(); return; }
-	scanDb();
+	if (multiStrand) { thread thread(scanDb); thread.detach(); return; } else scanDb();
 	if (strand == L"") prints();
 }
 
