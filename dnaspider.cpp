@@ -2743,7 +2743,7 @@ void scanDb() {
 		}
 	}
 	f.close();
-	if (strand > L"" && close_ctrl_mode && strand[0] == '<') { reTail = strand.substr(1, strand.length() - 2); tail = reTail; }//dbless repeat
+	if (strand > L"" && close_ctrl_mode && strand[0] == '<') { if (strand.substr(strand.length() - 1) != L">") return; codes = tail = reTail = strand.substr(1, strand.length() - 2); }//dbless repeat
 }
 
 void printCtrls() {
