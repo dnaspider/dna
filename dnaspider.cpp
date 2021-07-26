@@ -1353,7 +1353,7 @@ void scanDb() {
 			f.close(); fail = 0; esc_pressed = 0;
 			Multi multi;
 			for (i = 0; i < tail.length(); ++i) {
-				if (multiStrand) if (strand > L"" && strand == sv && !noClearStrand) strand.clear();//multiStrand variant clear
+				if (multiStrand) { if (strand == sv && !noClearStrand) strand.clear(); }//multiStrand variant clear
 				if (speed > 0) { if (sleep) { if (multiStrand) { multi.t = tail; multi.get_i = i; multi.q = qq; } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
 				GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 				if (pause_resume) { --i; Sleep(frequency); continue; }
