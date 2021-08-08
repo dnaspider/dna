@@ -2793,7 +2793,6 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 	}
 	loadSe();
-	//if (Unicode) SetConsoleOutputCP(CP_UTF8);
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
 	printIntro(); strand = L"<dna>"; scanDb(); strand.clear();//run @ startup
 #pragma endregion
