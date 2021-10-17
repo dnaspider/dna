@@ -122,124 +122,113 @@ void cbSet(wstring&);
 #pragma endregion
 
 #pragma region classo
-struct Mainn
-{
-	Mainn();
-	ctp 
-		c1, c2;//elapsed
-	wstring 
-		getStrand(), getStrand(wstring), getTail(wstring),
- 		s, s1, &t = tail;//strand
-	void 
-		setStrand(wstring), setTail();
-	~Mainn();
+struct Mainn {
+	ctp c1, c2;//elapsed
+	wstring s, s1, &t = tail;//strand
+	Mainn()	{
+		if (!multiStrand) return;
+		if (showMultiStrand) wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1);
+	}
+	void setStrand(wstring c) {
+		s1 = c.substr(0, strand.length());
+		linkr = s1;
+	}
+	wstring getStrand() {
+		return s1;
+	}
+	wstring getStrand(wstring c) {
+		s = c.substr(0, strand.length() + !strandLengthMode);
+		if (showMultiStrand) {
+			wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
+			wcout << "input: " << OutTab << OutTab << (linkr > L""? linkr + b : s + b) << endl;
+		}
+		return s;
+	}
+	void setTail() {
+		t = tail;
+		if (showMultiStrand) { wcout << "output: " << OutTab; showOutsMsg(L"", t, L"", 0); }
+	}
+	wstring getTail(wstring t) {
+		return t;
+	}
+	~Mainn() {
+		if (!multiStrand) return;
+		t.clear();
+		if (showMultiStrand) {
+			clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
+			wcout << "~thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
+		}
+	}
 };
 
-Mainn::Mainn()
-{
-	if (!multiStrand) return;
-	if (showMultiStrand) wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1);
-}
-
-void Mainn::setStrand(wstring c)
-{
-	s1 = c.substr(0, strand.length());
-	linkr = s1;
-}
-
-wstring Mainn::getStrand() { return s1; }
-
-wstring Mainn::getStrand(wstring c)
-{
-	s = c.substr(0, strand.length() + !strandLengthMode);
-	if (showMultiStrand) {
-		wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
-		wcout << "input: " << OutTab << OutTab << (linkr > L""? linkr + b : s + b) << endl;
+struct Multi {
+	wstring r, g, b, a, x, m, l, t = tail, q = qq;
+	size_t get_i = i;
+	bool br = 0;//break
+	Multi() {}
+	Multi(wstring r) {}
+	void setApp(wstring app) {
+		a = app;
 	}
-	return s;
-}
-
-void Mainn::setTail()
-{
-	t = tail;
-	if (showMultiStrand) { wcout << "output: " << OutTab; showOutsMsg(L"", t, L"", 0); }
-}
-
-wstring Mainn::getTail(wstring t) { return t; }
-
-Mainn::~Mainn()
-{
-	if (!multiStrand) return;
-	t.clear();
-	if (showMultiStrand) {
-		clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
-		wcout << "~thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
+	wstring getApp() {
+		return a;
 	}
-}
-
-struct Multi
-{
-	Multi(); Multi(wstring);
-	wstring 
-		getApp(), getLink(), getMS(), getQQ(), getRGBr(), getRGBg(), getRGBb(), getTail(), getX(),
-		r, g, b, a, x, m, l,
-		t = tail, q = qq;
-	size_t
-		getI(),
+	void setBreak() {
+		br = 1;
+	}
+	bool getBreak() {
+		return br;
+	}
+	size_t getI() {
+		return get_i;
+	}
+	void setI() {
 		get_i = i;
-	bool 
-		getBreak(),
-		br = 0;//break
-	void
-		setApp(wstring), setBreak(), setI(), setLink(wstring), setMS(wstring), setRGBr(wstring), setRGBg(wstring), setRGBb(wstring), setX(wstring);
-	~Multi();
+	}
+	void setLink(wstring li) {
+		l = li;
+	}
+	wstring getLink() {
+		return l;
+	}
+	void setMS(wstring mil) {
+		m = mil;
+	}
+	wstring getMS() {
+		return m;
+	}
+	wstring getQQ() {
+		return q;
+	}
+	void setRGBr(wstring red) {
+		r = red;
+	}
+	void setRGBg(wstring gre) {
+		g = gre;
+	}
+	void setRGBb(wstring blu) {
+		b = blu;
+	}
+	wstring getRGBr() {
+		return r;
+	}
+	wstring getRGBg() {
+		return g;
+	}
+	wstring getRGBb() {
+		return b;
+	}
+	wstring getTail() {
+		return t;
+	}
+	void setX(wstring it) {
+		x = it;
+	}
+	wstring getX() {
+		return x;
+	}
+	//~Multi() {}
 };
-
-Multi::Multi() {}
-
-Multi::Multi(wstring r) {}
-
-void Multi::setApp(wstring app) { a = app; }
-
-wstring Multi::getApp() { return a; }
-
-void Multi::setBreak() { br = 1; }
-
-bool Multi::getBreak() { return br; }
-
-size_t Multi::getI() { return get_i; }
-
-void Multi::setI() { get_i = i; }
-
-void Multi::setLink(wstring li) { l = li; }
-
-wstring Multi::getLink() { return l; }
-
-void Multi::setMS(wstring mil) { m = mil; }
-
-wstring Multi::getMS() { return m; }
-
-wstring Multi::getQQ() { return q; }
-
-void Multi::setRGBr(wstring red) { r = red; }
-
-void Multi::setRGBg(wstring gre) { g = gre; }
-
-void Multi::setRGBb(wstring blu) { b = blu; }
-
-wstring Multi::getRGBr() { return r; }
-
-wstring Multi::getRGBg() { return g; }
-
-wstring Multi::getRGBb() { return b; }
-
-wstring Multi::getTail() { return t; }
-
-void Multi::setX(wstring it) { x = it; }
-
-wstring Multi::getX() { return x; }
-
-Multi::~Multi() {}
 #pragma endregion
 
 #pragma region global_sub
@@ -2729,7 +2718,7 @@ void scanDb() {
 					if (shft) kbHold(VK_LSHIFT);
 					kb(ctail[0]);
 					if (shft) shftRelease();
-					GetAsyncKeyState(VkKeyScanW(ctail[0])); //clear
+					GetAsyncKeyState(VkKeyScanW(ctail[0])); GetAsyncKeyState(ctail[0]);//clear
 				}
 			}
 			if (strand > L"" || re > L"") {
