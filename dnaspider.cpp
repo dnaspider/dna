@@ -127,7 +127,7 @@ struct Mainn {
 	wstring s, s1, &t = tail;//strand
 	Mainn()	{
 		if (!multiStrand) return;
-		if (showMultiStrand) wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1);
+		if (showMultiStrand) { wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1); }
 	}
 	void setStrand(wstring c) {
 		s1 = c.substr(0, strand.length());
@@ -1309,8 +1309,8 @@ void scanDb() {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
 				if (re[0] == '>') {
-					if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); cell = L"><shift>,<shift->xy:" + xy + L">"; re = cell; linkr = L""; if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << L"<xy:" + xy + L">\n"; } }
-					else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { getRGB(); linkr = L""; if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << "<" << tail.substr(16, tail.length()) << endl; } mainn.t.clear(); }
+					if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L"," + to_wstring(pt.y); codes = L"<shift>,<shift->xy:"; cell = codes + xy + L">"; re = cell; linkr = L""; if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << L"<xy:" + xy + L">\n"; } }
+					else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { cell = L"<shift>,<shift->rgb:"; getRGB(); linkr = L""; if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << "<" << tail.substr(16, tail.length()) << endl; } mainn.t.clear(); }
 					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt-><,1>"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + (Loop_Insert ? L",>" : L">"); }
 				}
 			}
