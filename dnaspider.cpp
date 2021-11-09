@@ -1894,8 +1894,7 @@ void scanDb() {
 									if (hcb != nullptr) {
 										c = static_cast<wchar_t*>(GlobalLock(hcb));
 										if (c != nullptr) {
-											w = TEXT(c);
-
+											w = c;
 											if (qqC[5] == 'f') sifcb();
 											else {
 												if (!BackslashLogicals) { tar = regex_replace(tar, wregex(L"\\\\\\|"), L"  "); tar = regex_replace(tar, wregex(L"\\\\\\&"), L"  "); }
