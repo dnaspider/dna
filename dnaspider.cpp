@@ -1619,11 +1619,13 @@ void scanDb() {
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
+										else if (linkC.find(L" ") != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
 									}
 									f(); break;
 								}
 								if (linkC.find(L" ") != string::npos) {// ..., true: false:>
 									linkC = linkC.substr(0, linkC.find(L" "));
+									if (linkC == L"<") { if (multiStrand) { i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); tail = multi.getTail(); i += qqC.find(L">"); } else { rei(); } break; } //true, continue
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
 									if (linkC[0] == '<') relink = 0;
 									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
@@ -1777,7 +1779,143 @@ void scanDb() {
 					case'i':
 						switch (qq[2]) {
 						case 'f':
-							if (testqqb(L"<ifcb")) {//Clipboard ==, !=, <, <=, g, g=, (f)ind, (F)ind, (n)ot
+							if (testqqb(L"<ifxy")) {//==, !=, <, <=, g, g=
+								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (qp == L"") { conn(); break; }
+								wstring a = qp, x = L"1", ms = L"0", linkC; link = L"";//<ifxy:a a,x,ms,link link>
+								a = a.substr(0, a.find(L","));
+								if (qp.find(L",") != string::npos) {
+									if (a == L"") { printq(); break; }
+									ms = L"333";
+									x = qp.substr(qp.find(L",") + 1); if (x[0] == ' ') x = x.substr(1); if (x == L"") { x = L"1"; link = L":"; }
+									if (x.find(L",") != string::npos) {
+										ms = x.substr(x.find(L",") + 1); if (ms == L"") { printq(); break; }
+										if (ms.find(L",") != string::npos) {
+											link = ms.substr(ms.find(L",") + 1); if (link[0] == ' ') { link = link.substr(1); } if (link == L"") link = L"<";
+											ms = ms.substr(0, ms.find(L",")); if (check_if_num(ms) == L"") { printq(); break; }
+										}
+										x = x.substr(0, x.find(L","));
+									}
+									if (check_if_num(x) == L"") { printq(); break; }
+								}//cout << a << " " << x << " " << ms << " " << link << endl;
+								linkC = link; wstring qqC = qq; bool mF = 0;
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find(L">") + 1), L"", 0); } };
+								Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
+
+								auto sifxy = [&qqC, &multi, &a]() {
+									auto q = a.find(L" ");
+									auto x = a.substr(0, q), y = a.substr(q + 1);
+									POINT pt; GetCursorPos(&pt);
+									if (x == L".") x = to_wstring(pt.x);
+									if (y == L".") y = to_wstring(pt.y);
+									auto tx = stoi(x), ty = stoi(y);
+
+									switch (qqC[5]) {
+									case ':': //== <ifxy:> <ifxy=:> <ifxye:>
+									case '=':
+									case 'e':
+										if (tx == pt.x && ty == pt.y) multi.setBreak();
+										break;
+									case 'n': //!= <ifxyn:> <ifxy!:>
+									case '!':
+										if (tx != pt.x && ty != pt.y) multi.setBreak();
+										break;
+									case 'l'://<= <ifxyl:> <ifxyle:> <ifxy<:> <ifxy<=:>
+									case 'L':
+									case '<':
+										if (qqC[6] == 'e' || qqC[6] == '=') { if (tx <= pt.x && ty <= pt.y) { multi.setBreak(); break; } } //ifxyle <=
+										if (tx < pt.x && ty < pt.y) multi.setBreak();
+										break;
+									case 'g'://>= <ifxyg:> <ifxyge:> <ifxyg=:>
+										if (qqC[6] == 'e' || qqC[6] == '=') { if (tx >= pt.x && ty >= pt.y) { multi.setBreak(); break; } } //ifxyge >=/g=
+										if (tx > pt.x && ty > pt.y) multi.setBreak();
+										break;
+									}
+								};
+
+								wstring tar = a, app = a;
+								for (; size < length; ++size) { //cout << size << "ifxy:" << a << " *" << x << " " << ms << "ms" << endl;
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
+									if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
+									if (pause_resume) { --size; Sleep(frequency); continue; }
+									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
+									if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
+
+									if (!BackslashLogicals) { tar = regex_replace(tar, wregex(L"\\\\\\|"), L"  "); tar = regex_replace(tar, wregex(L"\\\\\\&"), L"  "); }
+									if (tar == L"") tar = a;
+									if (tar.find(L"|") != string::npos || tar.find(L"&") != string::npos) {// | &
+										wstring t = L"", ta = L"", q = L""; bool sor = 1, sand = 1;
+										for (size_t j = 0; j < a.length(); ++j) {
+											ta += a[j]; //build ta
+											if (tar[j] == '|' && (!BackslashLogicals ? 1 : tar[j - 1] == '\\') || tar[j] == '&' && (!BackslashLogicals ? 1 : tar[j - 1] == '\\') || j == a.length() - 1) {
+												t = a.substr(ta.length());
+												if (t > L"") q = a.substr(j, 1);
+												a = t > L"" ? ta.substr(0, ta.length() - 1 - BackslashLogicals) : ta; if (BackslashLogicals && t == L"") { q = ta[0]; a = ta.substr(1); }
+												if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
+												if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); //!\0
+												sifxy(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
+												if (!multi.br) {
+													if (q == L"&") {
+														sand = 0;
+														if (t.find(L"|") != string::npos) sand = 1; else break;
+													}
+													if (q == L"|") {
+														sor = 0;
+														if (t.find(L"&") != string::npos) sor = 1;
+														if (t.find(L"&") != string::npos && t.find(L"|") == string::npos) sor = 1;
+													}
+												}
+												if (q == L"&" && multi.br) sand = 1;
+												if (q == L"|" && multi.br) { sor = 1; break; }
+												multi.br = 0; a = t; j = -1; ta.clear();
+												if (!BackslashLogicals) tar = regex_replace(a, wregex(L"\\\\\\|"), L"  ");
+											}
+										}
+										if (!multiStrand) a = app;
+										if (sor) multi.br = 1; //sifxy
+									}
+									else {
+										if (!BackslashLogicals) a = regex_replace(a, wregex(L"\\\\\\|"), L"|");
+										sifxy();
+									}
+									if (multi.getBreak()) break;
+									else {
+										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
+										if (length >= 1) Sleep(stoi(ms));
+										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+									}
+								}
+								
+								if (multiStrand) {
+									i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); if (!mF) { tail = multi.getTail(); i += qqC.find(L">"); } //rei
+								}
+								if (size >= length) {//fail
+									if (linkC.length() > 0) {
+										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+											if (linkC == L"<") { if (!multiStrand) rei(); break; }
+											if (linkC.find(L" ") != string::npos)// ..., true: false:>
+												linkC = linkC.substr(linkC.find(L" ") + 1);
+											if (linkC[0] == '<') relink = 0;
+											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<xy:a a,x,ms,<link->..., <xy:a a,x,ms,link->
+											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
+										}
+										else if (linkC.find(L" ") != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
+									}
+									f(); break;
+								}
+								if (linkC.find(L" ") != string::npos) {// ..., true: false:>
+									linkC = linkC.substr(0, linkC.find(L" "));
+									if (linkC == L"<") { if (multiStrand) { i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); tail = multi.getTail(); i += qqC.find(L">"); } else { rei(); } break; } //true, continue
+									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<xy:a a,x,ms,<link->..., <xy:a a,x,ms,link->
+									if (linkC[0] == '<') relink = 0;
+									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
+								}
+								if (!multiStrand) rei();
+								break;
+							}
+							else if (testqqb(L"<ifcb")) {//Clipboard ==, !=, <, <=, g, g=, (f)ind, (F)ind, (n)ot
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								if (qp == L"") { conn(); break; }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link = L"";//<ifcb:a,x,ms,link>
@@ -1960,11 +2098,13 @@ void scanDb() {
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
+										else if (linkC.find(L" ") != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue | Use < in the false slot for continue | <ifcb:a,x,ms,link: <>
 									}
 									f(); break;
 								}
 								if (linkC.find(L" ") != string::npos) {//T:
 									linkC = linkC.substr(0, linkC.find(L" "));
+									if (linkC == L"<") { if (multiStrand) { i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); tail = multi.getTail(); i += qqC.find(L">"); } else { rei(); } break; } //true, continue | Use < in the true slot for continue |  <ifcb:a,x,ms,< link:>
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";
 									if (linkC[0] == '<') relink = 0;
 									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
@@ -2175,11 +2315,13 @@ void scanDb() {
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
+										else if (linkC.find(L" ") != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
 									}
 									f(); break;
 								}
 								if (linkC.find(L" ") != string::npos) {
 									linkC = linkC.substr(0, linkC.find(L" "));
+									if (linkC == L"<") { if (multiStrand) { i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); tail = multi.getTail(); i += qqC.find(L">"); } else { rei(); } break; } //true, continue
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";
 									if (linkC[0] == '<') relink = 0;
 									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
@@ -2373,7 +2515,7 @@ void scanDb() {
 							break;
 						case 'G':
 						case 'g':
-							if (testqqb(L"<RGB:") || testqqb(L"<rgb:")) { //<rgb:r,g,b,x,ms,link>
+							if (testqqb(L"<RGB:") || testqqb(L"<rgb:")) { //<rgb:r g b,x,ms,link>
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								if (qp == L"") { conn(); break; }
 								wstring r, g, b, a = qp, x = L"1", ms = L"0", linkC; link = L"";
@@ -2509,11 +2651,13 @@ void scanDb() {
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
+										else if (linkC.find(L" ") != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
 									}
 									f(); break;
 								}
 								if (linkC.find(L" ") != string::npos) {
 									linkC = linkC.substr(0, linkC.find(L" "));
+									if (linkC == L"<") { if (multiStrand) { i = multi.getI(); qqC = multi.getQQ(); linkC = multi.getLink(); tail = multi.getTail(); i += qqC.find(L">"); } else { rei(); } break; } //true, continue
 									tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find(L">") + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
 									if (linkC[0] == '<') relink = 0;
 									if (speed > 0) sleep = 0; re = L" "; i = -1; break;
@@ -2653,6 +2797,10 @@ void scanDb() {
 						switch (qq[2]) {
 						case 'y':
 							if (testqqb(L"<xy:")) {
+								if (qx == L"." || qy == L".") {//Use . for current pt | <xy:. 0>  <t-<ifxy:0 . | . 0 | . 864 | 1638 .,1,1000,:>1
+									POINT pt; GetCursorPos(&pt);
+									qx == L"." ? qx = to_wstring(pt.x) : qy = to_wstring(pt.y);
+								}
 								SetCursorPos(stoi(qx), stoi(qy)); rei();
 							}
 							else if (qqb(L"<xy>")) {//print pointer
@@ -2735,7 +2883,7 @@ void scanDb() {
 }
 
 void printCtrls() {
-	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nF11\t\t\tFullscreen\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC (LSHIFT)\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND: RGBXY&RGBXY\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t\\m\t<ml>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tFlip, then toggle settings back after next run (For RSHIFT + RCTRL)\n<db:>\t\t\tSwitch (se.txt Database)\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><DB:c:\\dna\\d.txt>\n{}\t\t\tReplacer (se.txt Replacer: 1)\n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n\n";
+	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nF11\t\t\tFullscreen\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC (LSHIFT)\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\tUse < in true or false slot for continue\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND: RGBXY&RGBXY\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifxy:>\t\t\tContinue if xy\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t\\m\t<ml>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tFlip, then toggle settings back after next run (For RSHIFT + RCTRL)\n<db:>\t\t\tSwitch (se.txt Database)\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><DB:c:\\dna\\d.txt>\n{}\t\t\tReplacer (se.txt Replacer: 1)\n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n\n";
 }
 
 void printIntro() {
