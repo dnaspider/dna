@@ -2797,7 +2797,11 @@ void scanDb() {
 						switch (qq[2]) {
 						case 'y':
 							if (testqqb(L"<xy:")) {
-								if (qx == L"." || qy == L".") {//Use . for current pt | <xy:. 0>  <t-<ifxy:0 . | . 0 | . 864 | 1638 .,1,1000,:>1
+								if ((multiLine) && qx[0] == '\n' || qx[0] == '\t' || qy[0] == '\n' || qy[0] == '\t') {
+									qx = regex_replace(qx, wregex(L"\n"), L""); qx = regex_replace(qx, wregex(L"\t"), L"");
+									qy = regex_replace(qy, wregex(L"\n"), L""); qy = regex_replace(qy, wregex(L"\t"), L"");
+								}
+								if (qx[0] == '.' || qy[0] == '.') {//Use . for current pt | <xy:. 0>  <t-<ifxy:0 . | . 0 | . 864 | 1638 .,1,1000,:>1
 									POINT pt; GetCursorPos(&pt);
 									qx == L"." ? qx = to_wstring(pt.x) : qy = to_wstring(pt.y);
 								}
