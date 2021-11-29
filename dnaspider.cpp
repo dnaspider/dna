@@ -13,6 +13,7 @@ using namespace std;
 using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
+short PauseKey = 123; // VK_F12;
 bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
 bool Loop_Insert = 1;
 bool Ignore_Print_Screen = 1, Ignore_Insert = 1, Ignore_Delete = 1, Ignore_Home = 1, Ignore_End = 1, Ignore_PgUp = 1, Ignore_PgDn = 1;
@@ -486,8 +487,18 @@ void kbPress(wstring s, short key) {
 	for (int j = 0; j < stoi(star_num); ++j) {
 		if (!NoEscapeOrPause) {
 			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
-			if (GetAsyncKeyState(VK_PAUSE) && key != VK_PAUSE) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-			if (pause_resume) { --j; Sleep(frequency); continue; }
+			GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+				showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+				pause_resume = 1;
+				wstring q = L"~PAUSE\n";
+				Sleep(450); while (pause_resume) {
+					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+					if (!esc_pressed) Sleep(150);
+				}
+				showOutsMsg(L"", OutsTemplate, q, 1);
+				if (q[1] == 'E' || tail == L"") break;
+			}
 		}
 		if (s.length() == 3) {
 			if (s == L"<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
@@ -523,6 +534,8 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
+			case 865://PauseKey:
+				{ if (check_if_num(v) != L"") PauseKey = stoi(v); else er(); } break;
 			case 1543://NoEscapeOrPause:
 				{ if (v == L"1" || v == L"0") { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
 			case 2053://R+ESC_A+ESC_Loop_Insert: <rgb,> <app,>
@@ -915,6 +928,7 @@ void printSe() {
 		cout << "StrandLengthMode: " << strandLengthMode << '\n';
 		cout << "StrandLength: " << strandLength << '\n';
 		cout << "RepeatKey: " << reKey << '\n';
+		cout << "PauseKey: " << PauseKey << '\n';
 		cout << "RgbScaleLayout: " << RgbScaleLayout << '\n';
 		cout << "Frequency: " << frequency << '\n';
 		cout << "Ignore_0-9: " << ignore09 << '\n';
@@ -1351,8 +1365,19 @@ void scanDb() {
 				if (multiStrand) { if (strand == sv && !noClearStrand) strand.clear(); }//multiStrand variant clear
 				if (speed > 0) { if (sleep) { if (multiStrand) { multi.t = tail; multi.get_i = i; multi.q = qq; } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
 				if (!NoEscapeOrPause) {
-					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }// int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
-					if (pause_resume) { --i; Sleep(frequency); continue; }
+					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; }
+					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {//int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+						showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+						pause_resume = 1;
+						wstring q = L"~PAUSE\n";
+						Sleep(450); while (pause_resume) {
+							GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+							GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+							if (!esc_pressed) Sleep(150);
+						}
+						showOutsMsg(L"", OutsTemplate, q, 1);
+						if (q[1] == 'E' || tail == L"") break;
+					}
 				}
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { wcout << "ctail: " << OutTab << OutTab << (ctail[0] > 127 ? L"[?]" : ctail) << endl; }
@@ -1483,8 +1508,18 @@ void scanDb() {
 								if (qq[2] == '*') {
 									GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_PAUSE); for (int j = 0; j < stoi(s); ++j) {//sleep150ms*?
 										if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); if (showStrand) { cout << '\n'; } return; }//stop
-										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-										if (pause_resume) { --j; Sleep(frequency); continue; }
+										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											pause_resume = 1;
+											wstring q = L"~PAUSE\n";
+											Sleep(450); while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+												if (!esc_pressed) Sleep(150);
+											}
+											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (q[1] == 'E' || tail == L"") break;
+										}
 										Sleep(CommaSleep);
 									}
 								}
@@ -1576,8 +1611,18 @@ void scanDb() {
 								for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
 										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
-										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-										if (pause_resume) { --size; Sleep(frequency); continue; }
+										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											pause_resume = 1;
+											wstring q = L"~PAUSE\n";
+											Sleep(450); while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+												if (!esc_pressed) Sleep(150);
+											}
+											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (q[1] == 'E' || tail == L"") break;
+										}
 									}
 									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
 									if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
@@ -1859,8 +1904,18 @@ void scanDb() {
 								for (; size < length; ++size) { //cout << size << "ifxy:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
 										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
-										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-										if (pause_resume) { --size; Sleep(frequency); continue; }
+										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											pause_resume = 1;
+											wstring q = L"~PAUSE\n";
+											Sleep(450); while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+												if (!esc_pressed) Sleep(150);
+											}
+											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (q[1] == 'E' || tail == L"") break;
+										}
 									}
 									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
 									if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
@@ -2048,8 +2103,18 @@ void scanDb() {
 								for (; size < length; ++size) { //cout << size << " ifcb:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
 										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); prints(1); return; }//stop
-										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-										if (pause_resume) { --size; Sleep(frequency); continue; }
+										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											pause_resume = 1;
+											wstring q = L"~PAUSE\n";
+											Sleep(450); while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+												if (!esc_pressed) Sleep(150);
+											}
+											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (q[1] == 'E' || tail == L"") break;
+										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
 									OpenClipboard(0);
@@ -2282,7 +2347,18 @@ void scanDb() {
 								for (; size < length; ++size) { //cout << size << " iftime:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
 										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); prints(1); return; }//stop
-										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE); kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
+										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											pause_resume = 1;
+											wstring q = L"~PAUSE\n";
+											Sleep(450); while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+												if (!esc_pressed) Sleep(150);
+											}
+											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (q[1] == 'E' || tail == L"") break;
+										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
 
@@ -2586,8 +2662,18 @@ void scanDb() {
 								for (; size < length; ++size) {
 									if (!NoEscapeOrPause) {
 										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
-										if (GetAsyncKeyState(VK_PAUSE)) { if (pause_resume) { pause_resume = 0; GetAsyncKeyState(VK_PAUSE);  kbRelease(VK_PAUSE); } else { pause_resume = 1; } }
-										if (pause_resume) { --size; Sleep(frequency); continue; }
+										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											pause_resume = 1;
+											wstring q = L"~PAUSE\n";
+											Sleep(450); while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
+												if (!esc_pressed) Sleep(150);
+											}
+											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (q[1] == 'E' || tail == L"") break;
+										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
 										
@@ -2916,7 +3002,7 @@ void scanDb() {
 }
 
 void printCtrls() {
-	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nF11\t\t\tFullscreen\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand | Pause/Resume\nLSHIFT + PAUSE_BREAK\tClear strand\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC (LSHIFT)\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Set to match desktop scale and layout/make everything bigger [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\tUse < in true or false slot for continue\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND: RGBXY&RGBXY\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifxy:>\t\t\tContinue if xy\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t\\m\t<ml>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tFlip, then toggle settings back after next run (For RSHIFT + RCTRL)\n<^^>\t\t\tFlip (CloseCtrlMode, CtrlScanOnlyMode)\n<db:>\t\t\tSwitch (se.txt Database)\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><DB:c:\\dna\\d.txt>\n{}\t\t\tReplacer (se.txt Replacer: 1)\n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n<~esc>\t\t\tse.txt NoEscapeOrPause: 0\n<~~esc>\t\t\tNoEscapeOrPause: 1\n\n";
+	wcout << L"Interface\n? + ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX + ESC\t\t\tExit\nCTRL + C\nCTRL + BREAK\nF11\t\t\tFullscreen\nH + ESC\t\t\tToggle visibility\nRIGHT_CTRL\t\tToggle < (se.txt CtrlKey: 163)\nLSHIFT + RCTRL\t\t<\nCOMMA + ESC\nRSHIFT + RCTRL\t\tSwitch mode (se.txt RSHIFT+CtrlKey_Toggle...)\nPAUSE_BREAK\t\tReset strand\nLSHIFT + PAUSE_BREAK\tClear strand\nF12\t\t\tPause/Resume (se.txt PauseKey: 123)\nP + ESC\t\t\t<xy:>\nA + ESC\t\t\t<app:>\nR + ESC (LSHIFT)\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Match with desktop System > Display, Scale & layout, Scale [125%])\nSCROLL_LOCK\t\tRepeat\nEQUAL + ESC\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><se>\n\t\t\tOr press LCTRL + S inside \"se.txt - Notepad\" (se.txt Editor: Notepad)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0,0>\t\tMove pointer to x y (P + ESC to get)\n<x:>\t\t\t<test-><xy:0,0><rc>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer (xy)\n\t\t\t<test-><xy:0,0><,1000><rp>\n<XY:><XY>\t\tSet, return pointer\n\t\t\t<test-><XY:0,0><,1000><XY>\n<~><~~>\t\t\tLong set, return pointer\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<lc>\t\t\tLEFT, RIGHT, MIDDLE -> CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress *\n\t\t\t<test><bs*4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tALT codes\n\t\t\t<test-><a:9201>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press * <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press. Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:) \\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\tUse < in true or false slot for continue\n\t\t\t<test-><app:Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,>calculator<enter><app:Calculator,><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:*db.txt - Notepad><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R + ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND: RGBXY&RGBXY\n\t\t\t<test-><xy:0,0><rgb:255 255 255>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><XY:0,0><RGB:255 255 255>1\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase)\n<RGB|>\t\t\t<test-><RGB&3>\n<cb:>\t\t\tSet clipboard (Auto CTRL + V if CAPS)\n\t\t\t<test-><cb:Test>\n<ifxy:>\t\t\tContinue if xy\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t\\m\t<ml>\n\t\t\t<test-><<:<test-\\g>\n<^>\t\t\tFlip, then toggle settings back after next run (For RSHIFT + RCTRL)\n<^^>\t\t\tFlip (CloseCtrlMode, CtrlScanOnlyMode)\n<db:>\t\t\tSwitch (se.txt Database)\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><DB:c:\\dna\\d.txt>\n{}\t\t\tReplacer (se.txt Replacer: 1)\n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n<~esc>\t\t\tse.txt NoEscapeOrPause: 0\n<~~esc>\t\t\tNoEscapeOrPause: 1\n\n";
 }
 
 void printIntro() {
@@ -2953,14 +3039,14 @@ int main() {//cout << "@dnaspider\n\n";
 #pragma region initial_startup
 	{
 		GetAsyncKeyState(VK_ESCAPE); for (i = 0; i <= 1; i++) { if (GetAsyncKeyState(VK_ESCAPE)) break;
-		WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; ++i) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
-		database = c + L"\\db.txt"; settings = c + L"\\se.txt"; replacerDb = database;
-		if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
-			showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
-			wcout << database << " not found.\nPress [1] to auto create.\n\n";
-			for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-			showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl: 1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nR+ESC_A+ESC_Loop_Insert: 0\nNoEscapeOrPause: 0"; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>notepad " + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
-		}
+			WCHAR t[MAX_PATH]; GetSystemDirectoryW(t, MAX_PATH); wstring c = L""; for (i = 0; ; ++i) { if (t[i] == ':') { c += L":\\dna"; break; } c += t[i]; };//root
+			database = c + L"\\db.txt"; settings = c + L"\\se.txt"; replacerDb = database;
+			if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
+				showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
+				wcout << database << " not found.\nPress [1] to auto create.\n\n";
+				for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
+				showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nPauseKey: 123\nnAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl: 1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nR+ESC_A+ESC_Loop_Insert: 0\nNoEscapeOrPause: 0"; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>notepad " + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+			}
 		}
 	}
 	loadSe();
