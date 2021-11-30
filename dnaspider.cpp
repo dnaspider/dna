@@ -166,9 +166,11 @@ struct Mainn {
 struct Multi {
 	wstring r, g, b, a, x, m, l, t = tail, q = qq;
 	size_t get_i = i;
+	int speed_ = 0;
 	bool br = 0;//break
 	Multi() {}
 	Multi(wstring r) {}
+	void setSpeed(int sl) { speed_ = sl; }
 	void setApp(wstring app) {
 		a = app;
 	}
@@ -485,21 +487,7 @@ void kbPress(wstring s, short key) {
 	if (key == VK_LEFT || key == VK_UP || key == VK_RIGHT || key == VK_DOWN || key == VK_HOME || key == VK_END) ip[0].ki.dwFlags = 1; else ip[0].ki.dwFlags = 0;
 	ip[1] = ip[0]; ip[1].ki.dwFlags = 2;
 	for (int j = 0; j < stoi(star_num); ++j) {
-		if (!NoEscapeOrPause) {
-			GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
-			GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
-				showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
-				pause_resume = 1;
-				wstring q = L"~PAUSE\n";
-				Sleep(450); while (pause_resume) {
-					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
-					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
-					if (!esc_pressed) Sleep(150);
-				}
-				showOutsMsg(L"", OutsTemplate, q, 1);
-				if (q[1] == 'E' || tail == L"") break;
-			}
-		}
+		GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } return; }//stop
 		if (s.length() == 3) {
 			if (s == L"<lc") { mouseEvent(MOUSEEVENTF_LEFTDOWN); mouseEvent(MOUSEEVENTF_LEFTUP); }
 			else if (s == L"<rc") { mouseEvent(MOUSEEVENTF_RIGHTDOWN); mouseEvent(MOUSEEVENTF_RIGHTUP); }
@@ -1363,20 +1351,21 @@ void scanDb() {
 			Multi multi;
 			for (i = 0; i < tail.length(); ++i) {
 				if (multiStrand) { if (strand == sv && !noClearStrand) strand.clear(); }//multiStrand variant clear
-				if (speed > 0) { if (sleep) { if (multiStrand) { multi.t = tail; multi.get_i = i; multi.q = qq; } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
+				if (speed > 0) { if (sleep) { if (multiStrand) { re =  multi.t = tail; multi.get_i = i; multi.q = qq; multi.setSpeed(speed); } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
 				if (!NoEscapeOrPause) {
 					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; }
 					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {//int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 						showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 						pause_resume = 1;
-						wstring q = L"~PAUSE\n";
+						wstring q = L"~PAUSE\n"; speed = 0;
 						Sleep(450); while (pause_resume) {
 							GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 							GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 							if (!esc_pressed) Sleep(150);
 						}
 						showOutsMsg(L"", OutsTemplate, q, 1);
-						if (q[1] == 'E' || tail == L"") break;
+						if (q[1] == 'E') break;
+						if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 					}
 				}
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
@@ -1511,14 +1500,15 @@ void scanDb() {
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
-											wstring q = L"~PAUSE\n";
+											wstring q = L"~PAUSE\n"; speed = 0;
 											Sleep(450); while (pause_resume) {
 												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
 											showOutsMsg(L"", OutsTemplate, q, 1);
-											if (q[1] == 'E' || tail == L"") break;
+											if (q[1] == 'E') break;
+											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
 										Sleep(CommaSleep);
 									}
@@ -1614,14 +1604,15 @@ void scanDb() {
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
-											wstring q = L"~PAUSE\n";
+											wstring q = L"~PAUSE\n"; speed = 0;
 											Sleep(450); while (pause_resume) {
 												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
 											showOutsMsg(L"", OutsTemplate, q, 1);
-											if (q[1] == 'E' || tail == L"") break;
+											if (q[1] == 'E') break;
+											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
 									}
 									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
@@ -1907,14 +1898,15 @@ void scanDb() {
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
-											wstring q = L"~PAUSE\n";
+											wstring q = L"~PAUSE\n"; speed = 0;
 											Sleep(450); while (pause_resume) {
 												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
 											showOutsMsg(L"", OutsTemplate, q, 1);
-											if (q[1] == 'E' || tail == L"") break;
+											if (q[1] == 'E') break;
+											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
 									}
 									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
@@ -2106,14 +2098,15 @@ void scanDb() {
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
-											wstring q = L"~PAUSE\n";
+											wstring q = L"~PAUSE\n"; speed = 0;
 											Sleep(450); while (pause_resume) {
 												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
 											showOutsMsg(L"", OutsTemplate, q, 1);
-											if (q[1] == 'E' || tail == L"") break;
+											if (q[1] == 'E') break;
+											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
@@ -2350,14 +2343,15 @@ void scanDb() {
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
-											wstring q = L"~PAUSE\n";
+											wstring q = L"~PAUSE\n"; speed = 0;
 											Sleep(450); while (pause_resume) {
 												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
 											showOutsMsg(L"", OutsTemplate, q, 1);
-											if (q[1] == 'E' || tail == L"") break;
+											if (q[1] == 'E') break;
+											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); multi.setBreak(); break; }
@@ -2665,14 +2659,15 @@ void scanDb() {
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
-											wstring q = L"~PAUSE\n";
+											wstring q = L"~PAUSE\n"; speed = 0;
 											Sleep(450); while (pause_resume) {
 												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
 											showOutsMsg(L"", OutsTemplate, q, 1);
-											if (q[1] == 'E' || tail == L"") break;
+											if (q[1] == 'E') break;
+											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
