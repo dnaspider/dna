@@ -121,6 +121,7 @@ bool assume = 0;
 void showOutsMsg(wstring, wstring, wstring, bool);
 ctp clockr(ctp&);
 void cbSet(wstring&);
+wstring randn(bool);
 #pragma endregion
 
 #pragma region classo
@@ -467,8 +468,8 @@ void scanDb(); void conn() {//<connect:>
 }
 
 void kbPress(wstring s, short key) {
-	wstring n = s;
 	if (qq.find(L">") == std::string::npos) { printq(); return; }
+	wstring n = s;
 	if (qq[n.length()] == '>') star_num = L"1";
 	else {
 		if (qq.substr(qq.find(L">") - 1, 1) == L":" || qq.substr(qq.find(L">") - 1, 1) == L"-") { conn(); return; }
@@ -478,8 +479,13 @@ void kbPress(wstring s, short key) {
 			else if (n[0] == '+') { if (n[1] == '+') { ++ic; } n = to_wstring(ic); } //<f1+> | <f1++> | Variable press <key<+>>
 			n = check_if_num(n);
 			if (n == L"") { printq(); return; }
+			if (n[0] == ' ') n = n.substr(1); if (n[0] == '<' && n.substr(1, 5) == L"rand:") {//x:<rand:0,5> | <up{x:}>
+				i += 1;
+				n = randn(1);
+				if (n == L"0") { i += qq.find(L">"); return; }
+			}
 			star_num = n;
-			if (!(stoi(n) > 0)) { printq(); return; };
+			if (n[0] == '{' || !(stoi(n) > 0)) { printq(); return; };
 		}
 		else { printq(); return; }
 	}
@@ -1106,7 +1112,7 @@ wstring getRGB(bool b = 0, bool cp = 0) {
 	hDC = GetDC(NULL);
 	if (hDC != NULL) {
 		auto x = pt.x, y = pt.y; bool rs = 0;
-		if (cp == 1) {
+		if (cp) {
 			rs = 1;
 			Sleep(3000);
 		}
@@ -1304,6 +1310,45 @@ wstring parse(int r, wstring &rs) {
 	return rs;
 }
 
+wstring randn(bool bg = 0) {
+	srand((unsigned)GetTickCount64());
+	int r{}; wstring rs;
+	char s = (qq[5] + qq[1]);
+	bool parse_ = 1;
+	switch (s) {
+	default:
+	case -84://':r': <rand:> #
+		if (check_if_num(qx) != L"" && check_if_num(qy) != L"" && stoi(qy) > stoi(qx)) {
+			r = qx == L"0" ?
+				rand() % (stoi(qy) + 1) :
+				(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
+		}
+		else r = rand();
+		rs = to_wstring(r);
+		parse_ = 0;
+		break;
+	case -112://'>R': <Rand> A-Z
+		r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
+		[[fallthrough]];
+	case -80://'>r': <rand> a-z
+		r = (char)((rand() % ('z' + 1 - 'a')) + 'a');//cout << (char)r;
+		[[fallthrough]];
+	case -116://':R': <Rand:> A-Za-z
+		r = rand() % 2;
+		r = r == 1 ?
+			(char)((rand() % ('z' + 1 - 'a')) + 'a') :
+			(char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
+	}
+	if (parse_) rs = parse(r, rs);
+	if (bg) return rs;
+	qq = rs + qq.substr(qq.find(L">") + 1, qq.length());
+	i = -1;
+	if (speed > 0) sleep = 0;
+	re = L" ";
+	tail = qq;
+	return rs;
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -1497,13 +1542,17 @@ void scanDb() {
 						else conn();
 						break;
 					case',':
-						if (qqb(L"<,") && qq.at(2) != ':' && qq.at(2) != '-') { //<,#> || <,*
+						if (qqb(L"<,") && qq[2] != ':' && qq[2] != '-') { //<,#> || <,*
 							wstring s = qq.substr(2, qq.find('>') - 2);
 							if (s == L"") s = to_wstring(CommaSleep);
 							if (s[0] == '*') s = s.substr(1, s.length()); //case: <,*
 							s = check_if_num(s);
 							if (s == L"") { printq(); break; }
-							if (stoi(s) > 0 && s[0] != '+') {
+							if (s[0] == ' ') s = s.substr(1); if (s[0] == '<' && s.substr(1, 5) == L"rand:") {//x:<rand:0,5> | <,{x:}>
+								i += 1; if (multiStrand) { multi.get_i = i; }
+								s = randn(1);
+							}
+							if (s[0] == '{' || stoi(s) > 0 && s[0] != '+') {
 								multi.t = tail;
 								if (qq[2] == '*') {
 									GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_PAUSE); for (int j = 0; j < stoi(s); ++j) {//sleep150ms*?
@@ -1524,8 +1573,8 @@ void scanDb() {
 										Sleep(CommaSleep);
 									}
 								}
-								else Sleep(stoi(s)); 
-							} 
+								else Sleep(stoi(s));
+							}
 							else { printq(); break; };
 							if (multiStrand) rei(multi); else rei();
 						}
@@ -2567,37 +2616,7 @@ void scanDb() {
 							break;
 						case 'a':
 							if (qqb(L"<rand:") || qqb(L"<rand>") || qqb(L"<Rand>") || qqb(L"<Rand:")) {//<rand:0,1>
-								srand((unsigned)time(NULL));
-								int r{}; wstring rs;
-								char s = (qq[5] + qq[1]);
-								switch (s) {
-								case -84://':r': <rand:> #
-									if (check_if_num(qx) != L"" && check_if_num(qy) != L"" && stoi(qy) > stoi(qx)) {
-										r = qx == L"0" ?
-											rand() % (stoi(qy) + 1) :
-											(rand() % (stoi(qy) + 1 - stoi(qx))) + stoi(qx);
-									}
-									else r = rand();
-									rs = to_wstring(r);
-									break;
-								case -112://'>R': <Rand> A-Z
-									r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
-									[[fallthrough]];
-								case -80://'>r': <rand> a-z
-									r = (char)((rand() % ('z' + 1 - 'a')) + 'a');//cout << (char)r;
-									[[fallthrough]];
-								case -116://':R': <Rand:> A-Za-z
-									r = rand() % 2;
-									r = r == 1 ?
-										(char)((rand() % ('z' + 1 - 'a')) + 'a') :
-										(char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
-								}
-								rs = parse(r, rs);
-								qq = rs + qq.substr(qq.find(L">") + 1, qq.length());
-								i = -1;
-								if (speed > 0) sleep = 0;
-								re = L" ";
-								tail = qq;
+								randn();
 							}
 							else conn();
 							break;
