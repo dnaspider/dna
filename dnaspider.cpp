@@ -1772,6 +1772,7 @@ void scanDb() {
 						switch (qq[2]) {
 						case 'l':
 							if (qqb(L"<cl>")) { wstring l = cbGet(); l = to_wstring(l.length()); cbSet(l); rei(); }
+							else conn();
 							break;
 						case 't':
 							if (qqb(L"<ctrl>")) { kbHold(VK_CONTROL); rei(); }
@@ -2891,15 +2892,20 @@ void scanDb() {
 							else conn();
 							break;
 						case 'p':
-							if (testqqb(L"<speed:")) { if (check_if_num(qp) != L"") { 
-								wstring n = qp;
-								if (n[0] == ' ') n = n.substr(1); if (n[0] == '<' && n.substr(1, 5) == L"rand:") {//x:<rand:111,1111> | <speed{x:}>
-									qx = n.substr(6,n.find(L",") - 6);
-									i += 1;
-									n = randn(1);
-									if (n == L"0") { i += qq.find(L">"); return; }
+							if (testqqb(L"<speed:")) { 
+								if (check_if_num(qp) != L"") { 
+									wstring n = qp;
+									if (n[0] == ' ') n = n.substr(1); 
+									if (n[0] == '<' && n.substr(1, 5) == L"rand:") {//<speed: <rand: 0, 1111>>
+										qx = n.substr(6, n.find(L",") - 6);
+										i += 1;
+										n = randn(1);
+										if (n == L"0") { i += qq.find(L">"); return; }
+									}
+									speed = stoi(n); rei(); sleep = 0;
 								}
-								speed = stoi(n); rei(); sleep = 0; } else printq(); }
+								else printq();
+							}
 							else if (qqb(L"<space")) kbPress(L"<space", VK_SPACE);
 							else conn();
 							break;
