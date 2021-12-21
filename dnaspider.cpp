@@ -1447,8 +1447,9 @@ void scanDb() {
 						}
 					}
 					switch (qq[1]) {
-					case '<'://cout
+					case '<':
 						if (testqqb(L"<<:")) {//cout
+							wstring t = qq;	t = isVar(t); //<<:{<x:>}> | Replacer
 							showOutsMsg(L"", qp, L"", 1); rei();
 							break;
 						}
