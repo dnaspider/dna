@@ -1449,7 +1449,7 @@ void scanDb() {
 					switch (qq[1]) {
 					case '<':
 						if (testqqb(L"<<:")) {//cout
-							wstring t = qq;	t = isVar(t); //<<:{<x:>}> | Replacer
+							if (replacer) { wstring t = qq;  t = isVar(t); } //<<:{<x:>}> | Replacer
 							showOutsMsg(L"", qp, L"", 1); rei();
 							break;
 						}
