@@ -440,7 +440,7 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 	return q;
 }
 
-void scanDb(); void conn() {//<connect:>
+void scanDb(); wstring conn(bool bg = 0) {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find(L">") + 1);
 	if (qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
 		if (qqs.substr(qqs.length() - 2, 2) == L":>" || qqs.substr(qqs.length() - 2, 2) == L"->") {
@@ -454,17 +454,31 @@ void scanDb(); void conn() {//<connect:>
 			if (cell.substr(0, 4) == L"<'''") break;
 			if (qqs == cell.substr(0, qqs.length())) { //<h:> | <h->
 				wstring x = cell.substr(qqs.length()), xx = qq.substr(qqs.length());
+				if (bg)	return x;
 				if (relink) tail = x; else tail = x + xx;
 				tail = isVar(tail);
 				if (SlightPauseInBetweenConnects) Sleep(150);
 				f.close(); i = -1;
 				if (speed > 0) sleep = 0;
 				re = L" ";//codes
-				return;
+				return L"";
 			}
-		} f.close(); if (fail) { if (showStrand) { wcout << "Fail: " << OutTab << OutTab << qqs << endl; } fail = 0; i = tail.length(); return; } printq();
+		} f.close(); if (fail) { if (showStrand) { wcout << "Fail: " << OutTab << OutTab << qqs << endl; } fail = 0; i = tail.length(); return L""; } printq();
 	}
 	else printq();
+	return L"";
+}
+
+void setQxQy(wstring x, size_t z = 0) {
+	if (x.find(L",") != string::npos) {
+		qx = x.substr(z, x.find(L","));//x <xy:#,#>
+		qy = x.substr(x.find(L",") + 1, x.find(L">") - x.find(L",") - 1);//y
+	}
+	else if (x.find(L" ") != string::npos) {
+		qx = x.substr(z, x.find(L" "));//x <xy:# #>
+		qy = x.substr(x.find(L" ") + 1, x.find(L">") - x.find(L" ") - 1);
+	}
+	else { qx.clear(), qy.clear(); } //wcout << "x: " << x  << "\nqx: " << qx << "\nqy: " << qy << endl;
 }
 
 void kbPress(wstring s, short key) {
@@ -472,16 +486,27 @@ void kbPress(wstring s, short key) {
 	wstring n = s;
 	if (qq[n.length()] == '>') star_num = L"1";
 	else {
-		if (qq.substr(qq.find(L">") - 1, 1) == L":" || qq.substr(qq.find(L">") - 1, 1) == L"-") { conn(); return; }
 		n = qq.substr(n.length(), qq.find(L">") - n.length());
+		if (n[0] == ':') n = n.substr(1);
+		if (n[0] == ' ') n = n.substr(1);
+		if ((qq.substr(qq.find(L">") - 1, 1) == L":" || qq.substr(qq.find(L">") - 1, 1) == L"-") && n[0] != '<') { conn(); return; }
 		if (n > L"") {
 			if (n[0] == '*') n = n.substr(1, n.length()); //case: <f1*
 			else if (n[0] == '+') { if (n[1] == '+') { ++ic; } n = to_wstring(ic); } //<f1+> | <f1++> | Variable press <key<+>>
 			n = check_if_num(n);
 			if (n == L"") { printq(); return; }
-			if (n[0] == ' ') n = n.substr(1); if (n[0] == '<' && n.substr(1, 5) == L"rand:") {//x:<rand:0,5> | <up{x:}>
+			if (n[0] == '<') {//Assume
+				if (n[n.length() - 1] == ':' || n[n.length() - 1] == '-') {//<x:>
+					wstring t = qq;
+					qq = n + L">";
+					n = conn(1);
+					qq = t;
+				}
+				if (n.substr(1, 5) == L"rand:") {//x:<rand:0,5> | <up{x:}>
+					setQxQy(n, 6);
+					n = randn(1);
+				}
 				i += 1;
-				n = randn(1);
 				if (n == L"0") { i += qq.find(L">"); return; }
 			}
 			star_num = n;
@@ -1411,6 +1436,7 @@ void scanDb() {
 				if (!NoEscapeOrPause) {
 					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; }
 					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {//int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
+						if (multiStrand) multi.setI();
 						showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 						pause_resume = 1;
 						wstring q = L"~PAUSE\n"; speed = 0;
@@ -1435,15 +1461,7 @@ void scanDb() {
 						qp = qq.substr(qq.find(L":") + 1, qq.find(L">") - qq.find(L":") - 1);//#
 						if (qp[0] > 0) {
 							if (qp[0] == ' ') qp = qp.substr(1);
-							if (qp.find(L",") != string::npos) {
-								qx = qp.substr(0, qp.find(L","));//x <xy:#,#>
-								qy = qp.substr(qp.find(L",") + 1, qp.find(L">") - qp.find(L",") - 1);//y
-							}
-							else if (qp.find(L" ") != string::npos) {
-								qx = qp.substr(0, qp.find(L" "));//x <xy:# #>
-								qy = qp.substr(qp.find(L" ") + 1, qp.find(L">") - qp.find(L" ") - 1);
-							}
-							else { qx.clear(), qy.clear(); } //wcout << "qp: " << qp  << "\nqx: " << qx << "\nqy: " << qy << endl;
+							setQxQy(qp);
 						}
 					}
 					switch (qq[1]) {
@@ -1549,10 +1567,19 @@ void scanDb() {
 							if (s[0] == '*') s = s.substr(1, s.length()); //case: <,*
 							s = check_if_num(s);
 							if (s == L"") { printq(); break; }
-							if (s[0] == ' ') s = s.substr(1); if (s[0] == '<' && s.substr(1, 5) == L"rand:") {//x:<rand:0,5> | <,{x:}>
-								i += 1; if (multiStrand) { multi.get_i = i; }
-								s = randn(1);
-								if (s == L"0") { return; }
+							if (s[0] == ' ') s = s.substr(1); if (s[0] == '<') {//Assume
+								if (s[s.length() - 1] == ':' || s[s.length() - 1] == '-') {//<x:>
+									wstring t = qq;
+									qq = s + L">";
+									s = conn(1);
+									qq = t;
+								}
+								if (s.substr(1, 5) == L"rand:") {//x:<rand:0,5> | <,{x:}>
+									setQxQy(s, 6);
+									s = randn(1);
+								}
+								i += 1; if (multiStrand) { multi.setI(); }
+								if (s == L"0") return;
 							}
 							if (s[0] == '{' || stoi(s) > 0 && s[0] != '+') {
 								multi.t = tail;
@@ -2898,7 +2925,7 @@ void scanDb() {
 									wstring n = qp;
 									if (n[0] == ' ') n = n.substr(1); 
 									if (n[0] == '<' && n.substr(1, 5) == L"rand:") {//<speed: <rand: 0, 1111>>
-										qx = n.substr(6, n.find(L",") - 6);
+										setQxQy(n, 6);
 										i += 1;
 										n = randn(1);
 										if (n == L"0") { i += qq.find(L">"); return; }
