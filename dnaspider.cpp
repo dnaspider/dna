@@ -1132,12 +1132,12 @@ void getApp() {
 	showMultiStrand = b;
 }
 
-wstring getRGB(bool b = 0, bool cp = 0) {
+wstring getRGB(bool b = 0, bool bg = 0) {
 	POINT pt; GetCursorPos(&pt); COLORREF color; HDC hDC;
 	hDC = GetDC(NULL);
 	if (hDC != NULL) {
 		auto x = pt.x, y = pt.y; bool rs = 0;
-		if (cp) {
+		if (bg) {
 			rs = 1;
 			Sleep(3000);
 		}
