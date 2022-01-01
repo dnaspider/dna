@@ -1144,14 +1144,16 @@ wstring getRGB(bool b = 0, bool bg = 0) {
 		color = GetPixel(hDC, x * RgbScaleLayout, y * RgbScaleLayout);
 		ReleaseDC(NULL, hDC);
 		if (color != CLR_INVALID) {
-			wstring c = to_wstring(GetRValue(color)) + L" " + to_wstring(GetGValue(color)) + L" " + to_wstring(GetBValue(color));
-			if (b) { 
-				if (rs) {
+			wstring c = to_wstring(GetRValue(color)) + L" " + to_wstring(GetGValue(color)) + L" " + to_wstring(GetBValue(color));//cb
+			if (b) {
+				if (rs) {//rshift+r+esc
 					auto r = L"<RGB:" + c + L" " + to_wstring(x) + L" " + to_wstring(y) + (Loop_Insert ? L",>" : L">");
 					cbSet(r);
 					return L"";
 				}
-				qx = to_wstring(x); qy = to_wstring(y); return c; }
+				qx = to_wstring(x); qy = to_wstring(y);
+				return c;
+			}
 			if (GetAsyncKeyState(VK_LSHIFT))
 				tail = L"<shift>,<shift->rgb:" + c + L" " + to_wstring(x) + L" " + to_wstring(y) + (Loop_Insert ? L",>" : L">");
 			else
