@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "dnaspider"
             VALUE "FileVersion", "1.0.0.151"
             VALUE "InternalName", "dnaspider.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2021"
+            VALUE "LegalCopyright", "Copyright (C) 2022"
             VALUE "ProductName", "dnaspider"
             VALUE "ProductVersion", "1.0.0.151"
         END
