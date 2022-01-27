@@ -13,10 +13,6 @@ using namespace std;
 using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
-short PauseKey = 123; // VK_F12;
-bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
-bool Loop_Insert = 1;
-bool Ignore_Print_Screen = 1, Ignore_Insert = 1, Ignore_Delete = 1, Ignore_Home = 1, Ignore_End = 1, Ignore_PgUp = 1, Ignore_PgDn = 1;
 wstring
 	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L"q", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
 	Kb_Key_0 = L"0", Kb_Key_1 = L"1", Kb_Key_2 = L"2", Kb_Key_3 = L"3", Kb_Key_4 = L"4", Kb_Key_5 = L"5", Kb_Key_6 = L"6", Kb_Key_7 = L"7", Kb_Key_8 = L"8", Kb_Key_9 = L"9",
@@ -26,6 +22,37 @@ wstring
 	Kb_Key_Print_Screen = L"?", Kb_Key_Insert = L"?", Kb_Key_Delete = L"?", Kb_Key_Home = L"?", Kb_Key_End = L"?", Kb_Key_PgUp = L"?", Kb_Key_PgDn = L"?",
 	Kb_Key_Numpad_0 = L"Z", Kb_Key_Numpad_1 = L"Q", Kb_Key_Numpad_2 = L"V", Kb_Key_Numpad_3 = L"W", Kb_Key_Numpad_4 = L"X", Kb_Key_Numpad_5 = L"Y", Kb_Key_Numpad_6 = L"B", Kb_Key_Numpad_7 = L"F", Kb_Key_Numpad_8 = L"G", Kb_Key_Numpad_9 = L"I", Kb_Key_Numlock = L"N", Kb_Key_Numpad_Divide = L"J", Kb_Key_Numpad_Multiply = L"K", Kb_Key_Numpad_Minus = L"{", Kb_Key_Numpad_Add = L"}", Kb_Key_Numpad_Period = L"\\", Kb_Key_Numpad_Enter = L":"
 ;
+wstring linkr = L"";
+wstring link = L""; //<app|rgb|ifcb,,,<link:>
+wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ", se = L"se.txt - ";
+wstring database, settings, replacerDb;
+wstring strand = L""; //>> supply
+wstring tail = L""; //strand:tail
+wstring re = L"";//repeat clone
+wstring reTail = L"";
+wstring codes = L""; //tail re
+wstring star_num; //<x*#>
+wstring qq; //<x>
+wstring qp; //<x:#>
+wstring qx, qy; //<xy:#,#>
+wstring OutsTemplate = L"\\Gstrand:\\t\\t\\7";
+double RgbScaleLayout = 1.00; //100%
+size_t i = 0;
+int CommaSleep = 150;
+int ic = 0; //<+>
+int strandLength = 3;
+int frequency = 150; //>> ms response -> vk_
+int speed = 0; //<< 
+int qxc = 0, qyc = 0;//<rp>
+int qxcc = 0, qycc = 0;//cc
+int CloseCtrlSpacer = 120;
+short PauseKey = 123; // VK_F12;
+short ClearStrandKey = VK_PAUSE;
+short reKey = VK_SCROLL; //repeat
+short cKey = VK_RCONTROL; //< 163 
+bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
+bool Loop_Insert = 1;
+bool Ignore_Print_Screen = 1, Ignore_Insert = 1, Ignore_Delete = 1, Ignore_Home = 1, Ignore_End = 1, Ignore_PgUp = 1, Ignore_PgDn = 1;
 bool noClearStrand = 0; //<!>
 bool multiLine = 1; wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
 bool multiblock = 0; //<~m>
@@ -35,23 +62,13 @@ bool ToggleCloseCtrl = 0, toggledCC = 0, ToggleKeep = 1; //RSHIFT+CtrlKey_Toggle
 bool ToggleCtrlScanOnly = 0, toggledCSO = 0, flipd = 0; //RSHIFT+CtrlKey_ToggleCtrlScanOnlyMode:
 bool Unicode = 1;
 bool OutTabs = 1; wstring OutTab = L"\t";
-wstring reTail = L"";
-wstring linkr = L"";
-short ClearStrandKey = VK_PAUSE;
-bool multiStrand = 1, showMultiStrand = 0;
-auto RgbScaleLayout = 1.00; //100%
-auto CloseCtrlSpacer = 120;
+bool multiStrand = 1, showMultiStrand = 0, showMultiStrandElapsedOnly = 0;
 bool relink = 0;
-wstring link = L""; //<app|rgb|ifcb,,,<link:>
-wstring editor = L"Notepad", editor1 = L"Visual Studio Code", db = L"db.txt - ", se = L"se.txt - ";
 bool fail = 0;
 bool sleep = 1;
 bool esc_pressed = 0;
 bool pause_resume = 0;
-int CommaSleep = 150;
-//bool ignoreMediaKeys = false;
 bool enableEscX = true;
-int ic = 0; //<+>
 bool ignoreNumPad = true;
 bool ignoreMenuKey = true;
 bool ignoreGraveAccent = true; //`
@@ -82,34 +99,16 @@ bool ignoreRCtrl = true;
 bool ignoreEnter = true;
 bool ignoreCaps = true;
 bool strandLengthMode = false;
-int strandLength = 3;
 bool qScanOnly = false;
-wstring database, settings, replacerDb;
-int frequency = 150; //>> ms response -> vk_
-int speed = 0; //<< 
-short reKey = VK_SCROLL; //repeat
-short cKey = VK_RCONTROL; //< 163 
-wstring strand = L""; //>> supply
-wstring tail = L""; //strand:tail
-wstring re = L"";//repeat clone
 bool showStrand = true; //cout <<
 bool showOuts = false; //cout << 
 bool showIntro = false;
 bool showSettings = 1;
-wstring star_num; //*#
-wstring qq; //<x>
-wstring qp; //<x:#>
-wstring qx, qy; //<xy:#,#>
-auto qxc = 0, qyc = 0;//<rp>
-auto qxcc = 0, qycc = 0;//cc
 bool shft = false;
-size_t i = 0;
 bool close_ctrl_mode = true; //x>, x:, x- 
 bool SlightPauseInBetweenConnects = false;
-wstring OutsTemplate = L"\\Gstrand:\\t\\t\\7";
 bool EscCommaAutoBs = true;
 bool EscEqualAutoBs = true;
-wstring codes = L""; //tail re
 bool EscHAutoBs = true;
 bool AutoBs_RepeatKey = 0;
 bool SeHotReload_CtrlS=1;
@@ -126,20 +125,20 @@ wstring randn(bool);
 
 #pragma region classo
 struct Mainn {
-	ctp c1, c2;//elapsed
 	wstring s, s1, &t = tail;//strand
+	ctp c1, c2;//elapsed
 	Mainn()	{
 		if (!multiStrand) return;
+		if (showMultiStrandElapsedOnly && !showMultiStrand) { clockr(c1); return; }
 		if (showMultiStrand) { wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1); }
 	}
 	void setStrand(wstring c) {
-		s1 = c.substr(0, strand.length());
-		linkr = s1;
+		linkr = s1 = c.substr(0, strand.length());
 	}
 	wstring getStrand() {
 		return s1;
 	}
-	wstring getStrand(wstring c) {
+	wstring getStrand(wstring &c) {
 		s = c.substr(0, strand.length() + !strandLengthMode);
 		if (showMultiStrand) {
 			wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b = L"";
@@ -151,12 +150,13 @@ struct Mainn {
 		t = tail;
 		if (showMultiStrand) { wcout << "output: " << OutTab; showOutsMsg(L"", t, L"", 0); }
 	}
-	wstring getTail(wstring t) {
+	wstring getTail(wstring &t) {
 		return t;
 	}
 	~Mainn() {
 		if (!multiStrand) return;
 		t.clear();
+		if (showMultiStrandElapsedOnly && !showMultiStrand) { clockr(c2); chrono::duration<double, milli> ts = c1 - c2; wstring q = L""; if (!showStrand) { q = strand[strand.length() - 1] == '>' ? L"" : strand.length() > 0 ? L">" : L""; wstring p = q; q = strand + p; } bool x = showStrand; showStrand = 1; showOutsMsg(L"", OutsTemplate, q, 1); showStrand = x; cout << dec << "(" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n"; return; }
 		if (showMultiStrand) {
 			clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
 			wcout << "~thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
@@ -553,6 +553,8 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
+			case 2738://ShowMultiStrandElapsedOnly:
+				{ if (v == L"1" || v == L"0") showMultiStrandElapsedOnly = stoi(v); else er(); } break;
 			case 865://PauseKey:
 				{ if (check_if_num(v) != L"") PauseKey = stoi(v); else er(); } break;
 			case 1543://NoEscapeOrPause:
@@ -929,6 +931,7 @@ void printSe() {
 		cout << "ClearStrandKey: " << ClearStrandKey << '\n';
 		cout << "MultiStrand: " << multiStrand << '\n';
 		cout << "ShowMultiStrand: " << showMultiStrand << '\n';
+		cout << "ShowMultiStrandElapsedOnly: " << showMultiStrandElapsedOnly << '\n';
 		cout << "ShowOuts: " << showOuts << '\n';
 		wcout << "OutsTemplate: " << OutsTemplate << '\n';
 		wcout << "OutTabs: " << OutTabs << '\n';
@@ -3119,7 +3122,7 @@ int main() {//cout << "@dnaspider\n\n";
 				showIntro=1;showOuts=1;cKey=VK_CONTROL;ignore09=0;SlightPauseInBetweenConnects=1;multiStrand=0;showMultiStrand=0;//minimalist se.txt
 				wcout << database << " not found.\nPress [1] to auto create.\n\n";
 				for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; }if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-				showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nPauseKey: 123\nnAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl: 1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nR+ESC_A+ESC_Loop_Insert: 0\nNoEscapeOrPause: 0"; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>notepad " + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+				showOuts = false; wofstream fd(database); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT + RIGHT_CTRL X or\n COMMA + ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT + PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<winr:><win>r<win-><app:run, 1, 6, :>\n<d-><app:*db.txt - Notepad | db.txt - Notepad, 1, 1, odb->\n<odb-><winr:>" << database << "<enter>\n<s-><app:*se.txt - Notepad | se.txt - Notepad, 1, 1, <ose->\n<ose-><winr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<  -><-<left>\n<   -><t-\n<lt:><shift>,<shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open db.txt\n RCTRL S: Open se.txt"; fd.close(); wofstream fs(settings); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nShowOuts: 0\nOutsTemplate: " << OutsTemplate << "\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleCloseCtrlMode: 0\nRSHIFT+CtrlKey_ToggleKeep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nPauseKey: 123\nnAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl: 1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nBackslashLogicals: 0\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nR+ESC_A+ESC_Loop_Insert: 0\nNoEscapeOrPause: 0"; fs.close(); out(L"<win>r<win-><app:run, 3, 60, :>notepad " + settings + L"<enter><ms:1500><win>r<win-><app:run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 			}
 		}
 	}
