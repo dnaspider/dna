@@ -1480,7 +1480,7 @@ void scanDb() {
 						break;
 					case '#':
 						if (testqqb(L"<#:")) {//ascii_calc
-							int s{}; for (auto x : qp) s += x;
+							int s{}; for (auto &x : qp) s += x;
 							auto q = to_wstring(s);	cbSet(q);
 							rei();
 						}
