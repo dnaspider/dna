@@ -3028,14 +3028,14 @@ void scanDb() {
 							break;
 						case ':':
 							if (testqqb(L"<x:")) {//x + or - 1px
-							if (qp == L"") { conn(); break; }
-							if (check_if_num(qp) != L"") {
-								POINT pt; GetCursorPos(&pt);
-								SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
-								rei();
+								if (qp == L"") { conn(); break; }
+								if (check_if_num(qp) != L"") {
+									POINT pt; GetCursorPos(&pt);
+									SetCursorPos(stoi(qp) + (int)(pt.x), (int)(pt.y));
+									rei();
+								}
+								else printq();
 							}
-							else printq();
-						}
 							else conn();
 							break;
 						default:
