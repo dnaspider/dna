@@ -3157,7 +3157,6 @@ int main() {//cout << "@dnaspider\n\n";
 							if (cKey == VK_RCONTROL || cKey == VK_LCONTROL || cKey == VK_LSHIFT || cKey == VK_RSHIFT || cKey == VK_LMENU || cKey == VK_RMENU || cKey == VK_ESCAPE) { Sleep(CloseCtrlSpacer); kbRelease(cKey); GetAsyncKeyState(cKey); }
 							if (multiStrand) {
 								i = 0; thread thread(key, L">"); Sleep(CloseCtrlSpacer); thread.detach();
-								//strand.clear();
 								if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 							} else {
 								key(L">");
