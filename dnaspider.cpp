@@ -1150,7 +1150,7 @@ wstring getRGB(bool b = 0, bool bg = 0) {
 			wstring c = to_wstring(GetRValue(color)) + L" " + to_wstring(GetGValue(color)) + L" " + to_wstring(GetBValue(color));//cb
 			if (b) {
 				if (rs) {//rshift+r+esc
-					auto r = L"<RGB:" + c + L" " + to_wstring(x) + L" " + to_wstring(y) + (Loop_Insert ? L",>" : L">");
+					auto r = L"<RGB~:" + c + L" " + to_wstring(x) + L" " + to_wstring(y) + (Loop_Insert ? L",>" : L">");
 					cbSet(r);
 					return L"";
 				}
@@ -1379,6 +1379,10 @@ wstring randn(bool bg = 0) {
 	return rs;
 }
 
+void setCursorCopy() {//<~>
+	POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y;
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -1504,7 +1508,7 @@ void scanDb() {
 						break;
 					case '~': 
 						if (qqb(L"<~>")) {//manual set xy
-							POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y; rei();
+							setCursorCopy(); rei();
 						}
 						else if (qqb(L"<~~>")) {//manual return xy
 							SetCursorPos(qxcc, qycc); rei();
@@ -2727,7 +2731,10 @@ void scanDb() {
 									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0, b.find(L" ")))) {
 										multi.setBreak();
-										if (qq[4] == '~') SetCursorPos(qxc, qyc);//<RGB~:>
+										if (qq[4] == '~') {//<RGB~:>
+											setCursorCopy();//<~>
+											SetCursorPos(qxc, qyc);
+										}
 									}
 								};
 									
