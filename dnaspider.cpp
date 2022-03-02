@@ -841,7 +841,7 @@ void loadSe() {
 			case 902://ShowOuts:
 				{ if (v == L"1" || v == L"0") showOuts = stoi(v); else er(); } break;
 			case 2913://SlightPauseInBetweenConnects:
-				{ if (check_if_num(v) > L"") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 1571://CloseCtrlSpacer:
 				{ if (check_if_num(v) > L"") { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
 			case 1467://RgbScaleLayout:
