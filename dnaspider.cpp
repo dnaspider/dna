@@ -1379,10 +1379,6 @@ wstring randn(bool bg = 0) {
 	return rs;
 }
 
-inline void setCursorCopy() {//<~>
-	POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y;
-}
-
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -1508,7 +1504,7 @@ void scanDb() {
 						break;
 					case '~': 
 						if (qqb(L"<~>")) {//manual set xy
-							setCursorCopy(); rei();
+							POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y; rei();
 						}
 						else if (qqb(L"<~~>")) {//manual return xy
 							SetCursorPos(qxcc, qycc); rei();
@@ -2731,8 +2727,8 @@ void scanDb() {
 									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0, b.find(L" ")))) {
 										multi.setBreak();
-										if (qq[4] == '~') {//<RGB~:>
-											setCursorCopy();//<~>
+										if (qq[4] == '~') {
+											POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y;//<RGB~:>
 											SetCursorPos(qxc, qyc);
 										}
 									}
