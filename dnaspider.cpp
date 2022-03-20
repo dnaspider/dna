@@ -2734,7 +2734,7 @@ void scanDb() {
 										}
 									}
 								};
-									
+
 								for (; size < length; ++size) {
 									if (!NoEscapeOrPause) {
 										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
