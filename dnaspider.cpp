@@ -2753,8 +2753,8 @@ void scanDb() {
 										}
 									}
 									if (size >= length) { if (multiStrand) { tail = multi.getTail(); } f(); break; }
-										
-
+									
+									
 									if (multiStrand) a = multi.getApp();
 									if (a.find(L"|") != string::npos || a.find(L"&") != string::npos) {//<t-<rgb:a|a|a,*,ms, T: F:>
 										wstring t = L"", ta = L"", q = L""; bool sor = 1, sand = 1;
