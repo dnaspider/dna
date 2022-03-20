@@ -2727,6 +2727,7 @@ void scanDb() {
 									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0, b.find(L" ")))) {
 										multi.setBreak();
+										if (multiStrand) qq = multi.getQQ();
 										if (qq[4] == '~') {
 											POINT pt; GetCursorPos(&pt); qxcc = pt.x; qycc = pt.y;//<RGB~:>
 											SetCursorPos(qxc, qyc);
