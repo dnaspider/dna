@@ -2718,7 +2718,7 @@ void scanDb() {
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find(L">") + 1) << endl; };
 								Multi multi(tail); if (multiStrand) { multi.setApp(a); multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
 								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
-									
+
 								auto sifrgb = [&multi, &r, &g, &b, &qqC]() {
 									POINT pt; COLORREF color; HDC hDC;
 									hDC = GetDC(NULL); GetCursorPos(&pt);
