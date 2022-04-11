@@ -1488,8 +1488,8 @@ void scanDb() {
 						else conn();
 						break;
 					case '!':
-						if (testqqb(L"<!!!:")) { 
-							codes = re = (qp + L">"); strand = L""; return; }//set re
+						if (testqqb(L"<!!!:")) {
+							reTail = codes = (qp + L">"); strand = L""; i = tail.length(); }//set repeat
 						else if (testqqb(L"<!!:")) {//multi run
 							wstring x = qq.substr(qq.find(L">") + 1);//tail
 							wstring m = qq.substr(0, qq.find(L">")) + L">";//q ms
