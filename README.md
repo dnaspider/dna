@@ -1,7 +1,7 @@
 # `👽`[dnaspider.exe](https://github.com/dnaspider/dna/releases "Download open source dnaspider.exe")
 Hello Friend, and thank you for your interest in dnaspider.exe 🙏.
 
-🥁 Introducing dnaspider.exe programmable keyboard software for Windows 10 (32/64-bit) PCs! Tweak and execute simple ⌨ and 🖱 functionality to your liking. Use this functionality to automate and accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality seamlessly.
+🥁 Introducing dnaspider.exe programmable keyboard software for Windows 11, 10 (32/64-bit) PCs! Tweak and execute simple or complex ⌨ and 🖱 functionality+ to your liking. Use this functionality to automate and accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality seamlessly. 🦾🤖🦾.
 <h3>How it works</h3>
 
 dnaspider.exe builds an input strand from keyboard keys you press... 
@@ -16,7 +16,7 @@ dnaspider.exe builds an input strand from keyboard keys you press...
 
 In the following example the output code looks like this `<bs4>hi<shift><left2><shift->` which pretty much says to "programmatically press `BACKSPACE` four times, press `H`, press `I`, press (hold) `SHIFT`, press `LEFT` arrow twice (to select hi), release `SHIFT`".
 
-The whole code looks like this and c:\dna\db.txt is the database where we'll be building and storing our algos:
+The whole code looks like this and <em>c:\dna\db.txt</em> is the database where we'll be building and storing our algos:
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
 <br>`test:<bs4>hi<shift><left2><shift->`
 <br><sup><sup>===============</sup></sup>
@@ -42,11 +42,12 @@ If you want <span title="Line 3">`test:`</span> to work as well, make the follow
 <br><sup><sup>===============</sup></sup>
 <br>Press `CTRL + S` to save <span title="Settings">se.txt</span>.
 
-Note: Window title text must be `se.txt - Notepad` or `se.txt - Visual Studio Code` for <span title="se.txt&#13;&#13;Press CTRL + S to push saved settings to dnaspider.exe">`SeHotReload_CtrlS`</span>.
+<sup>Note: se.txt's window title text must be `se.txt - Notepad` or `se.txt - Visual Studio Code` for <span title="se.txt&#13;&#13;Press CTRL + S to hot push saved settings to dnaspider.exe">`SeHotReload_CtrlS`</span>. So make sure, from the `WIN + E` <em>View menu</em>, that <em>Show -> File extensions</em> is <em>checked/enabled</em>. Otherwise you'll have to restart the program every time you change a setting and want it to take effect.
+</sup>
 
-If using an editor other than <span title="Notepad.exe">Notepad</span> or <span title="Visual Studio Code &#13;Code.exe">VSCode</span>, press `RIGHT_CTRL` `S` `E` or restart the program to update the settings.
+<sup>If using an editor other than <span title="Notepad.exe">Notepad</span> or <span title="Visual Studio Code &#13;Code.exe">VSCode</span>, edit se.txt `Editor: Notepad` and plug in your editors window title/name. Restart the program to update the setting. Now if you change a setting in se.txt while using your editor, press `LCTRL + S` to hot push the new setting to the program.</sup>
 
-Now to run, press `RIGHT_CTRL` or `COMMA + ESC` after the input (`T` `RIGHT_CTRL` or `T` `E` `S` `T` `RIGHT_CTRL`).
+Now to run, press <span title="se.txt CtrlKey: 163">`RIGHT_CTRL`</span> or `COMMA + ESC` after the input (`T` `RIGHT_CTRL` or `T` `E` `S` `T` `RIGHT_CTRL`  or `LSHIFT + RCTRL` `C` `O` `N` `N` `E` `C` `T` `RCTRL`).
 <h3>Syntax</h3>
 
 <strong><span title="Settings&#013;=se.txt==========&#013;StrandLengthMode: 1&#013;StrandLength: 3&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#013;&#013;Database&#013;=db.txt==========&#013;hello&#013;===============&#13;&#013;Run&#013;Press H E L in a text area&#13;&#13;Program&#13;=dnaspider.exe=====&#013;strand: h&#013;strand: he&#013;strand: hel&#013;===============">`hello`</span>
@@ -67,15 +68,9 @@ Browse the Wiki for information pertaining to the programs <a href="https://gith
 
 Get the latest release.
 
-<h3><a href="https://www.youtube.com/watch?v=OAhHa7FXAnQ" title="Video">Demo</a>,&nbsp;<a href="https://youtu.be/eREkcFJht8k" title="Video">1</a>,&nbsp;<a href="https://youtu.be/xQPrTvVNTOA" title="Video">2</a>&nbsp;</h3>
-  
-<p><h3>Live Streams</h3>
-  <pre><a href="https://youtu.be/w7nbusKkBnY" title="Video">c++ haxx</a>
-<a href="https://youtu.be/LNXzLi6ZoGw" title="Video">c++ craxx</a> | <a href="https://drive.google.com/drive/folders/1ohegnprEqJZGFY4asNcL3O33GFXXhdI4?usp=sharing" title="cpp.txt, cppse.txt">📂</a></pre>
-</p>
+<h3><a href="https://www.youtube.com/watch?v=OAhHa7FXAnQ">Demo</a></h3>
+View dnaspider.exe in action: <a href="https://youtu.be/eREkcFJht8k" title="Video">1</a>,&nbsp;<a href="https://youtu.be/xQPrTvVNTOA" title="Video">2</a>,&nbsp;<a href="https://youtu.be/w7nbusKkBnY" title="Video">3</a>,&nbsp;<a href="https://youtu.be/LNXzLi6ZoGw" title="Video">4</a>
 
-View dnaspider.exe in action.
-
-<h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;CTRL + SHIFT + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">Source</a></h3>
+<h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;CTRL + SHIFT + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">📂Source</a></h3>
 
 Open project file <em>dnaspider.vcxproj</em> in Visual Studio.
