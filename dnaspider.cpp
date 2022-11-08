@@ -1527,7 +1527,7 @@ void scanDb() {
 							strand = qp + L">"; thread thread(scanDb); Sleep(m1); thread.detach();
 							tail = x; i = -1;
 						}
-						else if (qqb(L"<!>") || testqqb(L"<!:")) { if (qq[2] == ':') { strand = qp; showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); } noClearStrand = 1; rei(); }
+						else if (qqb(L"<!>") || testqqb(L"<!:")) { if (qq[2] == ':') { strand = qp; if (showStrand) { showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); } } noClearStrand = 1; rei(); }
 						else conn();
 						break;
 					case '^':
