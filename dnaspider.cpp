@@ -39,7 +39,7 @@ wstring OutsTemplate = L"\\Gstrand:\\t\\t\\7";
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
 int CommaSleep = 150;
-int ic = 0; //<+>
+int ic = 0; //<+> icp
 int strandLength = 3;
 int frequency = 150; //>> ms response -> vk_
 int speed = 0; //<< 
@@ -166,7 +166,7 @@ struct Mainn {
 
 struct Multi {
 	wstring r, g, b, a, x, m, l, t = tail, q = qq;
-	size_t get_i = i;
+	size_t get_i = i, icp = 0;
 	int cx{}, cy{}, speed_ = 0;
 	bool br = 0;//break
 	Multi() {}
@@ -174,6 +174,9 @@ struct Multi {
 	void setSpeed(int& sl) { speed_ = sl; }
 	void setApp(wstring& app) {
 		a = app;
+	}
+	size_t get_icp() {
+		return icp;
 	}
 	wstring getApp() {
 		return a;
@@ -1205,7 +1208,7 @@ auto cbGet(wstring cb = L"") {
 	return cb;
 }
 
-void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
+void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	HANDLE hC = GetStdHandle(STD_OUTPUT_HANDLE);
 	size_t x = 0; bool t = 0;
 	if (multiLine) { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
@@ -1213,7 +1216,7 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 		if (w[0] > 127) SetConsoleOutputCP(CP_UTF7);
 		wcout << w; ++x; t = 1;
 	};
-	auto color = [&x, &t, w, hC](WORD n) { 
+	auto color = [&x, &t, w, hC](WORD n) {
 		SetConsoleTextAttribute(hC, n); ++x; t = 1;
 		if (w[x] == '\\') --x;
 	};
@@ -1223,14 +1226,14 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			t = 0;
 			switch (w[x + 1]) {
 			case'd': //out <+>
-				{ size_t x = i; wstring t = tail, c = codes;
-				out(to_wstring(ic));
-				tail = t; i = x; re = L" "; codes = c; }
-				write(L""); break;
+			{ size_t x = i; wstring t = tail, c = codes;
+			out(to_wstring(multi.get_icp()));
+			tail = t; i = x; re = L" "; codes = c; }
+			write(L""); break;
 			case'+':
-				{ wstring a = to_wstring(ic); write(a); } break; //<+>
+			{ wstring a = to_wstring(multi.get_icp()); write(a); } break; //<+>
 			case'a':
-				{ write(L"\a"); } break; //beep
+			{ write(L"\a"); } break; //beep
 			case'1':
 			case'B':
 				color(1); break; //blu
@@ -1253,30 +1256,113 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			case'9':
 				color(9); break;
 			case '\\':
-				{ write(L"\\"); }
-				break;
+			{ write(L"\\"); }
+			break;
 			case '\'':
 				x = w.length() - 1;
 				t = 1;
 				break;
 			case 'c':
-				{ write(cbGet()); }
-				break;
+			{ write(cbGet()); }
+			break;
 			case 'm':
-				{ write(multiLineDelim); }
-				break;
+			{ write(multiLineDelim); }
+			break;
 			case 'n':
-				{ write(L"\n"); }
-				break;
+			{ write(L"\n"); }
+			break;
 			case 'T':
-				{ wstring w{}; getTime(w); write(w); }
-				break;
+			{ wstring w{}; getTime(w); write(w); }
+			break;
 			case 't':
-				{ write(L"\t"); }
-				break;
+			{ write(L"\t"); }
+			break;
 			case 'g':
-				{ write(L">"); }
+			{ write(L">"); }
+			break;
+			}
+			if (t) continue;
+		}
+		if (w[x] > 127) SetConsoleOutputCP(CP_UTF7);
+		wcout << w[x]; if (wcout.fail()) { wcout.imbue(locale()); wcout.clear(); wcout << L"[?]"; }
+	}
+	SetConsoleOutputCP(CP_UTF7); wcout << s1; if (wcout.fail()) { wcout.imbue(locale()); wcout.clear(); wcout << L"[?]\n"; }
+	if (!b) cout << '\n';
+	SetConsoleOutputCP(CP_UTF8);
+}
+
+void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
+	HANDLE hC = GetStdHandle(STD_OUTPUT_HANDLE);
+	size_t x = 0; bool t = 0;
+	if (multiLine) { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
+	auto write = [&x, &t](wstring w) {
+		if (w[0] > 127) SetConsoleOutputCP(CP_UTF7);
+		wcout << w; ++x; t = 1;
+	};
+	auto color = [&x, &t, w, hC](WORD n) {
+		SetConsoleTextAttribute(hC, n); ++x; t = 1;
+		if (w[x] == '\\') --x;
+	};
+	wcout << s;
+	for (; x < w.length(); ++x) {
+		if (b && w[x] == '\\') {
+			t = 0;
+			switch (w[x + 1]) {
+			case'd': //out <+>
+			{ size_t x = i; wstring t = tail, c = codes;
+			out(to_wstring(ic));
+			tail = t; i = x; re = L" "; codes = c; }
+			write(L""); break;
+			case'+':
+			{ wstring a = to_wstring(ic); write(a); } break; //<+>
+			case'a':
+			{ write(L"\a"); } break; //beep
+			case'1':
+			case'B':
+				color(1); break; //blu
+			case'2':
+			case'G':
+				color(2); break; //gr
+			case'3':
+				color(3); break;
+			case'4':
+			case'R':
+				color(4); break; //r
+			case'5':
+				color(5); break;
+			case'6':
+				color(6); break;
+			case'7':
+				color(7); break;
+			case'8':
+				color(8); break;
+			case'9':
+				color(9); break;
+			case '\\':
+			{ write(L"\\"); }
+			break;
+			case '\'':
+				x = w.length() - 1;
+				t = 1;
 				break;
+			case 'c':
+			{ write(cbGet()); }
+			break;
+			case 'm':
+			{ write(multiLineDelim); }
+			break;
+			case 'n':
+			{ write(L"\n"); }
+			break;
+			case 'T':
+			{ wstring w{}; getTime(w); write(w); }
+			break;
+			case 't':
+			{ write(L"\t"); }
+			break;
+			case 'g':
+			{ write(L">"); }
+			break;
 			}
 			if (t) continue;
 		}
@@ -1486,7 +1572,11 @@ void scanDb() {
 					case '<':
 						if (testqqb(L"<<:")) {//cout
 							if (replacer) { wstring t = qq; t = isVar(t); } //<<:{<x:>}>
-							showOutsMsg(L"", qp, L"", 1); rei();
+							if (multiStrand) 
+								showOutsMsg(multi, L"", qp, L"", 1); 
+							else
+								showOutsMsg(L"", qp, L"", 1);
+							rei();
 							break;
 						}
 						else conn();
@@ -1520,9 +1610,8 @@ void scanDb() {
 									m = m.substr(m.find(L"-") + 1);
 									m = m.substr(0, m.length() - 1);
 								}
-								if (m == L"0") m = L"1";
 							}
-							if (m == L"") m = to_wstring(CloseCtrlSpacer);
+							if (m == L"" || m == L"0") m = L"1";
 							unsigned int m1 = stoi(m);
 							strand = qp + L">"; thread thread(scanDb); Sleep(m1); thread.detach();
 							tail = x; i = -1;
@@ -1571,7 +1660,7 @@ void scanDb() {
 						}
 						else if (testqqb(L"<+:")) {//calc +
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							ic += stoi(qp);
+							if (multiStrand) multi.icp += stoi(qp); else ic += stoi(qp);
 							calc();
 							break;
 						}
@@ -1580,7 +1669,7 @@ void scanDb() {
 					case'-':
 						if (testqqb(L"<-:")) {//-
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							ic -= stoi(qp);
+							if (multiStrand) multi.icp -= stoi(qp); else ic -= stoi(qp);
 							calc();
 							break;
 						}
@@ -1589,7 +1678,7 @@ void scanDb() {
 					case'*':
 						if (testqqb(L"<*:")) {//*
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							ic *= stoi(qp);
+							if (multiStrand) multi.icp *= stoi(qp); else ic *= stoi(qp);
 							calc();
 							break;
 						}
@@ -1598,7 +1687,7 @@ void scanDb() {
 					case'/':
 						if (testqqb(L"</:")) {//divide
 							if (check_if_num(qp) == L"" || stoi(qp) <= 0) { printq(); continue; }
-							ic /= stoi(qp);
+							if (multiStrand) multi.icp /= stoi(qp); else ic /= stoi(qp);
 							calc();
 							break;
 						}
@@ -1607,7 +1696,7 @@ void scanDb() {
 					case'%':
 						if (testqqb(L"<%:")) {//%
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							ic %= stoi(qp);
+							if (multiStrand) multi.icp %= stoi(qp); else ic %= stoi(qp);
 							calc();
 							break;
 						}
@@ -2350,25 +2439,25 @@ void scanDb() {
 									case ':': //==
 									case 'e':
 									case '=':
-										if (ic == q) b = 1;
+										if (multiStrand) { if (multi.icp == q) b = 1; } else { if (ic == q) b = 1; }
 										break;
 									case 'n': //!=
 									case '!':
-										if (ic != q) b = 1;
+										if (multiStrand) { if (multi.icp != q) b = 1; } else { if (ic != q) b = 1; }
 										break;
 									case 'l': //<=
 									case 'L':
 									case '<':
 										if (qq[5] == '=' || qq[5] == 'e') {
-											if (qp <= to_wstring(ic)) b = 1;
+											if (multiStrand) { if (qp <= to_wstring(multi.icp)) b = 1; } else { if (qp <= to_wstring(ic)) b = 1; }
 										} //if+le <=
-										else if (ic < q) b = 1;
+										else { if (multiStrand) { if (multi.icp < q) b = 1; } else { if (ic < q) b = 1; } }
 										break;
 									case 'g': //g=
 										if (qq[5] == '=' || qq[5] == 'e') {
-											if (ic >= q) b = 1;
+											if (multiStrand) { if (multi.icp >= q) b = 1; } else { if (ic >= q) b = 1; }
 										} //if+ge >=/g=
-										else if (ic > q) b = 1;
+										else { if (multiStrand) { if (multi.icp > q) b = 1; } else { if (ic > q) b = 1; } }
 									}
 								if (b) {
 									if (l > L"") {
