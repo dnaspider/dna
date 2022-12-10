@@ -38,6 +38,7 @@ wstring qx, qy; //<xy:#,#>
 wstring OutsTemplate = L"\\Gstrand:\\t\\t\\7";
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
+size_t MaxLengthClear = 7;
 int CommaSleep = 150;
 int ic = 0; //<+> icp
 int strandLength = 3;
@@ -568,6 +569,8 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
+			case 1449://MaxLengthClear:
+				{ if (check_if_num(v) != L"") MaxLengthClear = stoi(v); else er(); } break;
 			case 2738://ShowMultiStrandElapsedOnly:
 				{ if (v == L"1" || v == L"0") showMultiStrandElapsedOnly = stoi(v); else er(); } break;
 			case 865://PauseKey:
@@ -963,6 +966,7 @@ void printSe() {
 		cout << "CtrlScanOnlyMode: " << qScanOnly << '\n';
 		cout << "RSHIFT+CtrlKey_ToggleCtrlScanOnlyMode: " << ToggleCtrlScanOnly << '\n';
 		cout << "StrandLengthMode: " << strandLengthMode << '\n';
+		cout << "MaxLengthClear: " << MaxLengthClear << '\n';
 		cout << "StrandLength: " << strandLength << '\n';
 		cout << "RepeatKey: " << reKey << '\n';
 		cout << "PauseKey: " << PauseKey << '\n';
@@ -1478,6 +1482,7 @@ wstring randn(bool bg = 0) {
 }
 
 void scanDb() {
+	if (strand.length() >= (MaxLengthClear + 1 + close_ctrl_mode + close_ctrl_mode)) { strand.clear(); return; }
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
 			if (re == L"")
