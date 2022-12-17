@@ -2694,6 +2694,7 @@ void scanDb() {
 						case 'c':
 							if (qqb(L"<lc")) kbPress(L"<lc", VK_F7);//left click
 							else conn();
+							break;
 						case 'h':
 							if (qqb(L"<lh>")) {//left hold
 								mouseEvent(MOUSEEVENTF_LEFTDOWN);
