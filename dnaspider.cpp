@@ -1986,7 +1986,7 @@ void scanDb() {
 						case 'B':
 						case 'b':
 							if (testqqb(L"<DB:") || testqqb(L"<db:")) {//.h Database:
-								if (qq[1] == 'D' || qq[3] == '_') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
+								if (qq[1] == 'D') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
 								qp = regex_replace(qp, wregex(L"/"), L"\\");
 								wifstream f(qp); if (!f) { showOutsMsg(L"\nDatabase \"", qp, L"\" not found!", 0); return; }
 								database = editorDb = qp;
@@ -3062,7 +3062,7 @@ void scanDb() {
 						case 'E':
 						case 'e':
 							if (testqqb(L"<SE:") || testqqb(L"<se:")) {//.h Switch Settings: file
-								if (qq[1] == 'S' || qq[3] == '_') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
+								if (qq[1] == 'S') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(L"", qp, L"", 0); }
 								qp = regex_replace(qp, wregex(L"/"), L"\\");
 								wifstream f(qp); if (!f) { showOutsMsg(L"\nSettings \"", qp, L"\" not found!", 0); return; }
 								settings = editorSe = qp;
@@ -3290,7 +3290,7 @@ int main() {//cout << "@dnaspider\n\n";
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
 	printIntro(); strand = L"<dna>"; scanDb(); strand.clear();//run @ startup
-#pragma endregion																																								
+#pragma endregion
 	for (;; Sleep(frequency)) {
 		if (SeHotReload_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow() || FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow())) { HWND np = FindWindowW(0, (se + editor).c_str()), vsc = FindWindowW(0, (se + editor1).c_str()), vscS = FindWindowW(0, (editorSe).c_str()); HWND HotReload = GetForegroundWindow(); if (np == HotReload || vsc == HotReload || vscS == HotReload) { bool b = qScanOnly || ignore09; loadSe(); if ((!b && qScanOnly || ignore09) || (b && !qScanOnly || !ignore09)) clearAllKeys(); else GetAsyncKeyState(83); if (SeDbClearStrand_CtrlS) { strand.clear(); if (showStrand) { prints(); } continue; } else if (!ignoreAZ) key(L"s"); continue; } }//lctrl+s hot reload
 		if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow() || FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow())) { GetAsyncKeyState(83); strand.clear(); if (showStrand) { prints(); } continue; }//clear
