@@ -36,7 +36,7 @@ wstring qq; //<x>
 wstring qp; //<x:#>
 wstring qx, qy; //<xy:#,#>
 wstring OutsTemplate = L"\\Gstrand:\\t\\t\\7";
-wstring Loop_Insert_Text = L",>";
+wstring Loop_Insert_Text = L",";
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
 int CommaSleep = 150;
@@ -578,7 +578,7 @@ void loadSe() {
 			case 2053://R+ESC_A+ESC_Loop_Insert: <rgb,> <app,>
 				{ if (v == L"1" || v == L"0") Loop_Insert = stoi(v); else er(); } break;
 			case 1708://Loop_Insert_Text:
-				{ if (v.length() > 0) Loop_Insert_Text = v.substr(0); else er(); } break;
+				{ if (v == L"Loop_Insert_Text" || v == L"") v = L">"; if (v.substr(v.length() - 1) != L">") v += L">"; if (v.length() > 0) Loop_Insert_Text = v.substr(0); else er(); } break;
 			case 1993://Ignore_Print_Screen:
 				{ if (v == L"1" || v == L"0") Ignore_Print_Screen = stoi(v); else er(); } break;
 			case 1946://Kb_Key_Print_Screen::
