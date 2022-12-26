@@ -1637,7 +1637,7 @@ void scanDb() {
 						}
 						else if (qqb(L"<^^>")) {
 							close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly; 
-							codes = tail = regex_replace(tail, wregex(L"[<^^>]"), L"");
+							codes = tail = regex_replace(tail, wregex(L"[<][^][^][>]"), L"");
 							--i;
 						}
 						else conn();
