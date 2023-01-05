@@ -3265,6 +3265,8 @@ void repeat() {
 	if (multiblock) return;
 	kbRelease(reKey);
 	if (multiStrand) {
+		reTail = regex_replace(reTail, wregex(L"[<][^][^][>]"), L"");
+		codes = reTail;
 		thread thread(out, reTail); thread.detach();
 	}
 	else out(tail);
