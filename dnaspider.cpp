@@ -1636,8 +1636,8 @@ void scanDb() {
 							flipd = 1; if (ToggleCloseCtrl) close_ctrl_mode = 1; if (ToggleCtrlScanOnly) qScanOnly = 1; rei();
 						}
 						else if (qqb(L"<^^>")) {
-							close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly; 
-							codes = tail = regex_replace(tail, wregex(L"[<][^][^][>]"), L"");
+							close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly;
+							tail.replace(tail.find(L"<^^>"), 4, L"");
 							--i;
 						}
 						else conn();
@@ -3265,6 +3265,7 @@ void repeat() {
 	if (multiblock) return;
 	kbRelease(reKey);
 	if (multiStrand) {
+		if (reTail.find(L"<^^>") != string::npos) reTail.replace(reTail.find(L"<^^>"), 4, L"");
 		thread thread(out, reTail); thread.detach();
 	}
 	else out(tail);
