@@ -460,8 +460,9 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 
 void scanDb(); wstring conn(bool bg = 0) {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find(L">") + 1);
-	if (qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
-		if (qqs.substr(qqs.length() - 2, 2) == L":>" || qqs.substr(qqs.length() - 2, 2) == L"->") {
+	if (qqs.find(io[0]) != std::string::npos || qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
+		wstring x = L""; x += io[0]; x += L">";
+		if (qqs.substr(qqs.length() - 2, 2) == x || qqs.substr(qqs.length() - 2, 2) == L":>" || qqs.substr(qqs.length() - 2, 2) == L"->") {
 			con = true;
 		}
 	}
@@ -574,7 +575,7 @@ void loadSe() {
 			case 1022://io_Auto_BS:
 				{ if (v == L"1" || v == L"0") io_Auto_BS = stoi(v); else er(); } break;
 			case 966://io_Attach:
-				{ if (v.length() > 0) io_Attach = v; else io_Attach = L""; } break;
+				{ if (v.length() > 0) io_Attach = v; else er(); } break;
 			case 274://io:
 				{ if (v.length() > 0) io = v[0]; else er(); } break;
 			case 2738://ShowMultiStrandElapsedOnly:
@@ -1521,7 +1522,7 @@ void scanDb() {
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
-		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, sv.size()) == strand || (!strandLengthMode || sv[0] == '<') && cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L":" || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L"-" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L":>" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L"->") || cell.substr(0, sv.size() + 1) == strand + L">" || cell.substr(0, sv.size() + 1) == strand + L":" || cell.substr(0, sv.size() + 1) == strand + L"-" || cell.substr(0, sv.size() + 1) == strand + L"^" || cell.substr(0, sv.size() + 1) == strand + io[0] || (strandLengthMode && cell.substr(0, strandLength) == strand && cell[0] != '<') || close_ctrl_mode && strandLengthMode && strand[0] != '<' && cell.substr(0, sv.size() - 1) == sv.substr(0, sv.size() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o, i^o || io || io
+		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, sv.size()) == strand || (!strandLengthMode || sv[0] == '<') && cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + io[0] || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L":" || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L"-" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L":>" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L"->") || cell.substr(0, sv.size() + 1) == strand + L">" || cell.substr(0, sv.size() + 1) == strand + L":" || cell.substr(0, sv.size() + 1) == strand + L"-" || cell.substr(0, sv.size() + 1) == strand + L"^" || cell.substr(0, sv.size() + 1) == strand + io[0] || (strandLengthMode && cell.substr(0, strandLength) == strand && cell[0] != '<') || close_ctrl_mode && strandLengthMode && strand[0] != '<' && cell.substr(0, sv.size() - 1) == sv.substr(0, sv.size() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o, i^o, i*o || io || io
 			if (toggledCC) { toggledCC = 0; if (!ToggleKeep) close_ctrl_mode = !close_ctrl_mode; } if (toggledCSO) { toggledCSO = 0; if (!ToggleKeep) qScanOnly = !qScanOnly; } if (flipd) { flipd = 0; if (ToggleCloseCtrl) { if (close_ctrl_mode && strand[strand.length() - 1] == '>') { strand = strand.substr(0, strand.length() - 1); } close_ctrl_mode = 0; } if (ToggleCtrlScanOnly) qScanOnly = 0; }
 			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
@@ -1539,9 +1540,9 @@ void scanDb() {
 			tail = isVar(tail); //<r:>
 			if (tail[0] == io[0]) {//io:
 				wstring t = tail, s = strand;
-				out(io_Attach);
+				if (io_Attach > L"") out(io_Attach);
 				tail = t; strand = s; bool b = 0;
-				if (tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = strand + tail; b = 1; }
+				if (strand[0] != '<' && tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = strand + tail; b = 1; }
 				else tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
 				if (io_Auto_BS) bs_input();
