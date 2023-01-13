@@ -1138,7 +1138,7 @@ void printSe() {
 		wcout << "Loop_Insert_Text: " << Loop_Insert_Text << '\n';
 		cout << "NoEscapeOrPause: " << NoEscapeOrPause << '\n';
 		wcout << "io: " << io << '\n';
-		wcout << "io_AutoBS: " << io_Auto_BS << '\n';
+		wcout << "io_Auto_BS: " << io_Auto_BS << '\n';
 		cout << "Exit_EscX: " << enableEscX << '\n';
 		cout << '\n';
 	}
