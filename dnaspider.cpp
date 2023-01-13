@@ -1927,7 +1927,7 @@ void scanDb() {
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
-										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+										if (linkC[0] == io[0] || linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
 
@@ -1936,7 +1936,7 @@ void scanDb() {
 								}
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
-										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+										if (linkC == L"<" || linkC[linkC.length() - 1] == io[0] || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
 											if (linkC.find(L" ") != string::npos)// ..., true: false:>
 												linkC = linkC.substr(linkC.find(L" ") + 1);
@@ -2226,7 +2226,7 @@ void scanDb() {
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
-										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+										if (linkC[0] == io[0] || linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
 								
@@ -2235,7 +2235,7 @@ void scanDb() {
 								}
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
-										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+										if (linkC == L"<" || linkC[linkC.length() - 1] == io[0] || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
 											if (linkC.find(L" ") != string::npos)// ..., true: false:>
 												linkC = linkC.substr(linkC.find(L" ") + 1);
@@ -2435,7 +2435,7 @@ void scanDb() {
 									if (!multi.getBreak()) {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
-										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+										if (linkC[0] == io[0] || linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
 							
@@ -2445,7 +2445,7 @@ void scanDb() {
 								CloseClipboard();
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
-										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {//F:
+										if (linkC == L"<" || linkC[linkC.length() - 1] == io[0] || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {//F:
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
 											if (linkC.find(L" ") != string::npos) 
 												linkC = linkC.substr(linkC.find(L" ") + 1);//<t-<ifcb:a,*,ms, T: F:>
@@ -2668,7 +2668,7 @@ void scanDb() {
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
-										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+										if (linkC[0] == io[0] || linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
 								if (multiStrand) {
@@ -2676,7 +2676,7 @@ void scanDb() {
 								}
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
-										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+										if (linkC == L"<" || linkC[linkC.length() - 1] == io[0] || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
 											if (linkC.find(L" ") != string::npos)
 												linkC = linkC.substr(linkC.find(L" ") + 1);
@@ -2997,7 +2997,7 @@ void scanDb() {
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
 										if (length >= 1) Sleep(stoi(ms));
-										if (linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
+										if (linkC[0] == io[0] || linkC == L":" || linkC == L"-" && linkC.length() == 1) --size;
 									}
 								}
 
@@ -3006,7 +3006,7 @@ void scanDb() {
 								}
 								if (size >= length) {
 									if (linkC.length() > 0) {
-										if (linkC == L"<" || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
+										if (linkC == L"<" || linkC[linkC.length() - 1] == io[0] || linkC[linkC.length() - 1] == ':' || linkC[linkC.length() - 1] == '-') {
 											if (linkC == L"<") { if (!multiStrand) rei(); break; }
 											if (linkC.find(L" ") != string::npos)
 												linkC = linkC.substr(linkC.find(L" ") + 1);
