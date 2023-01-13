@@ -3044,6 +3044,7 @@ void scanDb() {
 								wstring rgb = getRGB(1), rgbc = rgb, h = qq.substr(0, 4) + L":" +  rgb + (qq[1] == 'r' ? L"" : L" " + qx + L" " + qy), hq;
 								if (showStrand) wcout << h;
 								for (size_t i = 0; i < (n * 10); ++i) {// <rgb|3>
+									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { GetAsyncKeyState(VK_ESCAPE); break; }
 									Sleep(95);
 									rgb = getRGB(1);
 									if (rgb == rgbc) continue;
