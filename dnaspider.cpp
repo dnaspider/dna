@@ -1631,28 +1631,24 @@ void scanDb() {
 						if (testqqb(L"<!!!:")) {
 							reTail = codes = (qp + L">"); strand = L""; i = tail.length(); }//set repeat
 						else if (testqqb(L"<!!:")) {//multi run
-							wstring x = qq.substr(qq.find(L">") + 1);//tail
+							wstring t = qq.substr(qq.find(L">") + 1);//tail
 							wstring m = qq.substr(0, qq.find(L">")) + L">";//q ms
-							if (m.substr(m.length() - 1) == L":>" || m.substr(m.length() - 1) == L"->") m = CloseCtrlSpacer;
+							wstring x = L""; x += io[0]; x += L">";
+							if (m.substr(m.length() - 2) == x || m.substr(m.length() - 2) == L":>" || m.substr(m.length() - 2) == L"->") m = to_wstring(CloseCtrlSpacer);
 							else {
-								m = m.substr(4);
-								if (m.find(L":") != string::npos){
-									qp = m.substr(0, m.find(L":") + 1);
-									if (qp[0] == ' ') qp = qp.substr(1); 
-									m = m.substr(m.find(L":") + 1);
-									m = m.substr(0, m.length() - 1);
-								}
-								else {//L"-"
-									qp = m.substr(0, m.find(L"-") + 1);
-									if (qp[0] == ' ') qp = qp.substr(1);
-									m = m.substr(m.find(L"-") + 1);
-									m = m.substr(0, m.length() - 1);
-								}
+								m = m.substr(4); wstring io = L"";
+								if (m.find(::io[0]) != string::npos) io = ::io[0];
+								else if (m.find(L":") != string::npos) io = L":";
+								else io = L"-";
+								qp = m.substr(0, m.find(io) + 1);
+								if (qp[0] == ' ') qp = qp.substr(1);
+								m = m.substr(m.find(io) + 1);
+								m = m.substr(0, m.length() - 1);
 							}
 							if (m == L"" || m == L"0") m = L"1";
 							unsigned int m1 = stoi(m);
 							strand = qp + L">"; thread thread(scanDb); Sleep(m1); thread.detach();
-							tail = x; i = -1;
+							tail = t; i = -1;
 						}
 						else if (qqb(L"<!>") || qqb(L"<!:>") || testqqb(L"<!:")) { if (qq[2] == ':') { if (qq[3] == '>') { strand.clear(); clearAllKeys(); rei(); break; } strand = qp; if (showStrand) { showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); } } noClearStrand = 1; rei(); }
 						else conn();
@@ -2506,7 +2502,7 @@ void scanDb() {
 								}
 								else rei();
 							}
-							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-') {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge, <ift+:5> | <ifs:+5,> (MultiStrand:1)
+							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-' && qq[3] != io[0]) {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge, <ift+:5> | <ifs:+5,> (MultiStrand:1)
 								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								if (qp == L"") { conn(); break; }
 								wstring a = qp; a = a.substr(0, a.find(L","));
