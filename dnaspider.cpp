@@ -2138,7 +2138,7 @@ void scanDb() {
 									auto tx = stoi(x), ty = stoi(y);
 
 									switch (qqC[5]) {
-									case ':': //== <ifxy:> <ifxy=:> <ifxye:>
+									case ':': //== <ifxy:> <ifxy=:> <ifxye:>  
 									case '=':
 									case 'e':
 										if (tx == pt.x && ty == pt.y) multi.setBreak();
@@ -2150,12 +2150,12 @@ void scanDb() {
 									case 'l'://<= <ifxyl:> <ifxyle:> <ifxy<:> <ifxy<=:>
 									case 'L':
 									case '<':
-										if (qqC[6] == 'e' || qqC[6] == '=') { if (tx <= pt.x && ty <= pt.y) { multi.setBreak(); break; } } //ifxyle <=
-										if (tx < pt.x && ty < pt.y) multi.setBreak();
+										if (qqC[6] == 'e' || qqC[6] == '=') { if (pt.x <= tx && pt.y <= ty) { multi.setBreak(); break; } } //ifxyle <=
+										if (pt.x < tx && pt.y < ty) multi.setBreak();
 										break;
 									case 'g'://>= <ifxyg:> <ifxyge:> <ifxyg=:>
-										if (qqC[6] == 'e' || qqC[6] == '=') { if (tx >= pt.x && ty >= pt.y) { multi.setBreak(); break; } } //ifxyge >=/g=
-										if (tx > pt.x && ty > pt.y) multi.setBreak();
+										if (qqC[6] == 'e' || qqC[6] == '=') { if (pt.x >= tx && pt.y >= ty) { multi.setBreak(); break; } } //ifxyge >=/g=
+										if (pt.x > tx && pt.y > ty) multi.setBreak();
 										break;
 									}
 								};
