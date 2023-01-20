@@ -2141,11 +2141,11 @@ void scanDb() {
 									case ':': //== <ifxy:> <ifxy=:> <ifxye:>  
 									case '=':
 									case 'e':
-										if (tx == pt.x && ty == pt.y) multi.setBreak();
+										if (pt.x == tx && pt.y == ty) multi.setBreak();
 										break;
 									case 'n': //!= <ifxyn:> <ifxy!:>
 									case '!':
-										if (tx != pt.x && ty != pt.y) multi.setBreak();
+										if (pt.x != tx && pt.y != ty) multi.setBreak();
 										break;
 									case 'l'://<= <ifxyl:> <ifxyle:> <ifxy<:> <ifxy<=:>
 									case 'L':
