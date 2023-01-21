@@ -1791,7 +1791,10 @@ void scanDb() {
 							if (showStrand) {
 								showOutsMsg(L"", OutsTemplate, L"", 1);
 								const wstring& v = qq.substr(2, qq.find('>') - 2);
-								showOutsMsg(L"", v, L"\n", 1);
+								if (multiStrand)
+									showOutsMsg(multi, L"", v, L"\n", 1);
+								else
+									showOutsMsg(L"", v, L"\n", 1);
 							}
 							rei(); sleep = 0;
 						}
