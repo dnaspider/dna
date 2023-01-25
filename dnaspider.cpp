@@ -3326,7 +3326,7 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			GetAsyncKeyState(VK_RETURN); if (GetAsyncKeyState(VK_RETURN) && cKey && cKey != VK_RETURN) { strand.clear(); prints(); Sleep(150); continue; } //ctrl + ~ clear
+			GetAsyncKeyState(VK_RETURN); if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { strand.clear(); prints(); Sleep(150); continue; } //ctrl + ~ clear
 			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); Sleep(150); continue; }
 			if (strand[0] == '<') {
