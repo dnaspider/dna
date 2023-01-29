@@ -508,14 +508,14 @@ void kbPress(wstring s, short key) {
 		n = qq.substr(n.length(), qq.find(L">") - n.length());
 		if (n[0] == ':') n = n.substr(1);
 		if (n[0] == ' ') n = n.substr(1);
-		if ((qq.substr(qq.find(L">") - 1, 1) == L":" || qq.substr(qq.find(L">") - 1, 1) == L"-") && n[0] != '<') { conn(); return; }
+		if ((qq[qq.find('>') - 1] == io[0] || qq.substr(qq.find(L">") - 1, 1) == L":" || qq.substr(qq.find(L">") - 1, 1) == L"-") && n[0] != '<') { conn(); return; }
 		if (n > L"") {
 			if (n[0] == '*') n = n.substr(1, n.length()); //case: <f1*
 			else if (n[0] == '+') { if (n[1] == '+') { ++ic; } n = to_wstring(ic); } //<f1+> | <f1++> | Variable press <key<+>>
 			n = check_if_num(n);
 			if (n == L"") { printq(); return; }
 			if (n[0] == '<') {//Assume
-				if (n[n.length() - 1] == ':' || n[n.length() - 1] == '-') {//<x:>
+				if (n[n.length() - 1] == io[0] || n[n.length() - 1] == ':' || n[n.length() - 1] == '-') {//<x:>
 					wstring t = qq;
 					qq = n + L">";
 					n = conn(1);
@@ -551,7 +551,7 @@ void kbPress(wstring s, short key) {
 	i += qq.find(L">");
 }
 
-void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
+void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); Sleep(1); re.clear(); }
 
 void calc() {
 	if (assume) { i += qq.find(L">"); return; }
@@ -3356,8 +3356,8 @@ int main() {//cout << "@dnaspider\n\n";
 			else {
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
 				else { clearAllKeys(); strand = L"<"; }
-			}
-			prints(); continue;
+			} 
+			prints(); Sleep(1); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
