@@ -1576,7 +1576,7 @@ void scanDb() {
 				if (multiStrand) { if (strand == sv && !noClearStrand) strand.clear(); }//multiStrand variant clear
 				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.get_i = i; multi.q = qq; multi.setSpeed(speed); } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
 				if (!NoEscapeOrPause) {
-					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; }
+					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { if (multi.esc == 1) {} else { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } }
 					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {//int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
 						if (multiStrand) multi.setI();
 						showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
@@ -1680,10 +1680,10 @@ void scanDb() {
 							multiStrand = 1; multiblock = 0; rei();
 						}
 						else if (qqb(L"<~esc>")) {
-							NoEscapeOrPause = 0; rei();
+							if (multiStrand) multi.esc = 0; else NoEscapeOrPause = 0; rei();
 						}
 						else if (qqb(L"<~~esc>")) {
-							NoEscapeOrPause = 1; rei();
+							if (multiStrand) multi.esc = 1; else NoEscapeOrPause = 1; rei();
 						}
 						else conn();
 						break;
