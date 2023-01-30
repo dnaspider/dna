@@ -171,7 +171,7 @@ struct Multi {
 	wstring r, g, b, a, x, m, l, t = tail, q = qq;
 	size_t get_i = i, icp = 0;
 	int cx{}, cy{}, speed_ = 0;
-	bool br = 0;//break
+	bool esc = 0, br = 0;//break
 	Multi() {}
 	Multi(wstring& r) {}
 	void setSpeed(int& sl) { speed_ = sl; }
