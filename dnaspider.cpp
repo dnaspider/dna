@@ -1589,7 +1589,7 @@ void scanDb() {
 						if (showStrand) showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 						pause_resume = 1;
 						wstring q = L"~PAUSE\n"; speed = 0;
-						Sleep(450); while (pause_resume) {
+						while (pause_resume) {
 							GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { while (GetAsyncKeyState(PauseKey) != 0) { Sleep(frequency / 3); } break; }
 							GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 							if (!esc_pressed) Sleep(150);
