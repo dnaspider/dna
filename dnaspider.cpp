@@ -3339,17 +3339,16 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) {
-				while (GetAsyncKeyState(VK_LCONTROL) != 0) {
+			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) {
 					Sleep(frequency/3);//cout << (GetAsyncKeyState(VK_LCONTROL)) << endl;
-				}
-				repeat();
-				continue;
-			}
-			GetAsyncKeyState(VK_RETURN); if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { strand.clear(); prints(); Sleep(150); continue; } //ctrl + ~ clear
+				} repeat(); continue; }
 			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
-			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); Sleep(150); continue; }
-			while (GetAsyncKeyState(cKey) != 0) Sleep(frequency / 3);
+			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { Sleep(frequency / 3); } if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); continue; }
+			while (GetAsyncKeyState(cKey) != 0) { 
+				GetAsyncKeyState(VK_RETURN); if (GetAsyncKeyState(VK_RETURN)) break;
+				Sleep(frequency / 3);
+			}
+			if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { kbRelease(cKey); GetAsyncKeyState(cKey); strand.clear(); prints(); continue; } //ctrl + ~ clear
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(L">") != std::string::npos) strand.clear();
