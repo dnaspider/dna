@@ -3351,7 +3351,7 @@ int main() {//cout << "@dnaspider\n\n";
 					Sleep(frequency/3);//cout << (GetAsyncKeyState(VK_LCONTROL)) << endl;
 				} repeat(); continue; }
 			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
-			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { kbRelease(VK_RSHIFT); if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); continue; }
+			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { kbRelease(VK_RSHIFT); if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); Sleep(frequency); continue; }
 			GetAsyncKeyState(VK_RETURN);
 			while (GetAsyncKeyState(cKey) != 0) { 
 				if (GetAsyncKeyState(VK_RETURN)) break;
