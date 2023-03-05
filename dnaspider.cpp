@@ -1908,7 +1908,7 @@ void scanDb() {
 												if (!multi.br) {
 													if (q == L"&") {
 														sand = 0;
-														if (t.find(L"|") != string::npos) sand = 1; else break;
+														if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
 													}
 													if (q == L"|") {
 														sor = 0;
@@ -2214,7 +2214,7 @@ void scanDb() {
 												if (!multi.br) {
 													if (q == L"&") {
 														sand = 0;
-														if (t.find(L"|") != string::npos) sand = 1; else break;
+														if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
 													}
 													if (q == L"|") {
 														sor = 0;
@@ -2419,7 +2419,7 @@ void scanDb() {
 															if (!multi.br) {
 																if (q == L"&") {
 																	sand = 0;
-																	if (t.find(L"|") != string::npos) sand = 1; else break;
+																	if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
 																}
 																if (q == L"|") {
 																	sor = 0;
@@ -2655,7 +2655,7 @@ void scanDb() {
 												sif();
 												if (!multi.br) {
 													if (q == L"&") { sand = 0; 
-														if (t.find(L"|") != string::npos) sand = 1; else break;
+														if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
 													}
 													if (q == L"|") { sor = 0;
 													if (t.find(L"&") != string::npos) { sor = 1; }
@@ -2971,7 +2971,7 @@ void scanDb() {
 												if (!multi.br) {
 													if (q == L"&") {
 														sand = 0;
-														if (t.find(L"|") != string::npos) sand = 1; else break;
+														if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
 													}
 													if (q == L"|") {
 														sor = 0;
