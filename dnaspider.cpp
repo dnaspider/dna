@@ -2968,6 +2968,13 @@ void scanDb() {
 													}
 												}
 												sifrgb();
+
+												if (!multi.br && q == L"&" && t.find(L"|") != string::npos) {
+													//sor = 0;
+													t = t.substr(t.find(L"|") + 1);
+													a = t; j = -1; ta.clear(); continue;
+												}
+
 												if (!multi.br) {
 													if (q == L"&") {
 														sand = 0;
