@@ -2215,11 +2215,11 @@ void scanDb() {
 												if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
 												if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); //!\0
 												sifxy(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
+												if (!multi.br && q == L"&" && t.find(L"|") != string::npos) {
+													t = t.substr(t.find(L"|") + 1);
+													a = t; j = -1; ta.clear(); continue;
+												}
 												if (!multi.br) {
-													if (!multi.br && q == L"&" && t.find(L"|") != string::npos) {
-														t = t.substr(t.find(L"|") + 1);
-														a = t; j = -1; ta.clear(); continue;
-													}
 													if (q == L"&") {
 														sand = 0;
 														if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
@@ -2424,11 +2424,11 @@ void scanDb() {
 															if (!BackslashLogicals) { a = regex_replace(a, wregex(L"\\\\\\|"), L"|"); a = regex_replace(a, wregex(L"\\\\\\&"), L"&"); }
 															if (a[0] == ' ' && a != L" ") { a = a.substr(1); } if (a.length() > 1 && a[a.length() - 1] == ' ') a = a.substr(0, a.length() - 1); //!\0
 															sifcb(); //wcout << a << "\t(" << multi.br << ")\t" << b << endl;
+															if (!multi.br && q == L"&" && t.find(L"|") != string::npos) {
+																t = t.substr(t.find(L"|") + 1);
+																a = t; j = -1; ta.clear(); continue;
+															}
 															if (!multi.br) {
-																if (!multi.br && q == L"&" && t.find(L"|") != string::npos) {
-																	t = t.substr(t.find(L"|") + 1);
-																	a = t; j = -1; ta.clear(); continue;
-																}
 																if (q == L"&") {
 																	sand = 0;
 																	if (t.find(L"|") != string::npos) sand = 1; else { if (!sor || t.find(L"&") == string::npos) break; }
