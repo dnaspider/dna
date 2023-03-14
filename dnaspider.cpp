@@ -3341,7 +3341,7 @@ void repeat() {
 
 #pragma endregion
 
-#pragma comment(lib, "Winmm.lib")//<audio:>b
+#pragma comment(lib, "Winmm.lib")//<audio:>
 int main() {//cout << "@dnaspider\n\n";
 	wcout.imbue(locale()); wcout.clear();
 #pragma region initial_startup
