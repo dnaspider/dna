@@ -3341,7 +3341,7 @@ void repeat() {
 
 #pragma endregion
 
-#pragma comment(lib, "Winmm.lib")//<audio:>
+#pragma comment(lib, "Winmm.lib")//<audio:>b
 int main() {//cout << "@dnaspider\n\n";
 	wcout.imbue(locale()); wcout.clear();
 #pragma region initial_startup
@@ -3377,6 +3377,7 @@ int main() {//cout << "@dnaspider\n\n";
 				if (GetAsyncKeyState(VK_RETURN)) break;
 				Sleep(frequency / 3);
 			}
+			if (GetAsyncKeyState(VK_RSHIFT)) continue;
 			if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { kbRelease(cKey); GetAsyncKeyState(cKey); strand.clear(); prints(); continue; } //ctrl + ~ clear
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
