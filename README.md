@@ -22,11 +22,11 @@ The whole code looks like this and <em>c:\dna\db.txt</em> is the database where 
 <br><sup><sup>===============</sup></sup>
 <br>The `:` links the <span title="strand:api">`input:output`</span> together. We can also use minus sign auto `BACKSPACE` strand option <span title="test-">`-`</span> or remember strand for `SCROLL_LOCK` repeat option <span title="test>">`>`</span>. There are connect options <span title="Press: RIGHT_CTRL, W, H, A, T, E, V, E, R">`<whatever:>`</span> or <span title="Press: RIGHT_CTRL, W, H, A, T, E, V, E, R">`<whatever->`</span> as well.
 
-Input strand and trailing output must be saved in <em title="Change c:\dna\se.txt > Database: c:\dna\db.txt for a different location or file name.&#13;e.g., Database: c:\Users\USER_NAME\OneDrive\dna\database.htm">c:\dna\db.txt</em> for the program to execute/run.
+Input strand and trailing output must be saved in <em title="Change c:\dna\se.txt > Database: c:\dna\db.txt for a different location or file name.&#13;e.g., Database: c:\Users\USER_NAME\OneDrive\dna\database.txt">c:\dna\db.txt</em> for the program to execute/run.
 
-Before you run a code you might have to clear the input strand first by toggle `RIGHT_CTRL` `BACKSPACE` or `LEFT_SHIFT + PAUSE_BREAK` then simply input the strand `T` `E` `S` `T` in a text area for the effect.
+Before you run a code you might have to clear the input strand first by toggle `RIGHT_CTRL` `BACKSPACE` or `LEFT_SHIFT + ClearStrandKey` then simply input the strand `T` `E` `S` `T` in a text area for the effect.
 
-After running the code once you can press `SCROLL_LOCK` or `EQUAL + ESC` to repeat the output.
+After running the code once you can press `PAUSE_BREAK (se.txt RepeatKey: 19)` or `EQUAL + ESC` or hold `LCTRL` press `RCTRL (se.txt CtrlKey: 163)` then Release `LCTRL` to repeat the output.
 
 Lets adjust the code a bit and use the auto <span title="-">`BACKSPACE`</span> and <span title="<connect:> or <connect->">connect</span> options.
 <br><sub><sub><span title="Database: c:\dna\db.txt">==db.txt=========</span></sub></sub>
@@ -36,16 +36,12 @@ Lets adjust the code a bit and use the auto <span title="-">`BACKSPACE`</span> a
 <br><sup><sup>===============</sup></sup>
 <br>Save then press `T` in a text area to run.
 
-If you want <span title="Line 3">`test:`</span> to work as well, make the following changes in <span title="Settings">c:\dna\se.txt</span> using <span title="se.txt - Notepad">Notepad.exe</span> or <span title="se.txt - Visual Studio Code">Code.exe</span>.
+If you want <span title="Line 3">`test:`</span> to work as well, make the following changes in <span title="Settings">c:\dna\se.txt</span> using <span title="se.txt - Visual Studio Code">Code.exe</span>.
 <br><sub><sub><span title="Settings: c:\dna\se.txt">==se.txt=========</span></sub></sub>
 <br><span title="CloseCtrlMode: True">`CloseCtrlMode: 1`</span>
+<br>`EditorSe: - Visual Studio Code`
 <br><sup><sup>===============</sup></sup>
-<br>Press `CTRL + S` to save <span title="Settings">se.txt</span>.
-
-<sup>Note: se.txt's window title text must be `se.txt - Notepad` or `se.txt - Visual Studio Code` for <span title="se.txt&#13;&#13;Press CTRL + S to hot push saved settings to dnaspider.exe">`SeHotReload_CtrlS`</span>. So make sure, from the `WIN + E` <em>View menu</em>, that <em>Show -> File extensions</em> is <em>checked/enabled</em>. Otherwise you'll have to restart the program every time you change a setting and want it to take effect.
-</sup>
-
-<sup>If using an editor other than <span title="Notepad.exe">Notepad</span> or <span title="Visual Studio Code &#13;Code.exe">VSCode</span>, edit se.txt `Editor: Notepad` and plug in your editors window title/name. Restart the program to update the setting. Now if you change a setting in se.txt while using your editor, press `LCTRL + S` to hot push the new setting to the program.</sup>
+<br>In Visual Studio Code, press `CTRL + S` to save <span title="Settings">se.txt</span>.
 
 Now to run, press <span title="se.txt CtrlKey: 163">`RIGHT_CTRL`</span> or `COMMA + ESC` after the input (`T` `RIGHT_CTRL` or `T` `E` `S` `T` `RIGHT_CTRL`  or `LSHIFT + RCTRL` `C` `O` `N` `N` `E` `C` `T` `RCTRL`).
 <h3>Syntax</h3>
@@ -67,9 +63,6 @@ Browse the Wiki for information pertaining to the programs <a href="https://gith
 <h3><a href="https://github.com/dnaspider/dna/releases" title="Press [WIN + PAUSE_BREAK] for system type">Download</a>&nbsp;</h3>
 
 Get the latest release.
-
-<h3><a href="https://www.youtube.com/watch?v=OAhHa7FXAnQ">Demo</a></h3>
-View dnaspider.exe in action: <a href="https://youtu.be/eREkcFJht8k" title="Video">1</a>,&nbsp;<a href="https://youtu.be/xQPrTvVNTOA" title="Video">2</a>,&nbsp;<a href="https://youtu.be/w7nbusKkBnY" title="Video">3</a>,&nbsp;<a href="https://youtu.be/LNXzLi6ZoGw" title="Video">4</a>
 
 <h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;CTRL + SHIFT + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">📂Source</a></h3>
 
