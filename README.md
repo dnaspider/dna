@@ -39,7 +39,7 @@ Lets adjust the code a bit and use the auto <span title="-">`BACKSPACE`</span> a
 If you want <span title="Line 3">`test:`</span> to work as well, make the following changes in <span title="Settings">c:\dna\se.txt</span> using <span title="se.txt - Visual Studio Code">Code.exe</span>.
 <br><sub><sub><span title="Settings: c:\dna\se.txt">==se.txt=========</span></sub></sub>
 <br><span title="CloseCtrlMode: True">`CloseCtrlMode: 1`</span>
-<br>`EditorSe: - Visual Studio Code`
+<br><span title="Or: se - Visual Studio Code">`EditorSe: se.txt - Visual Studio Code`</span>
 <br><sup><sup>===============</sup></sup>
 <br>In Visual Studio Code, press `CTRL + S` to save <span title="Settings">se.txt</span>.
 
