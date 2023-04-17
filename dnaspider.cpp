@@ -1978,8 +1978,8 @@ void scanDb() {
 							else conn();
 							break;
 						case 'u':
-							if (testqqb(L"<audio:")) {
-								mciSendStringW((qp).c_str(), 0, 0, 0); //<audio:play test.mp3>
+							if (testqqb(L"<Audio:") || testqqb(L"<audio:")) {
+								if (qq[1] == 'A') sndPlaySoundW((qp).c_str(), SND_FILENAME | SND_ASYNC); else mciSendStringW((qp).c_str(), 0, 0, 0); //<audio:play test.mp3>
 								rei();
 							}
 							else conn();
