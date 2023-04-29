@@ -1770,11 +1770,13 @@ void scanDb() {
 									GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_PAUSE); for (int j = 0; j < stoi(s); ++j) {//sleep150ms*?
 										if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); if (showStrand) { cout << '\n'; } return; }//stop
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
+											while (GetAsyncKeyState(PauseKey) != 0) { Sleep(frequency / 3); }
+											if (multiStrand) multi.setI();
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
 											wstring q = L"~PAUSE\n"; speed = 0;
-											Sleep(450); while (pause_resume) {
-												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+											while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { while (GetAsyncKeyState(PauseKey) != 0) { Sleep(frequency / 3); } break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
