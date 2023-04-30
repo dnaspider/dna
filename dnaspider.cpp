@@ -1508,6 +1508,16 @@ void bs_input() {
 	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] == 60 || ((!ignoreMenuKey) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (!ignoreEsc && strand[t] == Kb_Key_Esc[0]) || (!ignoreLShift && strand[t] == Kb_Key_Left_Shift[0]) || (!ignoreRShift && strand[t] == Kb_Key_Right_Shift[0]) || (!ignoreLAlt && strand[t] == Kb_Key_Left_Alt[0]) || (!ignoreRAlt && strand[t] == Kb_Key_Right_Alt[0]) || (!ignoreLCtrl && strand[t] == Kb_Key_Left_Ctrl[0]) || (!ignoreRCtrl && strand[t] == Kb_Key_Right_Ctrl[0]) || (!ignoreCaps && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 }
 
+wstring replace_q(wstring &a, wstring b, wstring c) {//cc @ qp = regex_replace(qp, wregex(L"\\\\g"), L">"). a=qp, b=">", c="g" 
+	wstring x = L"\\";
+	if (a.find(x + c) == string::npos) return a;
+	wstring y = L":" + c + L":_:" + c + L":"; //:g:_:g: placeholder
+	a = regex_replace(a, wregex(x + x + x + x + c), y);
+	a = regex_replace(a, wregex(x + x + c), b);
+	a = regex_replace(a, wregex(y), x + c);
+	return a;
+}
+
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
@@ -2011,7 +2021,7 @@ void scanDb() {
 						case 'B':
 						case 'b':
 							if (testqqb(L"<CB:") || testqqb(L"<cb:")) {
-								qp = regex_replace(qp, wregex(L"\\\\g"), L">"); qp = regex_replace(qp, wregex(L"\\\\m"), multiLineDelim);
+								replace_q(qp, L">", L"g"); replace_q(qp, multiLineDelim, L"m");
 								cbSet(qp);
 								if (qq[1] == 'C') { kbHold(VK_CONTROL); kb('v'); kbRelease(VK_CONTROL); }
 								rei();
@@ -2048,7 +2058,7 @@ void scanDb() {
 							else conn();
 							break;
 						case 'n':
-							if (qqb(L"<dna:")) { HWND h = GetConsoleWindow(); SetConsoleTitleW(qp.c_str()); rei(); }
+							if (qqb(L"<dna:")) { replace_q(qp, L">", L"g"); HWND h = GetConsoleWindow(); SetConsoleTitleW(qp.c_str()); rei(); }
 							else conn();
 							break;
 						case 'e':
