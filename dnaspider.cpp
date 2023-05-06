@@ -3377,12 +3377,12 @@ int main() {//cout << "@dnaspider\n\n";
 			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency/3); } repeat(); continue; }
 			GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; }
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); Sleep(frequency); continue; }
-			GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_RIGHT);
+			GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_BACK); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_DOWN);
 			while (GetAsyncKeyState(cKey) != 0) { 
 				if (GetAsyncKeyState(VK_RETURN)) break;
 				Sleep(frequency / 3);
 			}
-			if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT)) continue;
+			if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) continue;
 			if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { kbRelease(cKey); GetAsyncKeyState(cKey); strand.clear(); prints(); continue; } //ctrl + ~ clear
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
@@ -3411,7 +3411,7 @@ int main() {//cout << "@dnaspider\n\n";
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
 				else { clearAllKeys(); strand = L"<"; }
 			} 
-			prints(); Sleep(1); continue;
+			prints(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
