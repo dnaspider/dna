@@ -41,7 +41,7 @@ wstring OutsTemplate = L"\\Gstrand:\\t\\t\\7";
 wstring Loop_Insert_Text = L",";
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
-int rri = 0; //++RshftCtrlKey
+int rri = 0; //++RshftCtrlKeyMode
 int CommaSleep = 150;
 int ic = 0; //<+> icp
 int strandLength = 3;
@@ -54,7 +54,7 @@ short PauseKey = 123; // VK_F12
 short ClearStrandKey = VK_PAUSE;
 short reKey = VK_SCROLL; //repeat
 short cKey = VK_RCONTROL; //< 163
-bool RshftCtrlKey = 1;//Rshift+CtrlKey <
+bool RshftCtrlKeyMode = 1;//Rshift+CtrlKey <
 bool ManualRepeat = 0;//<repeat>
 bool io_Auto_BS = 1;//i*o
 bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
@@ -63,8 +63,8 @@ bool noClearStrand = 0; //<!>
 bool multiLine = 1; wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
 bool multiblock = 0; //<~m>
 bool replacer = 0; //{}
-bool ToggleCloseCtrl = 0, toggledCC = 0, ToggleKeep = 0; //RSHIFT+CtrlKey_ToggleCloseCtrlMode:
-bool ToggleCtrlScanOnly = 0, toggledCSO = 0, flipd = 0; //RSHIFT+CtrlKey_ToggleCtrlScanOnlyMode:
+bool ToggleCloseCtrl = 1, toggledCC = 0, ToggleKeep = 0;//RSHIFT+CtrlKey_ToggleCloseCtrlMode:
+bool ToggleCtrlScanOnly = 1, toggledCSO = 0, flipd = 0; //RSHIFT+CtrlKey_ToggleCtrlScanOnlyMode:
 bool Unicode = 1;
 bool OutTabs = 1; wstring OutTab = L"\t";
 bool multiStrand = 1, showMultiStrand = 0, showMultiStrandElapsedOnly = 0;
@@ -810,7 +810,7 @@ void loadSe() {
 			case 872://Replacer:
 				{ if (v == L"1" || v == L"0") replacer = stoi(v); else er(); } break;
 			case 1751://RSHIFT+CtrlKey_Mode
-				{ if (v == L"1" || v == L"0") RshftCtrlKey = stoi(v); else er(); } break;
+				{ if (v == L"1" || v == L"0") RshftCtrlKeyMode = stoi(v); else er(); } break;
 			case 3573://RSHIFT+CtrlKey_ToggleCtrlScanOnlyMode:
 				{ if (v == L"1" || v == L"0") ToggleCtrlScanOnly = stoi(v); else er(); } break;
 			case 3268://RSHIFT+CtrlKey_ToggleCloseCtrlMode:
@@ -974,7 +974,7 @@ void printSe() {
 		wcout << "ReplacerDb: " << replacerDb << '\n';
 		cout << "CtrlKey: " << cKey << '\n';
 		cout << "CloseCtrlMode: " << close_ctrl_mode << '\n';
-		cout << "RSHIFT+CtrlKey_Mode: " << RshftCtrlKey << '\n';
+		cout << "RSHIFT+CtrlKey_Mode: " << RshftCtrlKeyMode << '\n';
 		cout << "RSHIFT+CtrlKey_ToggleCloseCtrlMode: " << ToggleCloseCtrl << '\n';
 		cout << "RSHIFT+CtrlKey_ToggleKeep: " << ToggleKeep << '\n';
 		cout << "CloseCtrlSpacer: " << CloseCtrlSpacer << '\n';
@@ -3305,7 +3305,7 @@ void scanDb() {
 			if (strand > L"" || re > L"") {
 				if (re == L"" || re == L" " || strandLengthMode) { re = L""; reTail = tail = codes; }
 				clearAllKeys();
-				if (!noClearStrand && strand == sv) strand.clear();
+				if (!noClearStrand && strand == sv) strand.clear(); 
 			}
 			if (speed > 0) speed = 0;
 			break;
@@ -3314,6 +3314,7 @@ void scanDb() {
 	f.close();
 	if (!noClearStrand) { if (strand > L"" && close_ctrl_mode && strand[0] == '<') { if (strand.substr(strand.length() - 1) != L">") return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
+	if (rri && RshftCtrlKeyMode && !ToggleKeep) { rri = 0; if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (qScanOnly && ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; } }
 }
 
 void printCtrls() {
@@ -3374,29 +3375,29 @@ int main() {//cout << "@dnaspider\n\n";
 		if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())) { GetAsyncKeyState(83); strand.clear(); if (showStrand) { prints(); } continue; }//clear
 		if (GetAsyncKeyState(VK_BACK)) {
 			if (strand == L"") continue;
+			if (rri && strand == L"<") { rri = 0; if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (qScanOnly && ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; } }
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
 			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency/3); } repeat(); continue; }
-			if (!RshftCtrlKey) { GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; } }
-			if (RshftCtrlKey) { GetAsyncKeyState(VK_RSHIFT); } if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (RshftCtrlKey) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { Sleep(frequency / 3); } 
+			if (!RshftCtrlKeyMode) { GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; } }
+			GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_BACK); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_DOWN);
+			if (RshftCtrlKeyMode) { GetAsyncKeyState(VK_RSHIFT); } if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (RshftCtrlKeyMode) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { Sleep(frequency / 3); }
+				if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) continue;
 				++rri; if (rri > 1) { rri = 0;
-					if (strand == L"" && !ToggleKeep && qScanOnly) { strand = L"<"; }
-					else if (!qScanOnly) { qScanOnly = 1; strand.clear(); }
-					else strand.clear();
-					clearAllKeys(); prints(); continue;
+					if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; }
+					strand.clear(); prints(); continue;
 				}
-				if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; }
-				strand = qScanOnly ? L"<" : L""; clearAllKeys(); prints(); continue; 
+				if (rri) { if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (qScanOnly && ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; } }
+				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); continue; 
 			}
 			else { if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); continue; } }
-			if (!RshftCtrlKey) { GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_BACK); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_DOWN); }
 			while (GetAsyncKeyState(cKey) != 0) { 
-				if (!RshftCtrlKey && GetAsyncKeyState(VK_RETURN)) break;
+				if (!RshftCtrlKeyMode && GetAsyncKeyState(VK_RETURN)) break;
 				Sleep(frequency / 3);
 			}
-			if (!RshftCtrlKey) { if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) { continue; } }
+			if (!RshftCtrlKeyMode) { if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) { continue; } }
 			if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { kbRelease(cKey); GetAsyncKeyState(cKey); strand.clear(); prints(); continue; } //ctrl + ~ clear
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
@@ -3418,16 +3419,17 @@ int main() {//cout << "@dnaspider\n\n";
 				else if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find(L">") == std::string::npos) {//x>
-				strand.append(L">"); scanDb(); if (RshftCtrlKey) strand.clear();
+				strand.append(L">"); scanDb(); if (RshftCtrlKeyMode) strand.clear();
 				if (strand > L"") { prints(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; }
 			}//reg
 			else {
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
 				else {
-					if (RshftCtrlKey) {
-						if (rri > 1) { rri = 0; continue; }
-						if (rri > 0 && qScanOnly) { strand = ToggleKeep ? L"<" : L""; clearAllKeys(); if (strand > L"") { prints(); } continue; }
-						else if (rri > 0 && !qScanOnly) { strand = L"<"; clearAllKeys(); prints(); continue; }
+					if (RshftCtrlKeyMode) {
+						if (rri) {
+							if (!ToggleKeep && strand == L"" && qScanOnly || strand == L"<") { rri = 0; strand.clear(); if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; } continue; };
+							strand = L"<"; clearAllKeys(); prints(); continue;
+						}
 						continue;
 					}
 					clearAllKeys(); strand = L"<";
@@ -3474,6 +3476,7 @@ int main() {//cout << "@dnaspider\n\n";
 				repeat(); continue;
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
+				if (RshftCtrlKeyMode) continue;
 				if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); }
 				if (strand[0] == '<' && close_ctrl_mode && strand.length() >= 1) {
 					if (strand == L"<") continue;
@@ -3507,6 +3510,7 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (qScanOnly && strand[0] != '<') continue;
+		if (!rri && RshftCtrlKeyMode) continue;
 #pragma region input_strand
 		if (!ignoreAZ) {
 			if (GetAsyncKeyState(0x41)) { key(Kb_Key_A); continue; }
