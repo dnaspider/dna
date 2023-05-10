@@ -42,14 +42,14 @@ wstring Loop_Insert_Text = L",";
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
 int rri = 0; //++RshftCtrlKeyMode
-int CommaSleep = 150;
+int CommaSleep = 128;
 int ic = 0; //<+> icp
 int strandLength = 3;
-int frequency = 130; //>> ms response -> vk_
+int frequency = 128; //>> ms response -> vk_
 int speed = 0; //<< 
 int qxc = 0, qyc = 0;//<rp>
 int qxcc = 0, qycc = 0;//cc
-int CloseCtrlSpacer = 120;
+int CloseCtrlSpacer = 128;
 short PauseKey = 123; // VK_F12
 short ClearStrandKey = VK_PAUSE;
 short reKey = VK_SCROLL; //repeat
@@ -3383,14 +3383,14 @@ int main() {//cout << "@dnaspider\n\n";
 			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency/3); } repeat(); continue; }
 			if (!RshftCtrlKeyMode) { GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; } }
 			GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_BACK); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_DOWN);
-			if (RshftCtrlKeyMode) { GetAsyncKeyState(VK_RSHIFT); } if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (RshftCtrlKeyMode) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { Sleep(frequency / 3); }
+			if (RshftCtrlKeyMode) { GetAsyncKeyState(VK_RSHIFT); } if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (RshftCtrlKeyMode) {
 				if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) continue;
 				++rri; if (rri > 1) { rri = 0;
 					if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; }
 					strand.clear(); prints(); continue;
 				}
 				if (rri) { if (ToggleCloseCtrl) { close_ctrl_mode = !close_ctrl_mode; } if (qScanOnly && ToggleCtrlScanOnly) { qScanOnly = !qScanOnly; } }
-				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); continue; 
+				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); if (strand == L"") { Sleep(frequency); } continue;
 			}
 			else { if (ToggleCloseCtrl) { toggledCC = 1; close_ctrl_mode = !close_ctrl_mode; clearAllKeys(); strand = close_ctrl_mode ? L"" : L"<"; } if (ToggleCtrlScanOnly) { toggledCSO = 1; qScanOnly = !qScanOnly; if (!ToggleCloseCtrl) { clearAllKeys(); } strand = L""; } prints(); continue; } }
 			while (GetAsyncKeyState(cKey) != 0) { 
