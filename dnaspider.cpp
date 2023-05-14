@@ -3405,7 +3405,7 @@ int main() {//cout << "@dnaspider\n\n";
 				if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) continue;
 				if (RSHIFTCtrlKeyToggle) { clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); } continue;
 				++rri; if (rri > 1) { rri = 0;
-					strand.clear(); prints(); continue;
+					clearAllKeys(); strand.clear(); prints(); continue;
 				}
 			} else { if (RSHIFTCtrlKeyToggle) { clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); } continue; } }
 			while (GetAsyncKeyState(cKey) != 0) {
