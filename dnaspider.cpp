@@ -3376,14 +3376,14 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
-			if (RshftCtrlKeyMode) { GetAsyncKeyState(VK_RSHIFT); } if (GetAsyncKeyState(VK_RSHIFT)) { //LSHIFT+RSHIFT <
+			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //LSHIFT+RSHIFT <
 				while (GetAsyncKeyState(VK_LSHIFT) != 0) { Sleep(frequency / 3); }
 				++rri; if (rri > 1 && !ToggleKeep) { rri = 0; strand.clear(); prints(); continue; }
 				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); continue;
 			} continue;
 		}
-		if (GetAsyncKeyState(VK_CONTROL)) {
-			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
+		if (GetAsyncKeyState(VK_LCONTROL)) {
+			GetAsyncKeyState(VK_LCONTROL); GetAsyncKeyState(VK_RCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
 			GetAsyncKeyState(83); if (GetAsyncKeyState(83) && SeHotReload_CtrlS) {
 				if (FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow()
 					|| FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow()
