@@ -3410,7 +3410,7 @@ int main() {//cout << "@dnaspider\n\n";
 			} else { if (RSHIFTCtrlKeyToggle) { clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); } continue; } }
 			GetAsyncKeyState(VK_RCONTROL); while (GetAsyncKeyState(cKey) != 0) {
 				if (!RshftCtrlKeyMode && GetAsyncKeyState(VK_RETURN)) break;
-				 if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
+				 if (GetAsyncKeyState(VK_RCONTROL) && cKey != VK_RCONTROL) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
 				Sleep(frequency / 3);
 			}
 			if (!RshftCtrlKeyMode) { if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) { continue; } }
