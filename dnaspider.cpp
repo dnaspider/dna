@@ -3370,7 +3370,7 @@ int main() {//cout << "@dnaspider\n\n";
 			if (SeDbClearStrand_CtrlS && GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState(83) && (FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())) { GetAsyncKeyState(83); strand.clear(); if (showStrand) { prints(); } continue; }//clear
 		}
 		if (GetAsyncKeyState(VK_BACK)) {
-			if (rri && strand == L"<" || rri && strand != L"<" && strand.length() == 1) rri = 0;
+			if (rri && strand == L"<" || rri && strand[0] == 0) rri = 0;
 			if (strand == L"") continue;
 			strand = strand.substr(0, strand.length() - 1);
 			prints(); continue;
@@ -3378,43 +3378,40 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_LSHIFT)) {
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //LSHIFT+RSHIFT <
 				while (GetAsyncKeyState(VK_LSHIFT) != 0) { Sleep(frequency / 3); }
-				++rri; if (rri > 1 && !ToggleKeep) { rri = 0; strand.clear(); prints(); continue; }
+				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { rri = 0; strand.clear(); prints(); continue; }
 				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); continue;
 			} continue;
 		}
 		if (GetAsyncKeyState(VK_LCONTROL)) {
 			GetAsyncKeyState(VK_RCONTROL); if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
 			GetAsyncKeyState(83); if (GetAsyncKeyState(83) && SeHotReload_CtrlS) {
-				if (FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow()
-					|| FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow()
+				if (FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow()
+					|| FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow()
 					|| FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())
 				{ loadSe(); clearAllKeys(); strand.clear(); prints(); }
-				else if (FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow()
-					|| FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow()
+				else if (FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow()
+					|| FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow()
 					|| FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())
 				{ clearAllKeys(); strand.clear(); prints(); }
 				kbRelease(VK_CONTROL); while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); } continue;
 			}//lctrl+s
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			if (RshftCtrlKeyMode && rri && strand[0] == 0) continue;// || RshftCtrlKeyMode && qScanOnly && strand[0] == 0
 			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency/3); } repeat(); continue; }
 			if (!RshftCtrlKeyMode) { GetAsyncKeyState(VK_LSHIFT); if (GetAsyncKeyState(VK_LSHIFT) && cKey != VK_LSHIFT) { clearAllKeys(); strand = L"<"; prints(); continue; } }
 			GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_BACK); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_DOWN);
-			if (RshftCtrlKeyMode) { GetAsyncKeyState(VK_RSHIFT); } if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (io[0] == ' ') { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } if (RshftCtrlKeyMode) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { Sleep(frequency / 3); }
+			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { if (io[0] == ' ' && RSHIFTCtrlKeyToggle) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); } if (RshftCtrlKeyMode) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { Sleep(frequency / 3); }
 				if (GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) continue;
 				if (RSHIFTCtrlKeyToggle) { clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); } continue;
-				++rri; if (rri > 1) { rri = 0;
-					clearAllKeys(); strand.clear(); prints(); continue;
-				}
 			} else { if (RSHIFTCtrlKeyToggle) { clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); } continue; } }
 			GetAsyncKeyState(VK_RCONTROL); while (GetAsyncKeyState(cKey) != 0) {
 				if (!RshftCtrlKeyMode && GetAsyncKeyState(VK_RETURN)) break;
-				 if (GetAsyncKeyState(VK_RCONTROL) && cKey != VK_RCONTROL) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
+				 if (GetAsyncKeyState(VK_RCONTROL) && RshftCtrlKeyMode) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
 				Sleep(frequency / 3);
 			}
 			if (!RshftCtrlKeyMode) { if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) { continue; } }
 			if (GetAsyncKeyState(VK_RETURN) && cKey != VK_RETURN) { kbRelease(cKey); GetAsyncKeyState(cKey); strand.clear(); prints(); continue; } //ctrl + ~ clear
+			if (RshftCtrlKeyMode && strand == L"" && !rri) continue;
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(L">") != std::string::npos) strand.clear();
@@ -3446,6 +3443,7 @@ int main() {//cout << "@dnaspider\n\n";
 							if (!ToggleKeep && strand == L"" && qScanOnly || strand == L"<") { rri = 0; strand.clear(); continue; }
 							strand = L"<"; clearAllKeys(); prints(); continue;
 						}
+						if (strand > L"") { clearAllKeys(); strand.clear(); prints(); }
 						continue;
 					}
 					clearAllKeys(); strand = L"<";
@@ -3526,7 +3524,7 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (qScanOnly && strand[0] != '<') continue;
-		if (!rri && RshftCtrlKeyMode) continue;
+		if (!rri && RshftCtrlKeyMode && strand[0] == 0) continue;
 #pragma region input_strand
 		if (!ignoreAZ) {
 			if (GetAsyncKeyState(0x41)) { key(Kb_Key_A); continue; }
