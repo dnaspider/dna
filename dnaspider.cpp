@@ -348,7 +348,7 @@ void shftRelease() {
 
 void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
-void prints(bool clear = 0) { if (clear) strand.clear(); auto s = strand; OutsTemplate[0] == '\\' && OutsTemplate[OutsTemplate.length() - 2] == '\\' ? s = s.replace(0, s.length(), OutsTemplate.substr(0, 2) + s + OutsTemplate.substr(OutsTemplate.length() - 2)) : s = s.replace(0, s.length(), L"\\G" + s + L"\\7");  if (showStrand) showOutsMsg(L"", OutsTemplate + s, L"\n", 1); }
+void prints() { if (showStrand) { auto s = strand; OutsTemplate[0] == '\\' && OutsTemplate[OutsTemplate.length() - 2] == '\\' ? s = s.replace(0, s.length(), OutsTemplate.substr(0, 2) + s + OutsTemplate.substr(OutsTemplate.length() - 2)) : s = s.replace(0, s.length(), L"\\G" + s + L"\\7"); showOutsMsg(L"", OutsTemplate + s, L"\n", 1); } }
 
 bool qqb(const wstring s) {
 	return qq.substr(0, s.length()) == s && qq.find(L">") != string::npos;
@@ -1875,7 +1875,7 @@ void scanDb() {
 								wstring tar = a, app = a;
 								for (; size < length; ++size) { //cout << size << " app:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
-										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
+										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); strand.clear(); return; }//stop
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
@@ -2185,7 +2185,7 @@ void scanDb() {
 								wstring tar = a, app = a;
 								for (; size < length; ++size) { //cout << size << "ifxy:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
-										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
+										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); strand.clear(); return; }//stop
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
@@ -2390,7 +2390,7 @@ void scanDb() {
 								wstring tar = a;
 								for (; size < length; ++size) { //cout << size << " ifcb:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
-										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); prints(1); return; }//stop
+										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); strand.clear(); return; }//stop
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
@@ -2640,7 +2640,7 @@ void scanDb() {
 							
 								for (; size < length; ++size) { //cout << size << " iftime:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
-										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); prints(1); return; }//stop
+										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } CloseClipboard(); clearAllKeys(); strand.clear(); return; }//stop
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
@@ -2941,7 +2941,7 @@ void scanDb() {
 
 								for (; size < length; ++size) {
 									if (!NoEscapeOrPause) {
-										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); prints(1); return; }//stop
+										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); strand.clear(); return; }//stop
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
 											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
