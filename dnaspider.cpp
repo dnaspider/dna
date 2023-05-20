@@ -3366,7 +3366,8 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_BACK)) {
 			if (rri && strand == L"<" || rri && strand[0] == 0) rri = 0;
 			if (strand == L"") continue;
-			strand = strand.substr(0, strand.length() - 1);
+			auto s = sizeof(wchar_t); if (strand[strand.length() - 1] < 127) s /= 2;
+			strand = strand.substr(0, strand.length() - s);
 			prints(); continue;
 		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
