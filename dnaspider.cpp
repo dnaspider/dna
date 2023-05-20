@@ -1240,7 +1240,7 @@ void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0
 		if (w[x] == '\\') --x;
 	};
 	wcout << s;
-	SetConsoleOutputCP(CP_UTF8); for (; x < w.length(); ++x) {
+	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>)); for (; x < w.length(); ++x) {
 		if (b && w[x] == '\\') {
 			t = 0;
 			switch (w[x + 1]) {
@@ -1302,9 +1302,9 @@ void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0
 			}
 			if (t) continue;
 		}
-		wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>)); wcout << w[x];
+		wcout << w[x];
 	}
-	wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>)); wcout << s1 << L"\n";
+	wcout << s1 << L"\n";
 	if (!b) cout << '\n';
 }
 
@@ -1321,7 +1321,7 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 		if (w[x] == '\\') --x;
 	};
 	wcout << s;
-	SetConsoleOutputCP(CP_UTF8); for (; x < w.length(); ++x) {
+	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>)); for (; x < w.length(); ++x) {
 		if (b && w[x] == '\\') {
 			t = 0;
 			switch (w[x + 1]) {
@@ -1383,9 +1383,9 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 			}
 			if (t) continue;
 		}
-		wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>)); wcout << w[x];
+		wcout << w[x];
 	}
-	wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>)); wcout << s1 << L"\n";
+	wcout << s1 << L"\n";
 	if (!b) cout << '\n';
 }
 
