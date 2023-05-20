@@ -1302,7 +1302,7 @@ void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0
 		}
 		wcout << w[x];
 	}
-	wcout << s1 << L"\n";
+	wcout << s1;
 	if (!b) cout << '\n';
 }
 
@@ -1382,7 +1382,7 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 		}
 		wcout << w[x];
 	}
-	wcout << s1 << L"\n";
+	wcout << s1;
 	if (!b) cout << '\n';
 }
 
