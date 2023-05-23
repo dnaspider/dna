@@ -2025,7 +2025,7 @@ void scanDb() {
 								if (qq[1] == 'D') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(qp, L"", L"", 0); }
 								qp = regex_replace(qp, wregex(L"/"), L"\\");
 								wifstream f(qp); if (!f) { showOutsMsg(L"\nDatabase \"", qp, L"\" not found!", 0); return; }
-								database = editorDb = qp;
+								database = qp;
 								db = database.substr(database.find_last_of('\\') + 1) + L" - ";
 								rei();
 								break;
@@ -3128,7 +3128,7 @@ void scanDb() {
 								if (qq[1] == 'S') { showOutsMsg(L"", OutsTemplate, L"", 1); showOutsMsg(qp, L"", L"", 0); }
 								qp = regex_replace(qp, wregex(L"/"), L"\\");
 								wifstream f(qp); if (!f) { showOutsMsg(L"\nSettings \"", qp, L"\" not found!", 0); return; }
-								settings = editorSe = qp;
+								settings = qp;
 								se = settings.substr(settings.find_last_of('\\') + 1) + L" - ";
 								loadSe();
 								rei();
