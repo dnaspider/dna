@@ -55,7 +55,6 @@ short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
 short cKey = VK_SPACE; //<
 bool RSHIFTCtrlKeyToggle = 1;
-bool iot = 0;
 bool RshftCtrlKeyMode = 1, ToggleKeep = 0;//Rshift+CtrlKey <
 bool ManualRepeat = 0;//<repeat>
 bool io_Auto_BS = 1;//i*o
@@ -90,7 +89,7 @@ bool ignoreForwardslash = true;
 bool startHidden = true;
 bool ignoreAZ = false;
 bool ignore09 = true;
-bool ignoreSpace = false;
+bool ignoreSpace = true;
 bool ignoreArrows = true;
 bool ignoreF1s = true;//f1-f12
 bool ignoreEsc = true;
@@ -1504,20 +1503,29 @@ void replace_q(wstring &a, wstring b, wstring c) {
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
-			if (re == L"")
+			if (re[0] == 0)
 				return;
 		}
 		else {
-			if (strand.substr(strand.length() - 1) != L">")
+			if (strand[strand.length() - 1] != '>')
 				return;
 		}
 	}
+	else if (strand[0] == '<' && strand[1] == '>') return;
 	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (database == L"") { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	wstring sv = strand;
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
-		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
-		if (re > L"" && strand == L"" || strand > L"" && cell > L"" && (close_ctrl_mode && cell.substr(0, sv.size()) == strand || (!strandLengthMode || sv[0] == '<') && cell.substr(0, sv.size()) == sv.substr(0, sv.size() - (io[0] == ' ' && sv[0] == '<')) + io[0] || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - (io[0] == ' ' && sv[0] == '<' || io[0] != ' ')) + io[0] || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L":" || cell.substr(0, sv.size()) == sv.substr(0, sv.size() - 1) + L"-" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L":>" || cell.substr(0, sv.size() + 1) == sv.substr(0, sv.size() - 1) + L"->") || cell.substr(0, sv.size() + 1) == strand + L">" || cell.substr(0, sv.size() + 1) == strand + L":" || cell.substr(0, sv.size() + 1) == strand + L"-" || cell.substr(0, sv.size() + 1) == strand + L"^" || cell.substr(0, sv.size() + 1) == strand + io[0] || (strandLengthMode && cell.substr(0, strandLength) == strand && cell[0] != '<') || close_ctrl_mode && strandLengthMode && strand[0] != '<' && cell.substr(0, sv.size() - 1) == sv.substr(0, sv.size() - 1)) { //found i>o, i:o, i-o, i:>o, i->o || i>o, i:o, i-o, i^o, i*o || io || io
+		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...	
+		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
+			re[0] > 0 && sv[0] == 0 || sv[0] > 0 && a[0] > 0 && a[0] != ' '
+			&& a == b + io[0] //<x >
+			|| a == b + L'^' //<x^>
+			|| a == b + L':' //<x:>
+			|| a == b + L'-' //<x->
+			|| a == b + L'>' //<x>
+			|| (strandLengthMode && sv[0] != '<' && sv.size() == strandLength + close_ctrl_mode && cell.substr(0, strandLength) == b) //xxx
+		) {
 			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
 			if (re > L"" && strand == L"") {
@@ -1529,12 +1537,11 @@ void scanDb() {
 					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt-><,1>"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">"); }
 				}
 			}
-			tail = re > L"" && strand == L"" ? re : cell.substr(strand.length(), cell.length() - strand.length());
+			tail = re[0] > 0 && sv[0] == 0 ? re : cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>'));
 			if (multiStrand) mainn.getStrand(cell);
 			tail = isVar(tail); //<r:>
 			if (tail[0] == io[0]) {//io:
-				if (tail[0] == ' ' && io[0] == ' ') iot = 1;
-				bool b = 0;	if (strand[0] != '<' && tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = strand + tail; b = 1; }
+				bool b = 0;	if (sv[0] != '<' && tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = sv + tail; b = 1; }
 				else tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
 				if (io_Auto_BS) bs_input();
@@ -1549,11 +1556,11 @@ void scanDb() {
 					break;
 				case '>':
 					tail = tail.substr(1, tail.length());
-					if (sv > L"") codes = strand[0] == '<' ? strand.substr(1, strand.length()) + tail : strand + tail;
+					if (sv[0] > 0) codes = strand[0] == '<' ? strand.substr(1, strand.length()) + tail : strand + tail;
 					break;
 				case '^'://i^o
 					close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly;//<^^>
-					if (tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = strand + tail; break; }
+					if (tail[1] == '>' && sv[0] != '<') { tail = tail.substr(2, tail.length()); codes = strand + tail; break; }
 					[[fallthrough]];
 				case '-':
 					tail = tail.substr(1, tail.length());
@@ -3299,7 +3306,7 @@ void scanDb() {
 		}
 	}
 	f.close();
-	if (!noClearStrand) { if (strand > L"" && close_ctrl_mode && strand[0] == '<') { if (strand.substr(strand.length() - 1) != L">") return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
+	if (!noClearStrand) { if (strand[0] > 0 && close_ctrl_mode && strand[0] == '<') { if (strand[strand.length() - 1] != '>') return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
 	if (rri && RshftCtrlKeyMode && !ToggleKeep) rri = 0;
 }
@@ -3413,7 +3420,7 @@ int main() {//cout << "@dnaspider\n\n";
 					else {
 						if (strand.length() > 1) {
 							if (multiStrand) {
-								i = 0; if (iot && io[0] == ' ') { iot = 0; kb(VK_BACK); } if (RshftCtrlKeyMode && !ToggleKeep) { rri = 0; } thread thread(key, L">"); Sleep(CloseCtrlSpacer); thread.detach();
+								i = 0; if (io[0] == ' ' && cKey == VK_SPACE) { kb(VK_BACK); } if (RshftCtrlKeyMode && !ToggleKeep) { rri = 0; } thread thread(key, L">"); Sleep(CloseCtrlSpacer); thread.detach();
 								if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 							} else {
 								key(L">");
@@ -3424,10 +3431,11 @@ int main() {//cout << "@dnaspider\n\n";
 						else strand.clear();
 					}
 				}
-				else if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+				else if (RshftCtrlKeyMode && !close_ctrl_mode) { if (io[0] == ' ' && cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); prints(); scanDb(); }
+				if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find(L">") == std::string::npos) {//x>
-				strand.append(L">"); if (iot && io[0] == ' ') { iot = 0; kb(VK_BACK); } scanDb();
+				if (io[0] == ' ' && cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); prints(); scanDb();
 				clearAllKeys(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}//reg
 			else {
