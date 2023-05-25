@@ -3386,17 +3386,20 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		if (GetAsyncKeyState(VK_LCONTROL)) {
 			GetAsyncKeyState(VK_RCONTROL); if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//rctrl+lctrl repeat
-			GetAsyncKeyState(83); if (GetAsyncKeyState(83) && SeHotReload_CtrlS) {
-				if (FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow()
-					|| FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow()
-					|| FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())
-				{ loadSe(); clearAllKeys(); strand.clear(); prints(); }
-				else if (FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow()
-					|| FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow()
-					|| FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())
-				{ clearAllKeys(); strand.clear(); prints(); }
-				kbRelease(VK_CONTROL); while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); } continue;
-			}//lctrl+s
+			GetAsyncKeyState(83); while (GetAsyncKeyState(VK_LCONTROL) != 0) {
+				if (GetAsyncKeyState(83)) {
+					if (SeHotReload_CtrlS && FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow()) {
+						loadSe(); clearAllKeys(); strand.clear(); prints();
+					}
+					else if (SeDbClearStrand_CtrlS && FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow()) {
+						clearAllKeys(); strand.clear(); prints();
+					}
+					while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); }
+					continue;
+				}//lctrl+s
+				Sleep(frequency / 3); 
+			}
+			continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
 			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency/3); } repeat(); continue; }
@@ -3408,7 +3411,7 @@ int main() {//cout << "@dnaspider\n\n";
 			} else { if (RSHIFTCtrlKeyToggle) { clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); } continue; } }
 			GetAsyncKeyState(VK_RCONTROL); while (GetAsyncKeyState(cKey) != 0) {
 				if (!RshftCtrlKeyMode && GetAsyncKeyState(VK_RETURN)) break;
-				 if (GetAsyncKeyState(VK_RCONTROL) && RshftCtrlKeyMode && cKey != 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
+				if (GetAsyncKeyState(VK_RCONTROL) && RshftCtrlKeyMode && cKey != 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//lctrl+rctrl repeat
 				Sleep(frequency / 3);
 			}
 			if (!RshftCtrlKeyMode) { if (GetAsyncKeyState(VK_RSHIFT) || GetAsyncKeyState(VK_LEFT) || GetAsyncKeyState(VK_RIGHT) || GetAsyncKeyState(VK_BACK) || GetAsyncKeyState(VK_UP) || GetAsyncKeyState(VK_DOWN)) { continue; } }
