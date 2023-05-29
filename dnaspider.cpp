@@ -3093,18 +3093,17 @@ void scanDb() {
 								}
 								if (showStrand) cout << '>' << '\n';
 								
-
-								//-dup
+								//filter
 								wstring q = L"", c = L"", f = h.substr(0, h.find(L":") + 2);
 								size_t i = 0, x = b[0] == '~';
 								while (h.find(qq[4]) != string::npos) {
 									if (!i) q = h.substr(x + 6, h.find(qq[4]) - (x == 1 ? 0 : 1) - 6); else q = h.substr(0, h.find(qq[4]) - 1);
 									if (!i) h = h.substr(x + 6 + q.length() + 3); else h = h.substr(h.find(qq[4]) + 2);
-
 									if (h.find(q) != string::npos) {
 										h = regex_replace(h, wregex(q), L"");
-										h = regex_replace(h, wregex(LR"(\|  \|)"), L"|");
-										h = regex_replace(h, wregex(LR"( \| $)"), L"");
+										wstring r = L"\\" + qq.substr(4, 1) + L"  \\" + qq.substr(4, 1), s = L" \\" + qq.substr(4, 1) + L" $";
+										h = regex_replace(h, wregex(r), qq.substr(4, 1));
+										h = regex_replace(h, wregex(s), L"");
 									}
 									c += q + L" " + qq.substr(4, 1) + L" ";
 									++i;
@@ -3120,7 +3119,6 @@ void scanDb() {
 									break;
 								}
 								if (b[0] == ',' || b[0] == '~') h = f + h + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
-
 
 								cbSet(h);
 								rei();
