@@ -350,7 +350,7 @@ void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 void prints() { if (showStrand) { auto s = L""+strand; OutsTemplate[0] == '\\' && OutsTemplate[OutsTemplate.length() - 2] == '\\' ? s = s.replace(0, s.length(), OutsTemplate.substr(0, 2) + s + OutsTemplate.substr(OutsTemplate.length() - 2)) : s = s.replace(0, s.length(), L"\\G" + s + L"\\7"); showOutsMsg(L"", OutsTemplate + s, L"\n", 1); } }
 
 bool qqb(const wstring s) {
-	return qq[s.length()] != io[0] && qq.substr(0, s.length()) == s && qq.find(L">") != string::npos;
+	return qq.substr(0, s.length()) == s && qq.find(L">") != string::npos;
 }
 
 bool testqqb(const wstring s) {
