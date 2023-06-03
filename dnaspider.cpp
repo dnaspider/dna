@@ -3098,14 +3098,17 @@ void scanDb() {
 								size_t i = 0, x = b[0] == '~';
 								wstring r = L"\\" + qq.substr(4, 1) + L"  \\" + qq.substr(4, 1), s = L" \\" + qq.substr(4, 1) + L" $";
 								while (h.find(qq[4]) != string::npos) {
-									if (!i) q = h.substr(x + 6, h.find(qq[4]) - (x == 1 ? 0 : 1) - 6); else q = h.substr(0, h.find(qq[4]) - 1);
-									if (!i) h = h.substr(x + 6 + q.length() + 3); else h = h.substr(h.find(qq[4]) + 2);
-									if (h.find(q) != string::npos) {
+									if (!i) { q = h.substr(x + 6);
+											  q = q.substr(0, q.find(qq[4]) + 2);
+									} else q = h.substr(0, h.find(qq[4]) - 1);
+									if (!i) h = h.substr(x + 6 + q.length()); else h = h.substr(h.find(qq[4]) + 2);
+									if (h.find(q) != string::npos || ((h + L" " + qq[4] + L" ").find(q)) != string::npos) {
+										if (((h + L" " + qq[4] + L" ").find(q)) != string::npos) h = regex_replace(h, wregex(q.substr(0, q.length() - 3)), L""); else
 										h = regex_replace(h, wregex(q), L"");
 										h = regex_replace(h, wregex(r), qq.substr(4, 1));
 										h = regex_replace(h, wregex(s), L"");
 									}
-									c += q + L" " + qq.substr(4, 1) + L" ";
+									if (!i) c += q; else c += q + L" " + qq.substr(4, 1) + L" ";
 									++i;
 								}
 								if (c[0] > 0) {
