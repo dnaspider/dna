@@ -859,7 +859,8 @@ void loadSe() {
 			case 1172://StartHidden:
 				{ if (v == L"1" || v == L"0") startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey:
-				{ if (check_if_num(v) > L"") cKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") { if (v.substr(0, 2) == L"VK_") { v = stol(v); };
+				cKey = stoi(v); } else er(); } break;
 			case 999://ShowIntro:
 				{ if (v == L"1" || v == L"0") showIntro = stoi(v); else er(); } break;
 			case 1324://ShowSettings:
@@ -1132,8 +1133,8 @@ void printSe() {
 		cout << "Unicode: " << Unicode << '\n';
 		wcout << "Editor: " << editor << '\n';
 		wcout << "Editor1: " << editor1 << '\n';
-		wcout << "EditorDb: "; showOutsMsg(editorDb, L"", L"", 1);
-		wcout << "EditorSe: "; showOutsMsg(editorSe, L"", L"", 1);
+		wcout << "EditorDb: "; showOutsMsg(editorDb, L"", L"", 0);
+		wcout << "EditorSe: "; showOutsMsg(editorSe, L"", L"", 0);
 		wcout << "Loop_Insert_Text: " << Loop_Insert_Text << '\n';
 		cout << "NoEscapeOrPause: " << NoEscapeOrPause << '\n';
 		wcout << "io: " << io << '\n';
