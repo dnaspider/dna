@@ -3422,7 +3422,7 @@ int main() {//cout << "@dnaspider\n\n";
 				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { rri = 0; strand.clear(); prints(); continue; }
 				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); continue;
 			}
-			if (LSHIFTCtrlKey) { GetAsyncKeyState(cKey); if (GetAsyncKeyState(cKey)) { if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); rri = 1; while (GetAsyncKeyState(VK_LSHIFT) != 0) { Sleep(frequency / 3); } continue; } }
+			GetAsyncKeyState(cKey); if (GetAsyncKeyState(cKey) && LSHIFTCtrlKey) { if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); rri = 1; while (GetAsyncKeyState(VK_LSHIFT) != 0) { Sleep(frequency / 3); } continue; }
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LCONTROL)) {
