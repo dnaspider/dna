@@ -3536,7 +3536,6 @@ int main() {//cout << "@dnaspider\n\n";
 				repeat(); continue;
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
-				if (RshftCtrlKeyMode) continue;
 				if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); }
 				if (strand[0] == '<' && close_ctrl_mode && strand.length() >= 1) {
 					if (strand == L"<") continue;
