@@ -578,7 +578,7 @@ void loadSe() {
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
-				{ if (short x = stoi(v); x >= 0) RSHIFTCtrlKeyToggle = RSHIFTCtrlKeyToggleMax = stoi(v); else er(); } break;
+				{ if (short x = stoi(v); x >= 0) RSHIFTCtrlKeyToggle = RSHIFTCtrlKeyToggleMax = x; else er(); } break;
 			case 1273://ManualRepeat:
 				{ if (v == L"1" || v == L"0") ManualRepeat = stoi(v); else er(); } break;
 			case 1022://io_Auto_BS:
