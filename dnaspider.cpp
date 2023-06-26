@@ -3475,7 +3475,7 @@ int main() {//cout << "@dnaspider\n\n";
 						else strand.clear();
 					}
 				}
-				else if (RshftCtrlKeyMode && !close_ctrl_mode) { if (io[0] == ' ' && cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb(); }
+				else if (RshftCtrlKeyMode && !close_ctrl_mode) { if (cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb(); }
 				if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find(L">") == std::string::npos) {//x>
@@ -3488,7 +3488,7 @@ int main() {//cout << "@dnaspider\n\n";
 					if (RshftCtrlKeyMode) {
 						if (rri) {
 							if (!ToggleKeep && strand == L"" && qScanOnly || strand == L"<") { rri = 0; strand.clear(); continue; }
-							strand = L"<"; clearAllKeys(); prints(); continue;
+							strand = L"<"; if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); prints(); continue;
 						}
 						if (strand > L"") { clearAllKeys(); strand.clear(); prints(); }
 						continue;
