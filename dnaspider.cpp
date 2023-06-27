@@ -3432,7 +3432,7 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LCONTROL)) {
-			GetAsyncKeyState(VK_RCONTROL); if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 3); } repeat(); continue; }//rctrl+lctrl repeat
+			GetAsyncKeyState(VK_RCONTROL); if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 3); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } continue; }//rctrl+lctrl repeat
 			GetAsyncKeyState(83); while (GetAsyncKeyState(VK_LCONTROL) != 0) {
 				if (GetAsyncKeyState(83)) { while (GetAsyncKeyState(83) != 0) { Sleep(frequency / 3); } 
 					if (SeHotReload_CtrlS && (FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())) {
@@ -3449,14 +3449,15 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (GetAsyncKeyState(cKey)) {//toggle <
-			GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency/3); } repeat(); continue; }
 			short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT && RSHIFTCtrlKeyToggle) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { ++min; Sleep(frequency / 3); }
 				if (min > max) continue;
 				if (cKey == VK_SPACE) kb(VK_BACK);
 				clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); continue;
 			}
-			min = 0; GetAsyncKeyState(cKey); while (GetAsyncKeyState(cKey) != 0) { ++min; Sleep(frequency / 3); } if (min > max) continue;
+			min = 0; GetAsyncKeyState(VK_LCONTROL); GetAsyncKeyState(cKey); while (GetAsyncKeyState(cKey) != 0) { ++min; 
+				if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 3); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } min = max + 1; break; }//rctrl+lctrl
+			Sleep(frequency / 3); } if (min > max) continue;
 			if (RshftCtrlKeyMode && strand == L"" && !rri) continue;
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
