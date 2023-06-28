@@ -3400,6 +3400,7 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 		}
 	}
+	LSHIFTCtrlKeyMax = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax; RSHIFTCtrlKeyToggleMax = RSHIFTCtrlKeyToggle == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
 	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>));
