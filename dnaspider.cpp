@@ -41,7 +41,7 @@ wstring OutsTemplate = L"";
 wstring Loop_Insert_Text = L"";
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
-int rri = 0; //++RshftCtrlKeyMode
+int rri = 0; //++RSHIFTLSHIFT_Only
 int CommaSleep = 128;
 int ic = 0; //<+> icp
 int strandLength = 3;
@@ -57,7 +57,7 @@ short cKey = VK_SPACE; //<
 short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax, cKeyMax = 3;
 bool LSHIFTCtrlKey = 0; //<
 bool RSHIFTCtrlKeyToggle = 0;
-bool RshftCtrlKeyMode = 1, ToggleKeep = 0;//Rshift+CtrlKey <
+bool RSHIFTLSHIFT_Only = 1, ToggleKeep = 0;//Rshift+CtrlKey <
 bool ManualRepeat = 0;//<repeat>
 bool io_Auto_BS = 1;//i*o
 bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
@@ -575,13 +575,15 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
+			case 1536://RSHIFT+LSHIFT_Only:
+				{ if (v == L"1" || v == L"0") RSHIFTLSHIFT_Only = stoi(v); else er(); } break;
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
 				{ if (short x = stoi(v); x >= 0) RSHIFTCtrlKeyToggle = RSHIFTCtrlKeyToggleMax = x; else er(); } break;
 			case 1273://ManualRepeat:
 				{ if (v == L"1" || v == L"0") ManualRepeat = stoi(v); else er(); } break;
-			case 1022://io_Auto_BS:
+			case 959://AutoBs_io:
 				{ if (v == L"1" || v == L"0") io_Auto_BS = stoi(v); else er(); } break;
 			case 274://io:
 				{ if (v.length() > 0) io = v[0]; else er(); } break;
@@ -594,7 +596,7 @@ void loadSe() {
 				{ if (v == L"Loop_Insert_Text" || v == L"") v = L">"; if (v.substr(v.length() - 1) != L">") v += L">"; if (v.length() > 0) Loop_Insert_Text = v.substr(0); else er(); } break;
 			case 1993://Ignore_Print_Screen:
 				{ if (v == L"1" || v == L"0") Ignore_Print_Screen = stoi(v); else er(); } break;
-			case 1946://Kb_Key_Print_Screen::
+			case 1946://Kb_Key_Print_Screen:
 				{ if (v.length() > 0) Kb_Key_Print_Screen = v.substr(0); else er(); } break;
 			case 1394://Ignore_Insert:
 				{ if (v == L"1" || v == L"0") Ignore_Insert = stoi(v); else er(); } break;
@@ -814,10 +816,8 @@ void loadSe() {
 				break;
 			case 872://Replacer:
 				{ if (v == L"1" || v == L"0") replacer = stoi(v); else er(); } break;
-			case 1751://RSHIFT+CtrlKey_Mode:, RSHIFT+CtrlKey_Keep:
-				{ if (se == L"RSHIFT+CtrlKey_Mode:") { if (v == L"1" || v == L"0") RshftCtrlKeyMode = stoi(v); else er(); }
-				else if (se == L"RSHIFT+CtrlKey_Keep:") { if (v == L"1" || v == L"0") ToggleKeep = stoi(v); else er(); }
-				} break;
+			case 1751://RSHIFT+CtrlKey_Keep:
+				 if (se == L"RSHIFT+CtrlKey_Keep:") { if (v == L"1" || v == L"0") ToggleKeep = stoi(v); else er(); } break;
 			case 764://OutTabs:
 				{ if (v == L"1" || v == L"0") { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
 			case 1462://ClearStrandKey:
@@ -981,11 +981,11 @@ void printSe() {
 		cout << "CtrlKey: " << cKey << '\n';
 		cout << "LSHIFT+CtrlKey: " << LSHIFTCtrlKey << '\n';
 		cout << "CloseCtrlMode: " << close_ctrl_mode << '\n';
-		cout << "RSHIFT+CtrlKey_Mode: " << RshftCtrlKeyMode << '\n';
-		cout << "RSHIFT+CtrlKey_Keep: " << ToggleKeep << '\n';
 		cout << "RSHIFT+CtrlKey_Toggle: " << RSHIFTCtrlKeyToggle << '\n';
+		cout << "RSHIFT+CtrlKey_Keep: " << ToggleKeep << '\n';
 		cout << "CloseCtrlSpacer: " << CloseCtrlSpacer << '\n';
 		cout << "CtrlScanOnlyMode: " << qScanOnly << '\n';
+		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << '\n';
 		cout << "StrandLengthMode: " << strandLengthMode << '\n';
 		cout << "StrandLength: " << strandLength << '\n';
 		cout << "RepeatKey: " << reKey << '\n';
@@ -1144,7 +1144,7 @@ void printSe() {
 		wcout << "Loop_Insert_Text: " << Loop_Insert_Text << '\n';
 		cout << "NoEscapeOrPause: " << NoEscapeOrPause << '\n';
 		wcout << "io: " << io << '\n';
-		wcout << "io_Auto_BS: " << io_Auto_BS << '\n';
+		wcout << "AutoBs_io: " << io_Auto_BS << '\n';
 		wcout << "ManualRepeat: " << ManualRepeat << '\n';
 		cout << "Exit_EscX: " << enableEscX << '\n';
 		cout << '\n';
@@ -3354,7 +3354,7 @@ void scanDb() {
 	f.close();
 	if (!noClearStrand) { if (strand[0] > 0 && close_ctrl_mode && strand[0] == '<') { if (strand[strand.length() - 1] != '>') return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
-	if (rri && RshftCtrlKeyMode && !ToggleKeep) rri = 0;
+	if (rri && RSHIFTLSHIFT_Only && !ToggleKeep) rri = 0;
 }
 
 void printCtrls() {
@@ -3412,7 +3412,7 @@ int main() {//cout << "@dnaspider\n\n";
 			if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
 				wcout << database << " not found.\nPress [1] to auto create.\n\n";
 				for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; } if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT+RIGHT_CTRL X or\n COMMA+ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT+PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<wr:><win>r<win-><app:run, 1, 6, :>\n<d-><app: " << editorDb << L" | " << db << editor << L", 1, 1, odb->\n<odb-><wr:>" << database << "<enter>\n<s-><app: " << editorSe << L" | " << se << editor << L", 1, 1, <ose->\n<ose-><wr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<lt:><shift>, <shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open " << db.substr(0, db.length() - 2) << L"\n RCTRL S: Open " << se.substr(0, se.length() - 2); fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nShowOuts: 0\nOutsTemplate: \\R\\7strand:\\t\\t\\G\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nLSHIFT+CtrlKey: 1\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_Mode 0\nRSHIFT+CtrlKey_Keep: 0\nRSHIFT+CtrlKey_Toggle: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nPauseKey: 123\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10:)\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl:1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nEditorSe: " << editorSe << "\nEditorDb: " << editorDb << "\nLoop_Insert_Text: ,1,1000,->\nNoEscapeOrPause: 0\nio: *\nio_Auto_BS: " << io_Auto_BS << "\nManualRepeat: " << ManualRepeat; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>notepad " + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT+RIGHT_CTRL X or\n COMMA+ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT+PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<wr:><win>r<win-><app:run, 1, 6, :>\n<d-><app: " << editorDb << L" | " << db << editor << L", 1, 1, odb->\n<odb-><wr:>" << database << "<enter>\n<s-><app: " << editorSe << L" | " << se << editor << L", 1, 1, <ose->\n<ose-><wr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<lt:><shift>, <shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open " << db.substr(0, db.length() - 2) << L"\n RCTRL S: Open " << se.substr(0, se.length() - 2); fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nShowOuts: 0\nOutsTemplate: \\R\\7strand:\\t\\t\\G\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nLSHIFT+CtrlKey: 1\nCloseCtrlMode: 0\nRSHIFT+CtrlKey_Toggle: 0\nRSHIFT+CtrlKey_Keep: 0\nCloseCtrlSpacer: 120\nCtrlScanOnlyMode: 0\nRSHIFT+LSHIFT_Only: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nPauseKey: 123\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10:)\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl:1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nEditorSe: " << editorSe << "\nEditorDb: " << editorDb << "\nLoop_Insert_Text: ,1,1000,->\nNoEscapeOrPause: 0\nio: *\nAutoBs_io: " << io_Auto_BS << "\nManualRepeat: " << ManualRepeat; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>notepad " + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 			}
 		}
 	}
@@ -3466,7 +3466,7 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			continue;
 		}
-		if (GetAsyncKeyState(cKey)) {//toggle <
+		if (GetAsyncKeyState(cKey) && cKeyMax > 0) {//toggle <
 			if (RSHIFTCtrlKeyToggle) {
 				short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
 				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { ++min; Sleep(frequency / 3); }
@@ -3480,14 +3480,14 @@ int main() {//cout << "@dnaspider\n\n";
 					if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 3); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } min = max + 1; break; }//rctrl+lctrl
 				Sleep(frequency / 3); } if (min >= max) continue;
 			}
-			if (RshftCtrlKeyMode && strand == L"" && !rri) continue;
+			if (RSHIFTLSHIFT_Only && strand == L"" && !rri) continue;
 			if (strand[0] == '<') {
 				if (close_ctrl_mode) {//<x>	
 					if (strand.find(L">") != std::string::npos) strand.clear();
 					else {
 						if (strand.length() > 1) {
 							if (multiStrand) {
-								i = 0; if (cKey == VK_SPACE) { kb(VK_BACK); } if (RshftCtrlKeyMode && !ToggleKeep) { rri = 0; } thread thread(key, L">"); Sleep(CloseCtrlSpacer); thread.detach();
+								i = 0; if (cKey == VK_SPACE) { kb(VK_BACK); } if (RSHIFTLSHIFT_Only && !ToggleKeep) { rri = 0; } thread thread(key, L">"); Sleep(CloseCtrlSpacer); thread.detach();
 								if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 							} else {
 								key(L">");
@@ -3498,7 +3498,7 @@ int main() {//cout << "@dnaspider\n\n";
 						else strand.clear();
 					}
 				}
-				else if (RshftCtrlKeyMode && !close_ctrl_mode) { if (cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb(); }
+				else if (RSHIFTLSHIFT_Only && !close_ctrl_mode) { if (cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb(); }
 				if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find(L">") == std::string::npos) {//x>
@@ -3508,7 +3508,7 @@ int main() {//cout << "@dnaspider\n\n";
 			else {
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
 				else {
-					if (RshftCtrlKeyMode) {
+					if (RSHIFTLSHIFT_Only) {
 						if (rri) {
 							if (!ToggleKeep && strand == L"" && qScanOnly || strand == L"<") { rri = 0; strand.clear(); continue; }
 							strand = L"<"; if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); prints(); continue;
@@ -3596,7 +3596,7 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (qScanOnly && strand[0] != '<') continue;
-		if (!rri && RshftCtrlKeyMode && strand[0] == 0) continue;
+		if (!rri && RSHIFTLSHIFT_Only && strand[0] == 0) continue;
 #pragma region input_strand
 		if (!ignoreAZ) {
 			if (GetAsyncKeyState(0x41)) { key(Kb_Key_A); continue; }
