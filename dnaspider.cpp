@@ -3434,7 +3434,16 @@ int main() {//cout << "@dnaspider\n\n";
 				GetAsyncKeyState(cKey); bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (GetAsyncKeyState(cKey)) {
 					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
 				} Sleep(frequency / 3); } if (x) continue;
-				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { rri = 0; strand.append(L">"); if (strand != L"<>") { scanDb(); } strand.clear(); prints(); continue; }
+				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { 
+					if(strand[0] == '<' && strand.length() > 1) {
+						rri = 0; strand.append(L">"); scanDb();	strand.clear();
+					} else if (strand[0] != '<') {
+						clearAllKeys(); strand = L"<";
+					} else {
+						strand.clear();
+					}
+					prints(); continue;
+				}
 				clearAllKeys(); if (strandLengthMode) { strand = L"<"; rri = 0; } else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
 			}
 			if (LSHIFTCtrlKey) {
