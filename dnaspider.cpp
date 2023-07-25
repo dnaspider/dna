@@ -44,12 +44,12 @@ size_t i = 0;
 int rri = 0; //++RSHIFTLSHIFT_Only
 int CommaSleep = 128;
 int ic = 0; //<+> icp
-int strandLength = 3;
 int frequency = 128; //>> ms response -> vk_
 int speed = 0; //<< 
 int qxc = 0, qyc = 0;//<rp>
 int qxcc = 0, qycc = 0;//cc
 int CloseCtrlSpacer = 128;
+short strandLengthMode = 0;
 short PauseKey = 123; // VK_F12
 short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
@@ -104,7 +104,6 @@ bool ignoreLCtrl = true;
 bool ignoreRCtrl = true;
 bool ignoreEnter = true;
 bool ignoreCaps = true;
-bool strandLengthMode = false;
 bool qScanOnly = true;
 bool showStrand = false; //cout <<
 bool showOuts = false; //cout << 
@@ -307,12 +306,15 @@ void kb(wchar_t b) {//out char
 	SendInput(2, ip, sizeof(ip[0]));
 }
 
-void kb(wstring b) {//alt codes, emoji
+void kb(wstring b) {
+	b = regex_replace(b, wregex(L"\\\\g"), L">");
 	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
-	ip[0].ki.wScan = (unsigned)stoull(b); ip[0].ki.wVk = 0;
-	ip[1] = ip[0]; ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
-	SendInput(2, ip, sizeof(ip[0]));
+	for (auto i : b) {
+		ip[0].ki.wScan = i; ip[0].ki.wVk = 0;
+		ip[1] = ip[0]; ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
+		SendInput(2, ip, sizeof(ip[0]));
+	}
 }
 
 void kbHold(short key) {
@@ -848,9 +850,7 @@ void loadSe() {
 			case 1659://CtrlScanOnlyMode:
 				{ if (v == L"1" || v == L"0") qScanOnly = stoi(v); else er(); } break;
 			case 1677://StrandLengthMode:
-				{ if (v == L"1" || v == L"0") strandLengthMode = stoi(v); else er(); } break;
-			case 1288://StrandLength:
-				{ if (check_if_num(v) != L"") strandLength = stoi(v); else er(); } break;
+				{ if (short x = stoi(v); x >= 0) strandLengthMode = x; else er(); } break;
 			case 965://Ignore_A-Z:
 				{ if (v == L"1" || v == L"0") ignoreAZ = stoi(v); else er(); } break;
 			case 915://Ignore_0-9: | Kb_Key_Up:
@@ -987,7 +987,6 @@ void printSe() {
 		cout << "CtrlScanOnlyMode: " << qScanOnly << '\n';
 		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << '\n';
 		cout << "StrandLengthMode: " << strandLengthMode << '\n';
-		cout << "StrandLength: " << strandLength << '\n';
 		cout << "RepeatKey: " << reKey << '\n';
 		cout << "PauseKey: " << PauseKey << '\n';
 		cout << "RgbScaleLayout: " << RgbScaleLayout << '\n';
@@ -1538,7 +1537,7 @@ void scanDb() {
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
-			|| (strandLengthMode && sv[0] != '<' && sv.size() == .0+strandLength + close_ctrl_mode && cell.substr(0, strandLength) == b) //xxx
+			|| (strandLengthMode && sv[0] != '<' && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b) //xxx
 		) {
 			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
@@ -3382,7 +3381,7 @@ void printIntro() {
 void key(wstring k) {
 	if (multiblock) return;
 	strand.append(k);
-	if (strandLengthMode && static_cast<int>(strand.length()) > strandLength && strand[0] != '<') strand = strand.substr(strand.length() - strandLength);
+	if (strandLengthMode && static_cast<int>(strand.length()) > strandLengthMode && strand[0] != '<') strand = strand.substr(strand.length() - strandLengthMode);
 	prints();
 	if (close_ctrl_mode && strand.find(L">") != std::string::npos && strand[strand.length() - 1] != '>') { strand.clear(); prints(); return; }
 	if (multiStrand) { thread thread(scanDb); thread.detach(); return; } else scanDb();
@@ -3412,7 +3411,7 @@ int main() {//cout << "@dnaspider\n\n";
 			if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
 				wcout << database << " not found.\nPress [1] to auto create.\n\n";
 				for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; } if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT+RIGHT_CTRL X or\n COMMA+ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT+PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<wr:><win>r<win-><app:run, 1, 6, :>\n<d-><app: " << editorDb << L" | " << db << editor << L", 1, 1, odb->\n<odb-><wr:>" << database << "<enter>\n<s-><app: " << editorSe << L" | " << se << editor << L", 1, 1, <ose->\n<ose-><wr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<lt:><shift>, <shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open " << db.substr(0, db.length() - 2) << L"\n RCTRL S: Open " << se.substr(0, se.length() - 2); fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nShowOuts: 0\nOutsTemplate: \\R\\7strand:\\t\\t\\G\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nLSHIFT+CtrlKey: 1\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nRSHIFT+CtrlKey_Toggle: 0\nRSHIFT+CtrlKey_Keep: 0\nCtrlScanOnlyMode: 0\nRSHIFT+LSHIFT_Only: 0\nStrandLengthMode: 0\nStrandLength: 3\nRepeatKey: 145\nPauseKey: 123\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10:)\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl:1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nEditorSe: " << editorSe << "\nEditorDb: " << editorDb << "\nLoop_Insert_Text: ,1,1000,->\nNoEscapeOrPause: 0\nio: *\nAutoBs_io: " << io_Auto_BS << "\nManualRepeat: " << ManualRepeat; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>notepad " + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
+				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n LEFT_SHIFT+RIGHT_CTRL X or\n COMMA+ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n LEFT_SHIFT+PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n\n<wr:><win>r<win-><app:run, 1, 6, :>\n<d-><app: " << editorDb << L" | " << db << editor << L", 1, 1, odb->\n<odb-><wr:>" << database << "<enter>\n<s-><app: " << editorSe << L" | " << se << editor << L", 1, 1, <ose->\n<ose-><wr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<lt:><shift>, <shift->\n<al-<lt:>alt><lt:>alt-><left6>\n<ct-<lt:>ctrl><lt:>ctrl-><left7>\n<sh-<lt:>shift><lt:>shift-><left8>\n<wi-><lt:>win><lt:>win-><left6>\n\n RCTRL D: Open " << db.substr(0, db.length() - 2) << L"\n RCTRL S: Open " << se.substr(0, se.length() - 2); fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nShowOuts: 0\nOutsTemplate: \\R\\7strand:\\t\\t\\G\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacer: 0\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nLSHIFT+CtrlKey: 1\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nRSHIFT+CtrlKey_Toggle: 0\nRSHIFT+CtrlKey_Keep: 0\nCtrlScanOnlyMode: 0\nRSHIFT+LSHIFT_Only: 0\nStrandLengthMode: 0\nRepeatKey: 145\nPauseKey: 123\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nIgnore_Backslash: 1\nKb_Key_Backslash: \\\nIgnore_Caps: 1\nKb_Key_Caps: P\nIgnore_Comma: 1\nKb_Key_Comma: ,\nIgnore_Delete: 1\nKb_Key_Delete: ?\nIgnore_End: 1\nKb_Key_End: ?\nIgnore_Enter: 1\nKb_Key_Enter: E\nIgnore_Equal: 1\nIgnore_Esc: 1\nKb_Key_Esc: ~\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10:)\nKb_Key_F11: _\nKb_Key_F12: +\nIgnore_Forwardslash: 1\nKb_Key_Forwardslash: /\nIgnore_GraveAccent: 1\nKb_Key_Grave_Accent: `\nIgnore_Print_Screen: 1\nKb_Key_Print_Screen: ?\nIgnore_Home: 1\nKb_Key_Home: ?\nIgnore_Insert: 1\nKb_Key_Insert: ?\nIgnore_LAlt: 1\nKb_Key_Left_Alt: A\nIgnore_LBracket: 1\nKb_Key_Left_Bracket: [\nIgnore_LCtrl:1\nKb_Key_Left_Ctrl: C\nIgnore_LShift: 1\nKb_Key_Left_Shift: S\nIgnore_Menu: 1\nKb_Key_Menu: ?\nIgnore_Minus: 1\nKb_Key_Minus: -\nIgnore_NumPad: 1\nKb_Key_Numpad_0: Z\nKb_Key_Numpad_1: Q\nKb_Key_Numpad_2: V\nKb_Key_Numpad_3: W\nKb_Key_Numpad_4: X\nKb_Key_Numpad_5: Y\nKb_Key_Numpad_6: B\nKb_Key_Numpad_7: F\nKb_Key_Numpad_8: G\nKb_Key_Numpad_9: I\nKb_Key_Numlock: N\nKb_Key_Numpad_Divide: J\nKb_Key_Numpad_Multiply: K\nKb_Key_Numpad_Minus: {\nKb_Key_Numpad_Add: }\nKb_Key_Numpad_Period: \"\nKb_Key_Numpad_Enter: :\nIgnore_PgDn: 1\nKb_Key_PgDn: ?\nIgnore_PgUp: 1\nKb_Key_PgUp: ?\nIgnore_Period: 1\nKb_Key_Period: .\nIgnore_Quote: 1\nKb_Key_Quote: '\nIgnore_RAlt: 1\nKb_Key_Right_Alt: M\nIgnore_RBracket: 1\nKb_Key_Right_Bracket: ]\nIgnore_RCtrl: 1\nKb_Key_Right_Ctrl: O\nIgnore_RShift: 1\nKb_Key_Right_Shift: H\nIgnore_Semicolon: 1\nKb_Key_Semicolon: ;\nIgnore_Space: 0\nKb_Key_Space:  \nIgnore_Tab: 1\nKb_Key_Tab: T\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nEditorSe: " << editorSe << "\nEditorDb: " << editorDb << "\nLoop_Insert_Text: ,1,1000,->\nNoEscapeOrPause: 0\nio: *\nAutoBs_io: " << io_Auto_BS << "\nManualRepeat: " << ManualRepeat; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>notepad " + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>notepad " + database + L"<enter>"); re = L""; tail = L""; strand.clear();
 			}
 		}
 	}
@@ -3435,8 +3434,8 @@ int main() {//cout << "@dnaspider\n\n";
 				GetAsyncKeyState(cKey); bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (GetAsyncKeyState(cKey)) {
 					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
 				} Sleep(frequency / 3); } if (x) continue;
-				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { rri = 0; strand.clear(); prints(); continue; }
-				clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); continue;
+				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { rri = 0; strand.append(L">"); if (strand != L"<>") { scanDb(); } strand.clear(); prints(); continue; }
+				clearAllKeys(); if (strandLengthMode) { strand = L"<"; rri = 0; } else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
 			}
 			if (LSHIFTCtrlKey) {
 				GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) { ++min;
