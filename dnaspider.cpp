@@ -1422,7 +1422,8 @@ void scanDb() {
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
-			|| (strandLengthMode && sv[0] != '<' && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b) //xxx
+			|| ((strandLengthMode && sv[0] != '<') && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b //xxx
+			|| cell.substr(0, (size_t)strandLengthMode - 1) == b) //xxx
 		) {
 			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
