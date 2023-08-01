@@ -557,29 +557,29 @@ void loadSe() {
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
 			case 1536://RSHIFT+LSHIFT_Only:
-				{ if (v == L"1" || v == L"0") RSHIFTLSHIFT_Only = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') RSHIFTLSHIFT_Only = stoi(v); else er(); } break;
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
 				{ if (short x = stoi(v); x >= 0) RSHIFTCtrlKeyToggle = RSHIFTCtrlKeyToggleMax = x; else er(); } break;
 			case 1273://ManualRepeat:
-				{ if (v == L"1" || v == L"0") ManualRepeat = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ManualRepeat = stoi(v); else er(); } break;
 			case 959://AutoBs_io:
-				{ if (v == L"1" || v == L"0") io_Auto_BS = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') io_Auto_BS = stoi(v); else er(); } break;
 			case 274://io:
-				{ if (v == L"") { v = L" "; }
+				{ if (v[0] == 0) { v[0] = ' '; }
 				io = v[0]; } break;
 			case 2738://ShowMultiStrandElapsedOnly:
-				{ if (v == L"1" || v == L"0") showMultiStrandElapsedOnly = stoi(v); else er(); } break;
-				{ if (check_if_num(v) != L"") PauseKey = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrandElapsedOnly = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0] > 0) PauseKey = stoi(v); else er(); } break;
 			case 1543://NoEscapeOrPause:
-				{ if (v == L"1" || v == L"0") { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
 			case 1708://Loop_Insert_Text:
-				{ if (v == L"Loop_Insert_Text" || v == L"") v = L">"; if (v.substr(v.length() - 1) != L">") v += L">"; Loop_Insert_Text = v; } break;
+				{ if (v[0] == 0) { v[0] = '>'; } if (v[v.length() - 1] != '>') v += '>'; Loop_Insert_Text = v; } break;
 			case 1946://Kb_Key_Print_Screen:
 				Kb_Key_Print_Screen = v; break;
 			case 783://Kb_Key_A:
-				Kb_Key_A = v.substr(0); break;
+				Kb_Key_A = v; break;
 			case 784://Kb_Key_B:
 				Kb_Key_B = v; break;
 			case 785://Kb_Key_C:
@@ -637,7 +637,7 @@ void loadSe() {
 			case 768://Kb_Key_2:
 				Kb_Key_2 = v; break;
 			case 769://Unicode: | //Kb_Key_3:
-				{ if (se == L"Unicode:") { if (v == L"1" || v == L"0") Unicode = stoi(v); else er(); }
+				{ if (se == L"Unicode:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') Unicode = stoi(v); else er(); }
 				else if (se == L"Kb_Key_3:") Kb_Key_3 = v;
 				} break;
 			case 770://Kb_Key_4:
@@ -776,15 +776,15 @@ void loadSe() {
 				} else { multiLine = 0; multiLineDelim = L'\n'; }
 				break;
 			case 872://Replacer:
-				{ if (v == L"1" || v == L"0") replacer = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') replacer = stoi(v); else er(); } break;
 			case 1751://RSHIFT+CtrlKey_Keep:
-				 if (v == L"1" || v == L"0") ToggleKeep = stoi(v); else er(); break;
+				 if (v.length() == 1 && v[0] == '1' || v[0] == '0') ToggleKeep = stoi(v); else er(); break;
 			case 764://OutTabs:
-				{ if (v == L"1" || v == L"0") { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
 			case 1462://ClearStrandKey:
-				{ if (check_if_num(v) > L"") ClearStrandKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0] > 0) ClearStrandKey = stoi(v); else er(); } break;
 			case 1056://CommaSleep:
-				{ if (check_if_num(v) != L"") { if (stoi(v) <= 0) { v = L"1"; } CommaSleep = stoi(v); } else er(); } break;
+				{ if (check_if_num(v)[0] > 0) { if (stoi(v) <= 0) { v = L"1"; } CommaSleep = stoi(v); } else er(); } break;
 			case 673://Editor:
 				editor = v; break;
 			case 722://Editor1:
@@ -793,9 +793,9 @@ void loadSe() {
 				editorSe = v; break;
 			//case 839://EditorDb:
 			case 680://Assume:
-				{ if (v == L"1" || v == L"0") assume = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') assume = stoi(v); else er(); } break;
 			case 1095://ShowStrand:
-				{ if (v == L"1" || v == L"0") showStrand = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showStrand = stoi(v); else er(); } break;
 			case 847://Database:
 				{ if (v.length() > 0) { database = v; database = regex_replace(database, wregex(L"/"), L"\\"); db = database.substr(database.find_last_of('\\') + 1) + L" - "; } else er(); } break;
 			case 1038://ReplacerDb:
@@ -805,21 +805,21 @@ void loadSe() {
 				else if (se == L"Kb_Key_Delete:") Kb_Key_Delete = v;
 				} break;
 			case 1354://CloseCtrlMode:
-				{ if (v == L"1" || v == L"0") close_ctrl_mode = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') close_ctrl_mode = stoi(v); else er(); } break;
 			case 1659://CtrlScanOnlyMode:
-				{ if (v == L"1" || v == L"0") qScanOnly = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') qScanOnly = stoi(v); else er(); } break;
 			case 1677://StrandLengthMode:
 				{ if (short x = stoi(v); x >= 0) strandLengthMode = x; else er(); } break;
 			case 965://Ignore_A-Z:
-				{ if (v == L"1" || v == L"0") ignoreAZ = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreAZ = stoi(v); else er(); } break;
 			case 915://Ignore_0-9: | Kb_Key_Up:
-				{ if (se == L"Ignore_0-9:") { if (v == L"1" || v == L"0") ignore09 = stoi(v); else er(); }
+				{ if (se == L"Ignore_0-9:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignore09 = stoi(v); else er(); }
 				else if (se == L"Kb_Key_Up:")Kb_Key_Up = v;
 				} break;
 			case 1172://StartHidden:
-				{ if (v == L"1" || v == L"0") startHidden = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey: (vk enum, max)
-				{ if (check_if_num(v) > L"") {
+				{ if (check_if_num(v)[0] > 0) {
 					if (v.find(' ') != string::npos) {
 						wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
 						v = v.substr(0, v.find(' ')); 
@@ -827,48 +827,48 @@ void loadSe() {
 					} else cKeyMax = 1;
 				cKey = stoi(v); } else er(); } break;
 			case 999://ShowIntro:
-				{ if (v == L"1" || v == L"0") showIntro = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showIntro = stoi(v); else er(); } break;
 			case 1324://ShowSettings:
-				{ if (v == L"1" || v == L"0") showSettings = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showSettings = stoi(v); else er(); } break;
 			case 1004://Frequency:
-				{ if (check_if_num(v) != L"") frequency = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0] > 0) frequency = stoi(v); else er(); } break;
 			case 964://RepeatKey:
-				{ if (check_if_num(v) != L"") reKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0] > 0) reKey = stoi(v); else er(); } break;
 			case 1649://AutoBs_RepeatKey:
-				{ if (v == L"1" || v == L"0") AutoBs_RepeatKey = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') AutoBs_RepeatKey = stoi(v); else er(); } break;
 			case 902://ShowOuts:
-				{ if (v == L"1" || v == L"0") showOuts = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showOuts = stoi(v); else er(); } break;
 			case 2913://SlightPauseInBetweenConnects:
-				{ if (v == L"1" || v == L"0") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 1571://CloseCtrlSpacer:
-				{ if (check_if_num(v) > L"") { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
+				{ if (check_if_num(v)[0] > 0) { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
 			case 1467://RgbScaleLayout:
-				{ if (check_if_num(v) > L"") RgbScaleLayout = stod(v); else er(); } break;
+				{ if (check_if_num(v)[0] > 0) RgbScaleLayout = stod(v); else er(); } break;
 			case 1201://MultiStrand:
-				{ if (v == L"1" || v == L"0") multiStrand = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') multiStrand = stoi(v); else er(); } break;
 			case 1618://ShowMultiStrand:
-				{ if (v == L"1" || v == L"0") showMultiStrand = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrand = stoi(v); else er(); } break;
 			case 1098://AutoBs_EscH: | Ignore_F1-F12: | Kb_Key_PgUp:
-				{ if (se == L"AutoBs_EscH:") { if (v == L"1" || v == L"0") EscHAutoBs = stoi(v); else er(); }
-				else if (se == L"Ignore_F1-F12:") { if (v == L"1" || v == L"0") ignoreF1s = stoi(v); else er(); }
+				{ if (se == L"AutoBs_EscH:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscHAutoBs = stoi(v); else er(); }
+				else if (se == L"Ignore_F1-F12:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreF1s = stoi(v); else er(); }
 				else if (se == L"Kb_Key_PgUp:") Kb_Key_PgUp = v;
 				} break;
 			case 1519://AutoBs_EscComma:
-				{ if (v == L"1" || v == L"0") EscCommaAutoBs = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscCommaAutoBs = stoi(v); else er(); } break;
 			case 1530://AutoBs_EscEqual:
-				{ if (v == L"1" || v == L"0") EscEqualAutoBs = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscEqualAutoBs = stoi(v); else er(); } break;
 			case 1723://SeHotReload_CtrlS:
-				{ if (v == L"1" || v == L"0") SeHotReload_CtrlS = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SeHotReload_CtrlS = stoi(v); else er(); } break;
 			case 2098://SeDbClearStrand_CtrlS:
-				{ if (v == L"1" || v == L"0") SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
 			case 1403://Ignore_Arrows:
-				{ if (v == L"1" || v == L"0") ignoreArrows = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreArrows = stoi(v); else er(); } break;
 			case 1001://Kb_Key_Esc:
 				Kb_Key_Esc = v; break;
 			case 1346://Ignore_NumPad:
-				{ if (v == L"1" || v == L"0") ignoreNumPad = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreNumPad = stoi(v); else er(); } break;
 			case 934://Exit_EscX:
-				{ if (v == L"1" || v == L"0") enableEscX = stoi(v); else er(); } break;
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') enableEscX = stoi(v); else er(); } break;
 		}
 	}
 	f.close();
@@ -1410,7 +1410,7 @@ void scanDb() {
 		}
 	}
 	else if (strand[0] == '<' && strand[1] == '>') return;
-	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (database == L"") { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
+	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (database[0] == 0) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	wstring sv = strand;
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
@@ -1418,16 +1418,16 @@ void scanDb() {
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
 			re[0] > 0 && sv[0] == 0 || sv[0] > 0 && a[0] > 0 && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| a == b + L'^' //<x^>
+			|| strandLengthMode && sv[0] != '<' && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b //xxx
+			|| strandLengthMode && sv[0] != '<' && cell.substr(0, (size_t)strandLengthMode - 1) == b //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
-			|| ((strandLengthMode && sv[0] != '<') && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b //xxx
-			|| cell.substr(0, (size_t)strandLengthMode - 1) == b) //xxx
+			|| a == b + L'^' //<x^>
 		) {
-			if (multiStrand) { if (re == L"") mainn.setStrand(cell); }
+			if (multiStrand) { if (re[0] == 0) mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
-			if (re > L"" && strand == L"") {
+			if (re[0] > 0 && strand[0] == 0) {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
 				if (re[0] == '>') {
@@ -3271,7 +3271,7 @@ void key(wstring k) {
 	prints();
 	if (close_ctrl_mode && strand.find('>') != std::string::npos && strand[strand.length() - 1] != '>') { strand.clear(); prints(); return; }
 	if (multiStrand) { thread thread(scanDb); thread.detach(); return; } else scanDb();
-	if (strand == L"") prints();
+	if (strand[0] == 0) prints();
 }
 
 void repeat() {
