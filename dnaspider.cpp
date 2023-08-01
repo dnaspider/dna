@@ -347,30 +347,30 @@ void clearAllKeys() {
 	GetAsyncKeyState(VK_BACK);
 	GetAsyncKeyState(VK_ESCAPE);
 	GetAsyncKeyState(VK_PAUSE);
-	if (Kb_Key_Space[0] > 0) GetAsyncKeyState(VK_SPACE);
+	if (Kb_Key_Space[0]) GetAsyncKeyState(VK_SPACE);
 	if (!ignoreF1s) { GetAsyncKeyState(VK_F1); GetAsyncKeyState(VK_F2); GetAsyncKeyState(VK_F3); GetAsyncKeyState(VK_F4); GetAsyncKeyState(VK_F5); GetAsyncKeyState(VK_F6); GetAsyncKeyState(VK_F7); GetAsyncKeyState(VK_F8); GetAsyncKeyState(VK_F9); GetAsyncKeyState(VK_F10); GetAsyncKeyState(VK_F11); GetAsyncKeyState(VK_F12); }
 	if (!ignoreArrows) { GetAsyncKeyState(VK_LEFT); GetAsyncKeyState(VK_UP); GetAsyncKeyState(VK_RIGHT); GetAsyncKeyState(VK_DOWN); }
-	if (Kb_Key_Tab[0] > 0)GetAsyncKeyState(VK_TAB);
-	if (Kb_Key_Left_Alt[0] > 0)GetAsyncKeyState(VK_LMENU);
-	if (Kb_Key_Right_Alt[0] > 0)GetAsyncKeyState(VK_RMENU);
-	if (Kb_Key_Left_Ctrl[0] > 0)GetAsyncKeyState(VK_LCONTROL);
-	if (Kb_Key_Right_Ctrl[0] > 0)GetAsyncKeyState(VK_RCONTROL);
-	if (Kb_Key_Enter[0] > 0)GetAsyncKeyState(VK_RETURN);
-	if (Kb_Key_Caps[0] > 0)GetAsyncKeyState(VK_CAPITAL);
-	if (Kb_Key_Grave_Accent[0] > 0)GetAsyncKeyState(VK_OEM_3);
-	if (Kb_Key_Minus[0] > 0)GetAsyncKeyState(VK_OEM_MINUS);
-	if (Kb_Key_Equal[0] > 0)GetAsyncKeyState(VK_OEM_PLUS);
-	if (Kb_Key_Left_Bracket[0] > 0)GetAsyncKeyState(VK_OEM_4);
-	if (Kb_Key_Right_Bracket[0] > 0)GetAsyncKeyState(VK_OEM_6);
-	if (Kb_Key_Backslash[0] > 0)GetAsyncKeyState(VK_OEM_5);
-	if (Kb_Key_Semicolon[0] > 0)GetAsyncKeyState(VK_OEM_1);
-	if (Kb_Key_Quote[0] > 0)GetAsyncKeyState(VK_OEM_7);
-	if (Kb_Key_Comma[0] > 0)GetAsyncKeyState(VK_OEM_COMMA);
-	if (Kb_Key_Period[0] > 0)GetAsyncKeyState(VK_OEM_PERIOD);
-	if (Kb_Key_Forwardslash[0] > 0)GetAsyncKeyState(VK_OEM_2);
+	if (Kb_Key_Tab[0])GetAsyncKeyState(VK_TAB);
+	if (Kb_Key_Left_Alt[0])GetAsyncKeyState(VK_LMENU);
+	if (Kb_Key_Right_Alt[0])GetAsyncKeyState(VK_RMENU);
+	if (Kb_Key_Left_Ctrl[0])GetAsyncKeyState(VK_LCONTROL);
+	if (Kb_Key_Right_Ctrl[0])GetAsyncKeyState(VK_RCONTROL);
+	if (Kb_Key_Enter[0])GetAsyncKeyState(VK_RETURN);
+	if (Kb_Key_Caps[0])GetAsyncKeyState(VK_CAPITAL);
+	if (Kb_Key_Grave_Accent[0])GetAsyncKeyState(VK_OEM_3);
+	if (Kb_Key_Minus[0])GetAsyncKeyState(VK_OEM_MINUS);
+	if (Kb_Key_Equal[0])GetAsyncKeyState(VK_OEM_PLUS);
+	if (Kb_Key_Left_Bracket[0])GetAsyncKeyState(VK_OEM_4);
+	if (Kb_Key_Right_Bracket[0])GetAsyncKeyState(VK_OEM_6);
+	if (Kb_Key_Backslash[0])GetAsyncKeyState(VK_OEM_5);
+	if (Kb_Key_Semicolon[0])GetAsyncKeyState(VK_OEM_1);
+	if (Kb_Key_Quote[0])GetAsyncKeyState(VK_OEM_7);
+	if (Kb_Key_Comma[0])GetAsyncKeyState(VK_OEM_COMMA);
+	if (Kb_Key_Period[0])GetAsyncKeyState(VK_OEM_PERIOD);
+	if (Kb_Key_Forwardslash[0])GetAsyncKeyState(VK_OEM_2);
 	if (!ignoreNumPad) { GetAsyncKeyState(VK_NUMLOCK); GetAsyncKeyState(VK_DIVIDE); GetAsyncKeyState(VK_MULTIPLY); GetAsyncKeyState(VK_SUBTRACT); GetAsyncKeyState(VK_ADD); GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_DECIMAL); GetAsyncKeyState(VK_NUMPAD0); GetAsyncKeyState(VK_NUMPAD1); GetAsyncKeyState(VK_NUMPAD2); GetAsyncKeyState(VK_NUMPAD3); GetAsyncKeyState(VK_NUMPAD4); GetAsyncKeyState(VK_NUMPAD5); GetAsyncKeyState(VK_NUMPAD6); GetAsyncKeyState(VK_NUMPAD7); GetAsyncKeyState(VK_NUMPAD8); GetAsyncKeyState(VK_NUMPAD9); }
-	if (Kb_Key_Insert[0] > 0) GetAsyncKeyState(VK_INSERT); if (Kb_Key_Delete[0] > 0) GetAsyncKeyState(VK_DELETE); if (Kb_Key_Home[0] > 0) GetAsyncKeyState(VK_HOME); if (Kb_Key_End[0] > 0) GetAsyncKeyState(VK_END); if (Kb_Key_PgUp[0] > 0) GetAsyncKeyState(VK_PRIOR); if (Kb_Key_PgDn[0] > 0) GetAsyncKeyState(VK_NEXT);
-	if (Kb_Key_Menu[0] > 0) GetAsyncKeyState(VK_APPS); //menu
+	if (Kb_Key_Insert[0]) GetAsyncKeyState(VK_INSERT); if (Kb_Key_Delete[0]) GetAsyncKeyState(VK_DELETE); if (Kb_Key_Home[0]) GetAsyncKeyState(VK_HOME); if (Kb_Key_End[0]) GetAsyncKeyState(VK_END); if (Kb_Key_PgUp[0]) GetAsyncKeyState(VK_PRIOR); if (Kb_Key_PgDn[0]) GetAsyncKeyState(VK_NEXT);
+	if (Kb_Key_Menu[0]) GetAsyncKeyState(VK_APPS); //menu
 }
 
 void printDb() {
@@ -385,7 +385,7 @@ wstring loadVar(wstring q = L"") {
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	wstring cell, se; GetAsyncKeyState(VK_ESCAPE); while (getline(f, cell, multiLineDelim[0])) {
 		if (!NoEscapeOrPause && GetAsyncKeyState(VK_ESCAPE) || cell.substr(0, 4) == L"<'''") break;
-		if (cell[0] == 0 || cell[0] == '\n' || cell[0] == ' ') continue;
+		if (!cell[0] || cell[0] == '\n' || cell[0] == ' ') continue;
 		se = cell.substr(0, q.length());
 		if (se == q) {
 			wstring v = cell.substr(q.length());
@@ -544,15 +544,15 @@ void calc() {
 }
 
 void loadSe() {
-	wifstream f(settings); if (!f) { showOutsMsg(L"\nSettings \"", settings, L"\" not found!", 0); if (settings == L"") { cout << "Create c:\\dna\\se.txt manually\n"; } return; }
+	wifstream f(settings); if (!f) { showOutsMsg(L"\nSettings \"", settings, L"\" not found!", 0); if (!settings[0]) { cout << "Create c:\\dna\\se.txt manually\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	wstring cell; while (getline(f, cell)) {
-		if (cell[0] == 0 || cell[0] == ' ') continue;
+		if (!cell[0] || cell[0] == ' ') continue;
 		wstring se = cell.substr(0, cell.find_first_of(L":\t ")); se += ':';
 		wstring v = (cell.substr(cell.find_first_of(L":\t ") + 1)); if (v.find_first_not_of(L"\t ") == string::npos) {//""
 			if (v != L" ") v.clear();
 		} if (se == cell + L":") v.clear();
-		if (v[0] > 0 && v != L" ") v = v.substr(v.find_first_not_of(L"\t "));
+		if (v[0] && v != L" ") v = v.substr(v.find_first_not_of(L"\t "));
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
@@ -567,15 +567,14 @@ void loadSe() {
 			case 959://AutoBs_io:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') io_Auto_BS = stoi(v); else er(); } break;
 			case 274://io:
-				{ if (v[0] == 0) { v[0] = ' '; }
-				io = v[0]; } break;
+				{ if (!v[0]) { v[0] = ' '; } io = v[0]; } break;
 			case 2738://ShowMultiStrandElapsedOnly:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrandElapsedOnly = stoi(v); else er(); } break;
-				{ if (check_if_num(v)[0] > 0) PauseKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0]) PauseKey = stoi(v); else er(); } break;
 			case 1543://NoEscapeOrPause:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
 			case 1708://Loop_Insert_Text:
-				{ if (v[0] == 0) { v[0] = '>'; } if (v[v.length() - 1] != '>') v += '>'; Loop_Insert_Text = v; } break;
+				{ if (!v[0]) { v[0] = '>'; } if (v[v.length() - 1] != '>') v += '>'; Loop_Insert_Text = v; } break;
 			case 1946://Kb_Key_Print_Screen:
 				Kb_Key_Print_Screen = v; break;
 			case 783://Kb_Key_A:
@@ -782,9 +781,9 @@ void loadSe() {
 			case 764://OutTabs:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
 			case 1462://ClearStrandKey:
-				{ if (check_if_num(v)[0] > 0) ClearStrandKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0]) ClearStrandKey = stoi(v); else er(); } break;
 			case 1056://CommaSleep:
-				{ if (check_if_num(v)[0] > 0) { if (stoi(v) <= 0) { v = L"1"; } CommaSleep = stoi(v); } else er(); } break;
+				{ if (check_if_num(v)[0]) { if (stoi(v) <= 0) { v = L"1"; } CommaSleep = stoi(v); } else er(); } break;
 			case 673://Editor:
 				editor = v; break;
 			case 722://Editor1:
@@ -819,7 +818,7 @@ void loadSe() {
 			case 1172://StartHidden:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey: (vk enum, max)
-				{ if (check_if_num(v)[0] > 0) {
+				{ if (check_if_num(v)[0]) {
 					if (v.find(' ') != string::npos) {
 						wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
 						v = v.substr(0, v.find(' ')); 
@@ -831,9 +830,9 @@ void loadSe() {
 			case 1324://ShowSettings:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showSettings = stoi(v); else er(); } break;
 			case 1004://Frequency:
-				{ if (check_if_num(v)[0] > 0) frequency = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0]) frequency = stoi(v); else er(); } break;
 			case 964://RepeatKey:
-				{ if (check_if_num(v)[0] > 0) reKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v)[0]) reKey = stoi(v); else er(); } break;
 			case 1649://AutoBs_RepeatKey:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') AutoBs_RepeatKey = stoi(v); else er(); } break;
 			case 902://ShowOuts:
@@ -841,9 +840,9 @@ void loadSe() {
 			case 2913://SlightPauseInBetweenConnects:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 1571://CloseCtrlSpacer:
-				{ if (check_if_num(v)[0] > 0) { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
+				{ if (check_if_num(v)[0]) { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
 			case 1467://RgbScaleLayout:
-				{ if (check_if_num(v)[0] > 0) RgbScaleLayout = stod(v); else er(); } break;
+				{ if (check_if_num(v)[0]) RgbScaleLayout = stod(v); else er(); } break;
 			case 1201://MultiStrand:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') multiStrand = stoi(v); else er(); } break;
 			case 1618://ShowMultiStrand:
@@ -1387,7 +1386,7 @@ wstring randn(bool bg = 0) {
 }
 
 void bs_input() {
-	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] == 60 || ((Kb_Key_Menu[0] > 0) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] > 0 && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] > 0 && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] > 0 && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] > 0 && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] > 0 && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] > 0 && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] > 0 && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] > 0 && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] == 60 || ((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 }
 
 void replace_q(wstring &a, wstring b, wstring c) {
@@ -1401,7 +1400,7 @@ void replace_q(wstring &a, wstring b, wstring c) {
 void scanDb() {
 	if (close_ctrl_mode) {
 		if (strand.length() == 0) {
-			if (re[0] == 0)
+			if (!re[0])
 				return;
 		}
 		else {
@@ -1410,13 +1409,13 @@ void scanDb() {
 		}
 	}
 	else if (strand[0] == '<' && strand[1] == '>') return;
-	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (database[0] == 0) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
+	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (!database[0]) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	wstring sv = strand;
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 	Mainn mainn; wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...	
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
-			re[0] > 0 && sv[0] == 0 || sv[0] > 0 && a[0] > 0 && a[0] != ' '
+			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
 			|| strandLengthMode && sv[0] != '<' && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b //xxx
 			|| strandLengthMode && sv[0] != '<' && cell.substr(0, (size_t)strandLengthMode - 1) == b //xxx
@@ -1425,9 +1424,9 @@ void scanDb() {
 			|| a == b + L'>' //<x>
 			|| a == b + L'^' //<x^>
 		) {
-			if (multiStrand) { if (re[0] == 0) mainn.setStrand(cell); }
+			if (multiStrand) { if (!re[0]) mainn.setStrand(cell); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
-			if (re[0] > 0 && strand[0] == 0) {
+			if (re[0] && !strand[0]) {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
 				if (re[0] == '>') {
@@ -1436,7 +1435,7 @@ void scanDb() {
 					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt-><,1>"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">"); }
 				}
 			}
-			tail = re[0] > 0 && sv[0] == 0 ? re : cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>'));
+			tail = re[0] && !sv[0] ? re : cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>'));
 			if (multiStrand) mainn.getStrand(cell);
 			tail = isVar(tail); //<r:>
 			if (tail[0] == io[0]) {//io:
@@ -1455,7 +1454,7 @@ void scanDb() {
 					break;
 				case '>':
 					tail = tail.substr(1, tail.length());
-					if (sv[0] > 0) codes = strand[0] == '<' ? strand.substr(1, strand.length()) + tail : strand + tail;
+					if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.length()) + tail : strand + tail;
 					break;
 				case '^'://i^o
 					close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly;//<^^>
@@ -1507,7 +1506,7 @@ void scanDb() {
 					if (showOuts) showOutsMsg(L"qq: " + OutTab + OutTab, qq);
 					if (qq.substr(0, qq.find('>')).find(':') != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(':') + 1, qq.find('>') - qq.find(':') - 1);//#
-						if (qp[0] > 0) {
+						if (qp[0]) {
 							if (qp[0] == ' ') qp = qp.substr(1);
 							setQxQy(qp);
 						}
@@ -1835,7 +1834,7 @@ void scanDb() {
 									if (multi.getBreak()) break;
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
-										if (length >= 1) { if (gq[0] > 0 && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
+										if (length >= 1) { if (gq[0] && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
 										if (linkC[0] == io[0] && linkC.length() == 1 || linkC == L":" || linkC == L"-") --size;
 									}
 								}
@@ -2146,7 +2145,7 @@ void scanDb() {
 									if (multi.getBreak()) break;
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
-										if (length >= 1) { if (gq[0] > 0 && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
+										if (length >= 1) { if (gq[0] && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
 										if (linkC[0] == io[0] && linkC.length() == 1 || linkC == L":" || linkC == L"-") --size;
 									}
 								}
@@ -2360,7 +2359,7 @@ void scanDb() {
 									CloseClipboard();
 									if (!multi.getBreak()) {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
-										if (length >= 1) { if (gq[0] > 0 && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
+										if (length >= 1) { if (gq[0] && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
 										if (linkC[0] == io[0] && linkC.length() == 1 || linkC == L":" || linkC == L"-") --size;
 									}
 								}
@@ -2395,7 +2394,7 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<if+")) {//<if+:> | stop if <+>
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (check_if_num(qp) == L"" || qp[0] == 0) { conn(); break; }
+								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (check_if_num(qp) == L"" || !qp[0]) { conn(); break; }
 								bool b = 0; int q = stoi(qp);
 								wstring l = L""; if (qp.find(' ') != string::npos) l = qp.substr(qp.find(' ') + 1);//<if+:# true:>
 								switch (qq[4]) {
@@ -2598,7 +2597,7 @@ void scanDb() {
 									if (multi.getBreak()) break;
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
-										if (length >= 1) { if (gq[0] > 0 && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
+										if (length >= 1) { if (gq[0] && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
 										if (linkC[0] == io[0] && linkC.length() == 1 || linkC == L":" || linkC == L"-") --size;
 									}
 								}
@@ -2933,7 +2932,7 @@ void scanDb() {
 									if (multi.getBreak()) break;
 									else {
 										if (multiStrand) { ms = multi.getMS(); linkC = multi.getLink(); }
-										if (length >= 1) { if (gq[0] > 0 && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
+										if (length >= 1) { if (gq[0] && ms[0] != '0') { if (gq.length() == 1) wcout << gq; else showOutsMsg(L"", gq, L"", 1); } Sleep(stoi(ms)); }
 										if (linkC[0] == io[0] && linkC.length() == 1 || linkC == L":" || linkC == L"-") --size;
 									}
 								}
@@ -3010,7 +3009,7 @@ void scanDb() {
 									if (!i) c += q; else c += q + L" " + qq.substr(4, 1) + L" ";
 									++i;
 								}
-								if (c[0] > 0) {
+								if (c[0]) {
 									c += h;
 									h = c.substr(0, c.length());
 									h = regex_replace(h, wregex(s), L"");
@@ -3227,7 +3226,7 @@ void scanDb() {
 					GetAsyncKeyState(VkKeyScanW(ctail[0])); GetAsyncKeyState(ctail[0]);//clear
 				}
 			}
-			if (strand > L"" || re > L"") {
+			if (strand[0] || re[0]) {
 				if (re == L"" || re == L" " || strandLengthMode) { re.clear(); reTail = tail = codes; }
 				clearAllKeys();
 				if (!noClearStrand && strand == sv) strand.clear(); 
@@ -3237,7 +3236,7 @@ void scanDb() {
 		}
 	}
 	f.close();
-	if (!noClearStrand) { if (strand[0] > 0 && close_ctrl_mode && strand[0] == '<') { if (strand[strand.length() - 1] != '>') return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
+	if (!noClearStrand) { if (strand[0] && close_ctrl_mode && strand[0] == '<') { if (strand[strand.length() - 1] != '>') return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
 	if (rri && RSHIFTLSHIFT_Only && !ToggleKeep) rri = 0;
 }
@@ -3271,7 +3270,7 @@ void key(wstring k) {
 	prints();
 	if (close_ctrl_mode && strand.find('>') != std::string::npos && strand[strand.length() - 1] != '>') { strand.clear(); prints(); return; }
 	if (multiStrand) { thread thread(scanDb); thread.detach(); return; } else scanDb();
-	if (strand[0] == 0) prints();
+	if (!strand[0]) prints();
 }
 
 void repeat() {
@@ -3309,7 +3308,7 @@ int main() {//cout << "@dnaspider\n\n";
 #pragma endregion
 	for (;; Sleep(frequency)) {
 		if (GetAsyncKeyState(VK_BACK)) {
-			if (rri && strand == L"<" || rri && strand[0] == 0) rri = 0;
+			if (rri && strand == L"<" || rri && !strand[0]) rri = 0;
 			if (strand == L"") continue;
 			auto s = sizeof(wchar_t); if (strand[strand.length() - 1] < 127) s /= 2;
 			strand = strand.substr(0, strand.length() - s);
@@ -3318,9 +3317,9 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_LSHIFT)) {
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //RSHIFT+LSHIFT <
 				GetAsyncKeyState(cKey); bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (GetAsyncKeyState(cKey)) {
-					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
+					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? '<' : '\0'; prints(); x = 1; break; //rshift+lshift+cKey
 				} Sleep(frequency / 3); } if (x) continue;
-				++rri; if (rri > 1 && !ToggleKeep || rri && strand > L"") { 
+				++rri; if (rri > 1 && !ToggleKeep || rri && strand[0]) {
 					if(strand[0] == '<' && strand.length() > 1) {
 						rri = 0; strand.append(L">"); scanDb();	strand.clear();
 					} else if (strand[0] != '<') {
@@ -3385,7 +3384,7 @@ int main() {//cout << "@dnaspider\n\n";
 								if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 							} else {
 								key(L">");
-								if (strand > L"") { strand.clear(); prints(); }
+								if (strand[0]) { strand.clear(); prints(); }
 							}
 							continue;
 						}
@@ -3407,7 +3406,7 @@ int main() {//cout << "@dnaspider\n\n";
 							if (!ToggleKeep && strand == L"" && qScanOnly || strand == L"<") { rri = 0; strand.clear(); continue; }
 							strand = L"<"; if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); prints(); continue;
 						}
-						if (strand > L"") { clearAllKeys(); strand.clear(); prints(); }
+						if (strand[0]) { clearAllKeys(); strand.clear(); prints(); }
 						continue;
 					}
 					clearAllKeys(); strand = L"<";
@@ -3421,7 +3420,7 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (GetAsyncKeyState(ClearStrandKey)) {
-			if (strand[0] == 0) continue;
+			if (!strand[0]) continue;
 			if (strand == L"<") strand.clear();
 			else if (strand[0] == '<') strand = L"<";
 			else strand.clear();
@@ -3462,7 +3461,7 @@ int main() {//cout << "@dnaspider\n\n";
 					if (strand == L"<") continue;
 					strand.append(L">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 					if (multiStrand) { thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); strand.clear(); continue; } else scanDb();
-					if (strand > L"") strand.clear();
+					if (strand[0]) strand.clear();
 					if (strand == L"") prints();
 					continue;
 				}
@@ -3471,7 +3470,7 @@ int main() {//cout << "@dnaspider\n\n";
 					if (strand[0] != '<' && close_ctrl_mode && strand.length() > 0) {
 						strand.append(L">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 						if (multiStrand) { thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); strand.clear(); continue; } else scanDb();
-						if (strand > L"") strand.clear();
+						if (strand[0]) strand.clear();
 						if (strand == L"") prints();
 						continue;
 					}
@@ -3486,119 +3485,119 @@ int main() {//cout << "@dnaspider\n\n";
 				continue; 
 			}
 			GetAsyncKeyState(VK_OEM_2); if (GetAsyncKeyState(VK_OEM_2)) { printCtrls(); continue; } //? + esc
-			if (Kb_Key_Esc[0] > 0) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
+			if (Kb_Key_Esc[0]) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
 			continue;
 		}
 		if (qScanOnly && strand[0] != '<') continue;
-		if (!rri && RSHIFTLSHIFT_Only && strand[0] == 0) continue;
+		if (!rri && RSHIFTLSHIFT_Only && !strand[0]) continue;
 #pragma region input_strand
 		if (!ignoreAZ) {
-			if (GetAsyncKeyState(0x41) && Kb_Key_A[0] > 0) { key(Kb_Key_A); continue; }
-			if (GetAsyncKeyState(0x42) && Kb_Key_B[0] > 0) { key(Kb_Key_B); continue; }
-			if (GetAsyncKeyState(0x43) && Kb_Key_C[0] > 0) { key(Kb_Key_C); continue; }
-			if (GetAsyncKeyState(0x44) && Kb_Key_D[0] > 0) { key(Kb_Key_D); continue; }
-			if (GetAsyncKeyState(0x45) && Kb_Key_E[0] > 0) { key(Kb_Key_E); continue; }
-			if (GetAsyncKeyState(0x46) && Kb_Key_F[0] > 0) { key(Kb_Key_F); continue; }
-			if (GetAsyncKeyState(0x47) && Kb_Key_G[0] > 0) { key(Kb_Key_G); continue; }
-			if (GetAsyncKeyState(0x48) && Kb_Key_H[0] > 0) { key(Kb_Key_H); continue; }
-			if (GetAsyncKeyState(0x49) && Kb_Key_I[0] > 0) { key(Kb_Key_I); continue; }
-			if (GetAsyncKeyState(0x4A) && Kb_Key_J[0] > 0) { key(Kb_Key_J); continue; }
-			if (GetAsyncKeyState(0x4B) && Kb_Key_K[0] > 0) { key(Kb_Key_K); continue; }
-			if (GetAsyncKeyState(0x4C) && Kb_Key_L[0] > 0) { key(Kb_Key_L); continue; }
-			if (GetAsyncKeyState(0x4D) && Kb_Key_M[0] > 0) { key(Kb_Key_M); continue; }
-			if (GetAsyncKeyState(0x4E) && Kb_Key_N[0] > 0) { key(Kb_Key_N); continue; }
-			if (GetAsyncKeyState(0x4F) && Kb_Key_O[0] > 0) { key(Kb_Key_O); continue; }
-			if (GetAsyncKeyState(0x50) && Kb_Key_P[0] > 0) { key(Kb_Key_P); continue; }
-			if (GetAsyncKeyState(0x51) && Kb_Key_Q[0] > 0) { key(Kb_Key_Q); continue; }
-			if (GetAsyncKeyState(0x52) && Kb_Key_R[0] > 0) { key(Kb_Key_R); continue; }
-			if (GetAsyncKeyState(0x53) && Kb_Key_S[0] > 0) { key(Kb_Key_S); continue; }
-			if (GetAsyncKeyState(0x54) && Kb_Key_T[0] > 0) { key(Kb_Key_T); continue; }
-			if (GetAsyncKeyState(0x55) && Kb_Key_U[0] > 0) { key(Kb_Key_U); continue; }
-			if (GetAsyncKeyState(0x56) && Kb_Key_V[0] > 0) { key(Kb_Key_V); continue; }
-			if (GetAsyncKeyState(0x57) && Kb_Key_W[0] > 0) { key(Kb_Key_W); continue; }
-			if (GetAsyncKeyState(0x58) && Kb_Key_X[0] > 0) { key(Kb_Key_X); continue; }
-			if (GetAsyncKeyState(0x59) && Kb_Key_Y[0] > 0) { key(Kb_Key_Y); continue; }
-			if (GetAsyncKeyState(0x5A) && Kb_Key_Z[0] > 0) { key(Kb_Key_Z); continue; }
+			if (GetAsyncKeyState(0x41) && Kb_Key_A[0]) { key(Kb_Key_A); continue; }
+			if (GetAsyncKeyState(0x42) && Kb_Key_B[0]) { key(Kb_Key_B); continue; }
+			if (GetAsyncKeyState(0x43) && Kb_Key_C[0]) { key(Kb_Key_C); continue; }
+			if (GetAsyncKeyState(0x44) && Kb_Key_D[0]) { key(Kb_Key_D); continue; }
+			if (GetAsyncKeyState(0x45) && Kb_Key_E[0]) { key(Kb_Key_E); continue; }
+			if (GetAsyncKeyState(0x46) && Kb_Key_F[0]) { key(Kb_Key_F); continue; }
+			if (GetAsyncKeyState(0x47) && Kb_Key_G[0]) { key(Kb_Key_G); continue; }
+			if (GetAsyncKeyState(0x48) && Kb_Key_H[0]) { key(Kb_Key_H); continue; }
+			if (GetAsyncKeyState(0x49) && Kb_Key_I[0]) { key(Kb_Key_I); continue; }
+			if (GetAsyncKeyState(0x4A) && Kb_Key_J[0]) { key(Kb_Key_J); continue; }
+			if (GetAsyncKeyState(0x4B) && Kb_Key_K[0]) { key(Kb_Key_K); continue; }
+			if (GetAsyncKeyState(0x4C) && Kb_Key_L[0]) { key(Kb_Key_L); continue; }
+			if (GetAsyncKeyState(0x4D) && Kb_Key_M[0]) { key(Kb_Key_M); continue; }
+			if (GetAsyncKeyState(0x4E) && Kb_Key_N[0]) { key(Kb_Key_N); continue; }
+			if (GetAsyncKeyState(0x4F) && Kb_Key_O[0]) { key(Kb_Key_O); continue; }
+			if (GetAsyncKeyState(0x50) && Kb_Key_P[0]) { key(Kb_Key_P); continue; }
+			if (GetAsyncKeyState(0x51) && Kb_Key_Q[0]) { key(Kb_Key_Q); continue; }
+			if (GetAsyncKeyState(0x52) && Kb_Key_R[0]) { key(Kb_Key_R); continue; }
+			if (GetAsyncKeyState(0x53) && Kb_Key_S[0]) { key(Kb_Key_S); continue; }
+			if (GetAsyncKeyState(0x54) && Kb_Key_T[0]) { key(Kb_Key_T); continue; }
+			if (GetAsyncKeyState(0x55) && Kb_Key_U[0]) { key(Kb_Key_U); continue; }
+			if (GetAsyncKeyState(0x56) && Kb_Key_V[0]) { key(Kb_Key_V); continue; }
+			if (GetAsyncKeyState(0x57) && Kb_Key_W[0]) { key(Kb_Key_W); continue; }
+			if (GetAsyncKeyState(0x58) && Kb_Key_X[0]) { key(Kb_Key_X); continue; }
+			if (GetAsyncKeyState(0x59) && Kb_Key_Y[0]) { key(Kb_Key_Y); continue; }
+			if (GetAsyncKeyState(0x5A) && Kb_Key_Z[0]) { key(Kb_Key_Z); continue; }
 		}
 		if (!ignore09) {
-			if (GetAsyncKeyState(0x30) && Kb_Key_0[0] > 0) { key(Kb_Key_0); continue; }
-			if (GetAsyncKeyState(0x31) && Kb_Key_1[0] > 0) { key(Kb_Key_1); continue; }
-			if (GetAsyncKeyState(0x32) && Kb_Key_2[0] > 0) { key(Kb_Key_2); continue; }
-			if (GetAsyncKeyState(0x33) && Kb_Key_3[0] > 0) { key(Kb_Key_3); continue; }
-			if (GetAsyncKeyState(0x34) && Kb_Key_4[0] > 0) { key(Kb_Key_4); continue; }
-			if (GetAsyncKeyState(0x35) && Kb_Key_5[0] > 0) { key(Kb_Key_5); continue; }
-			if (GetAsyncKeyState(0x36) && Kb_Key_6[0] > 0) { key(Kb_Key_6); continue; }
-			if (GetAsyncKeyState(0x37) && Kb_Key_7[0] > 0) { key(Kb_Key_7); continue; }
-			if (GetAsyncKeyState(0x38) && Kb_Key_8[0] > 0) { key(Kb_Key_8); continue; }
-			if (GetAsyncKeyState(0x39) && Kb_Key_9[0] > 0) { key(Kb_Key_9); continue; }
+			if (GetAsyncKeyState(0x30) && Kb_Key_0[0]) { key(Kb_Key_0); continue; }
+			if (GetAsyncKeyState(0x31) && Kb_Key_1[0]) { key(Kb_Key_1); continue; }
+			if (GetAsyncKeyState(0x32) && Kb_Key_2[0]) { key(Kb_Key_2); continue; }
+			if (GetAsyncKeyState(0x33) && Kb_Key_3[0]) { key(Kb_Key_3); continue; }
+			if (GetAsyncKeyState(0x34) && Kb_Key_4[0]) { key(Kb_Key_4); continue; }
+			if (GetAsyncKeyState(0x35) && Kb_Key_5[0]) { key(Kb_Key_5); continue; }
+			if (GetAsyncKeyState(0x36) && Kb_Key_6[0]) { key(Kb_Key_6); continue; }
+			if (GetAsyncKeyState(0x37) && Kb_Key_7[0]) { key(Kb_Key_7); continue; }
+			if (GetAsyncKeyState(0x38) && Kb_Key_8[0]) { key(Kb_Key_8); continue; }
+			if (GetAsyncKeyState(0x39) && Kb_Key_9[0]) { key(Kb_Key_9); continue; }
 		}
 		if (!ignoreF1s) {
-			if (GetAsyncKeyState(0x70) && Kb_Key_F1[0] > 0) { key(Kb_Key_F1); continue; }
-			if (GetAsyncKeyState(0x71) && Kb_Key_F2[0] > 0) { key(Kb_Key_F2); continue; }
-			if (GetAsyncKeyState(0x72) && Kb_Key_F3[0] > 0) { key(Kb_Key_F3); continue; }
-			if (GetAsyncKeyState(0x73) && Kb_Key_F4[0] > 0) { key(Kb_Key_F4); continue; }
-			if (GetAsyncKeyState(0x74) && Kb_Key_F5[0] > 0) { key(Kb_Key_F5); continue; }
-			if (GetAsyncKeyState(0x75) && Kb_Key_F6[0] > 0) { key(Kb_Key_F6); continue; }
-			if (GetAsyncKeyState(0x76) && Kb_Key_F7[0] > 0) { key(Kb_Key_F7); continue; }
-			if (GetAsyncKeyState(0x77) && Kb_Key_F8[0] > 0) { key(Kb_Key_F8); continue; }
-			if (GetAsyncKeyState(0x78) && Kb_Key_F9[0] > 0) { key(Kb_Key_F9); continue; }
-			if (GetAsyncKeyState(0x79) && Kb_Key_F10[0] > 0) { key(Kb_Key_F10); continue; }
-			if (GetAsyncKeyState(0x7A) && Kb_Key_F11[0] > 0) { key(Kb_Key_F11); continue; }
-			if (GetAsyncKeyState(0x7B) && Kb_Key_F12[0] > 0) { key(Kb_Key_F12); continue; }
+			if (GetAsyncKeyState(0x70) && Kb_Key_F1[0]) { key(Kb_Key_F1); continue; }
+			if (GetAsyncKeyState(0x71) && Kb_Key_F2[0]) { key(Kb_Key_F2); continue; }
+			if (GetAsyncKeyState(0x72) && Kb_Key_F3[0]) { key(Kb_Key_F3); continue; }
+			if (GetAsyncKeyState(0x73) && Kb_Key_F4[0]) { key(Kb_Key_F4); continue; }
+			if (GetAsyncKeyState(0x74) && Kb_Key_F5[0]) { key(Kb_Key_F5); continue; }
+			if (GetAsyncKeyState(0x75) && Kb_Key_F6[0]) { key(Kb_Key_F6); continue; }
+			if (GetAsyncKeyState(0x76) && Kb_Key_F7[0]) { key(Kb_Key_F7); continue; }
+			if (GetAsyncKeyState(0x77) && Kb_Key_F8[0]) { key(Kb_Key_F8); continue; }
+			if (GetAsyncKeyState(0x78) && Kb_Key_F9[0]) { key(Kb_Key_F9); continue; }
+			if (GetAsyncKeyState(0x79) && Kb_Key_F10[0]) { key(Kb_Key_F10); continue; }
+			if (GetAsyncKeyState(0x7A) && Kb_Key_F11[0]) { key(Kb_Key_F11); continue; }
+			if (GetAsyncKeyState(0x7B) && Kb_Key_F12[0]) { key(Kb_Key_F12); continue; }
 		}
 		if (!ignoreArrows) {
-			if (GetAsyncKeyState(VK_LEFT) && Kb_Key_Left[0] > 0) { key(Kb_Key_Left); continue; }
-			if (GetAsyncKeyState(VK_UP) && Kb_Key_Up[0] > 0) { key(Kb_Key_Up); continue; }
-			if (GetAsyncKeyState(VK_RIGHT) && Kb_Key_Right[0] > 0) { key(Kb_Key_Right); continue; }
-			if (GetAsyncKeyState(VK_DOWN) && Kb_Key_Down[0] > 0) { key(Kb_Key_Down); continue; }
+			if (GetAsyncKeyState(VK_LEFT) && Kb_Key_Left[0]) { key(Kb_Key_Left); continue; }
+			if (GetAsyncKeyState(VK_UP) && Kb_Key_Up[0]) { key(Kb_Key_Up); continue; }
+			if (GetAsyncKeyState(VK_RIGHT) && Kb_Key_Right[0]) { key(Kb_Key_Right); continue; }
+			if (GetAsyncKeyState(VK_DOWN) && Kb_Key_Down[0]) { key(Kb_Key_Down); continue; }
 		}
-		if (GetAsyncKeyState(VK_SNAPSHOT) && Kb_Key_Print_Screen[0] > 0) { key(Kb_Key_Print_Screen); continue; }
-		if (GetAsyncKeyState(VK_SPACE) && Kb_Key_Space[0] > 0) { key(Kb_Key_Space); continue; }
-		if (GetAsyncKeyState(VK_TAB) && Kb_Key_Tab[0] > 0) { key(Kb_Key_Tab); continue; }
-		if (GetAsyncKeyState(VK_LSHIFT) && Kb_Key_Left_Shift[0] > 0) { key(Kb_Key_Left_Shift); continue; }
-		if (GetAsyncKeyState(VK_RSHIFT) && Kb_Key_Right_Shift[0] > 0) { key(Kb_Key_Right_Shift); continue; }
-		if (GetAsyncKeyState(VK_LMENU) && Kb_Key_Left_Alt[0] > 0) { key(Kb_Key_Left_Alt); continue; }
-		if (GetAsyncKeyState(VK_RMENU) && Kb_Key_Right_Alt[0] > 0) { key(Kb_Key_Right_Alt); continue; }
-		if (GetAsyncKeyState(VK_LCONTROL) && Kb_Key_Left_Ctrl[0] > 0) { key(Kb_Key_Left_Ctrl); continue; }
-		if (GetAsyncKeyState(VK_RCONTROL) && Kb_Key_Right_Ctrl[0] > 0) { key(Kb_Key_Right_Ctrl); continue; }
-		if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Enter[0] > 0) { key(Kb_Key_Enter); continue; }
-		if (GetAsyncKeyState(VK_CAPITAL) && Kb_Key_Caps[0] > 0) { key(Kb_Key_Caps); continue; }
-		if (GetAsyncKeyState(VK_OEM_3) && Kb_Key_Grave_Accent[0] > 0) { key(Kb_Key_Grave_Accent); continue; }
-		if (GetAsyncKeyState(VK_OEM_MINUS) && Kb_Key_Minus[0] > 0) { key(Kb_Key_Minus); continue; }
-		if (GetAsyncKeyState(VK_OEM_PLUS) && Kb_Key_Equal[0] > 0) { key(Kb_Key_Equal); continue; }
-		if (GetAsyncKeyState(VK_OEM_4) && Kb_Key_Left_Bracket[0] > 0) { key(Kb_Key_Left_Bracket); continue; }
-		if (GetAsyncKeyState(VK_OEM_6) && Kb_Key_Right_Bracket[0] > 0) { key(Kb_Key_Right_Bracket); continue; }
-		if (GetAsyncKeyState(VK_OEM_5) && Kb_Key_Backslash[0] > 0) { key(Kb_Key_Backslash); continue; }
-		if (GetAsyncKeyState(VK_OEM_1) && Kb_Key_Semicolon[0] > 0) { key(Kb_Key_Semicolon); continue; }
-		if (GetAsyncKeyState(VK_OEM_7) && Kb_Key_Quote[0] > 0) { key(Kb_Key_Quote); continue; }
-		if (GetAsyncKeyState(VK_OEM_COMMA) && Kb_Key_Comma[0] > 0) { key(Kb_Key_Comma); continue; }
-		if (GetAsyncKeyState(VK_OEM_PERIOD) && Kb_Key_Period[0] > 0) { key(Kb_Key_Period); continue; }
-		if (GetAsyncKeyState(VK_OEM_2) && Kb_Key_Forwardslash[0] > 0) { key(Kb_Key_Forwardslash); continue; }
-		if (GetAsyncKeyState(VK_APPS) && Kb_Key_Menu[0] > 0) { key(Kb_Key_Menu); continue; }
-		if (GetAsyncKeyState(VK_INSERT) && Kb_Key_Insert[0] > 0) { key(Kb_Key_Insert); continue; }
-		if (GetAsyncKeyState(VK_DELETE) && Kb_Key_Delete[0] > 0) { key(Kb_Key_Delete); continue; }
-		if (GetAsyncKeyState(VK_HOME) && Kb_Key_Home[0] > 0) { key(Kb_Key_Home); continue; }
-		if (GetAsyncKeyState(VK_END) && Kb_Key_End[0] > 0) { key(Kb_Key_End); continue; }
-		if (GetAsyncKeyState(VK_PRIOR) && Kb_Key_PgUp[0] > 0) { key(Kb_Key_PgUp); continue; }
-		if (GetAsyncKeyState(VK_NEXT) && Kb_Key_PgDn[0] > 0) { key(Kb_Key_PgDn); continue; }
+		if (GetAsyncKeyState(VK_SNAPSHOT) && Kb_Key_Print_Screen[0]) { key(Kb_Key_Print_Screen); continue; }
+		if (GetAsyncKeyState(VK_SPACE) && Kb_Key_Space[0]) { key(Kb_Key_Space); continue; }
+		if (GetAsyncKeyState(VK_TAB) && Kb_Key_Tab[0]) { key(Kb_Key_Tab); continue; }
+		if (GetAsyncKeyState(VK_LSHIFT) && Kb_Key_Left_Shift[0]) { key(Kb_Key_Left_Shift); continue; }
+		if (GetAsyncKeyState(VK_RSHIFT) && Kb_Key_Right_Shift[0]) { key(Kb_Key_Right_Shift); continue; }
+		if (GetAsyncKeyState(VK_LMENU) && Kb_Key_Left_Alt[0]) { key(Kb_Key_Left_Alt); continue; }
+		if (GetAsyncKeyState(VK_RMENU) && Kb_Key_Right_Alt[0]) { key(Kb_Key_Right_Alt); continue; }
+		if (GetAsyncKeyState(VK_LCONTROL) && Kb_Key_Left_Ctrl[0]) { key(Kb_Key_Left_Ctrl); continue; }
+		if (GetAsyncKeyState(VK_RCONTROL) && Kb_Key_Right_Ctrl[0]) { key(Kb_Key_Right_Ctrl); continue; }
+		if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Enter[0]) { key(Kb_Key_Enter); continue; }
+		if (GetAsyncKeyState(VK_CAPITAL) && Kb_Key_Caps[0]) { key(Kb_Key_Caps); continue; }
+		if (GetAsyncKeyState(VK_OEM_3) && Kb_Key_Grave_Accent[0]) { key(Kb_Key_Grave_Accent); continue; }
+		if (GetAsyncKeyState(VK_OEM_MINUS) && Kb_Key_Minus[0]) { key(Kb_Key_Minus); continue; }
+		if (GetAsyncKeyState(VK_OEM_PLUS) && Kb_Key_Equal[0]) { key(Kb_Key_Equal); continue; }
+		if (GetAsyncKeyState(VK_OEM_4) && Kb_Key_Left_Bracket[0]) { key(Kb_Key_Left_Bracket); continue; }
+		if (GetAsyncKeyState(VK_OEM_6) && Kb_Key_Right_Bracket[0]) { key(Kb_Key_Right_Bracket); continue; }
+		if (GetAsyncKeyState(VK_OEM_5) && Kb_Key_Backslash[0]) { key(Kb_Key_Backslash); continue; }
+		if (GetAsyncKeyState(VK_OEM_1) && Kb_Key_Semicolon[0]) { key(Kb_Key_Semicolon); continue; }
+		if (GetAsyncKeyState(VK_OEM_7) && Kb_Key_Quote[0]) { key(Kb_Key_Quote); continue; }
+		if (GetAsyncKeyState(VK_OEM_COMMA) && Kb_Key_Comma[0]) { key(Kb_Key_Comma); continue; }
+		if (GetAsyncKeyState(VK_OEM_PERIOD) && Kb_Key_Period[0]) { key(Kb_Key_Period); continue; }
+		if (GetAsyncKeyState(VK_OEM_2) && Kb_Key_Forwardslash[0]) { key(Kb_Key_Forwardslash); continue; }
+		if (GetAsyncKeyState(VK_APPS) && Kb_Key_Menu[0]) { key(Kb_Key_Menu); continue; }
+		if (GetAsyncKeyState(VK_INSERT) && Kb_Key_Insert[0]) { key(Kb_Key_Insert); continue; }
+		if (GetAsyncKeyState(VK_DELETE) && Kb_Key_Delete[0]) { key(Kb_Key_Delete); continue; }
+		if (GetAsyncKeyState(VK_HOME) && Kb_Key_Home[0]) { key(Kb_Key_Home); continue; }
+		if (GetAsyncKeyState(VK_END) && Kb_Key_End[0]) { key(Kb_Key_End); continue; }
+		if (GetAsyncKeyState(VK_PRIOR) && Kb_Key_PgUp[0]) { key(Kb_Key_PgUp); continue; }
+		if (GetAsyncKeyState(VK_NEXT) && Kb_Key_PgDn[0]) { key(Kb_Key_PgDn); continue; }
 		if (!ignoreNumPad) {
-			if (GetAsyncKeyState(VK_NUMPAD0) && Kb_Key_Numpad_0[0] > 0) { key(Kb_Key_Numpad_0); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD1) && Kb_Key_Numpad_1[0] > 0) { key(Kb_Key_Numpad_1); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD2) && Kb_Key_Numpad_2[0] > 0) { key(Kb_Key_Numpad_2); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD3) && Kb_Key_Numpad_3[0] > 0) { key(Kb_Key_Numpad_3); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD4) && Kb_Key_Numpad_4[0] > 0) { key(Kb_Key_Numpad_4); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD5) && Kb_Key_Numpad_5[0] > 0) { key(Kb_Key_Numpad_5); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD6) && Kb_Key_Numpad_6[0] > 0) { key(Kb_Key_Numpad_6); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD7) && Kb_Key_Numpad_7[0] > 0) { key(Kb_Key_Numpad_7); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD8) && Kb_Key_Numpad_8[0] > 0) { key(Kb_Key_Numpad_8); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD9) && Kb_Key_Numpad_9[0] > 0) { key(Kb_Key_Numpad_9); continue; }
-			if (GetAsyncKeyState(VK_NUMLOCK) && Kb_Key_Numlock[0] > 0) { key(Kb_Key_Numlock); continue; }
-			if (GetAsyncKeyState(VK_DIVIDE) && Kb_Key_Numpad_Divide[0] > 0) { key(Kb_Key_Numpad_Divide); continue; }
-			if (GetAsyncKeyState(VK_MULTIPLY) && Kb_Key_Numpad_Multiply[0] > 0) { key(Kb_Key_Numpad_Multiply); continue; }
-			if (GetAsyncKeyState(VK_SUBTRACT) && Kb_Key_Numpad_Minus[0] > 0) { key(Kb_Key_Numpad_Minus); continue; }
-			if (GetAsyncKeyState(VK_ADD) && Kb_Key_Numpad_Add[0] > 0) { key(Kb_Key_Numpad_Add); continue; }
-			if (GetAsyncKeyState(VK_DECIMAL) && Kb_Key_Numpad_Period[0] > 0) { key(Kb_Key_Numpad_Period); continue; }
-			if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Numpad_Enter[0] > 0) { key(Kb_Key_Numpad_Enter); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD0) && Kb_Key_Numpad_0[0]) { key(Kb_Key_Numpad_0); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD1) && Kb_Key_Numpad_1[0]) { key(Kb_Key_Numpad_1); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD2) && Kb_Key_Numpad_2[0]) { key(Kb_Key_Numpad_2); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD3) && Kb_Key_Numpad_3[0]) { key(Kb_Key_Numpad_3); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD4) && Kb_Key_Numpad_4[0]) { key(Kb_Key_Numpad_4); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD5) && Kb_Key_Numpad_5[0]) { key(Kb_Key_Numpad_5); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD6) && Kb_Key_Numpad_6[0]) { key(Kb_Key_Numpad_6); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD7) && Kb_Key_Numpad_7[0]) { key(Kb_Key_Numpad_7); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD8) && Kb_Key_Numpad_8[0]) { key(Kb_Key_Numpad_8); continue; }
+			if (GetAsyncKeyState(VK_NUMPAD9) && Kb_Key_Numpad_9[0]) { key(Kb_Key_Numpad_9); continue; }
+			if (GetAsyncKeyState(VK_NUMLOCK) && Kb_Key_Numlock[0]) { key(Kb_Key_Numlock); continue; }
+			if (GetAsyncKeyState(VK_DIVIDE) && Kb_Key_Numpad_Divide[0]) { key(Kb_Key_Numpad_Divide); continue; }
+			if (GetAsyncKeyState(VK_MULTIPLY) && Kb_Key_Numpad_Multiply[0]) { key(Kb_Key_Numpad_Multiply); continue; }
+			if (GetAsyncKeyState(VK_SUBTRACT) && Kb_Key_Numpad_Minus[0]) { key(Kb_Key_Numpad_Minus); continue; }
+			if (GetAsyncKeyState(VK_ADD) && Kb_Key_Numpad_Add[0]) { key(Kb_Key_Numpad_Add); continue; }
+			if (GetAsyncKeyState(VK_DECIMAL) && Kb_Key_Numpad_Period[0]) { key(Kb_Key_Numpad_Period); continue; }
+			if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Numpad_Enter[0]) { key(Kb_Key_Numpad_Enter); continue; }
 		}
 #pragma endregion
 	}
