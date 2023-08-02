@@ -39,6 +39,8 @@ wstring qp; //<x:#>
 wstring qx, qy; //<xy:#,#>
 wstring OutsTemplate = L"";
 wstring Loop_Insert_Text = L"";
+wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
+wstring OutTab = L"\t"; //OutTabs
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
 int rri = 0; //++RSHIFTLSHIFT_Only
@@ -62,11 +64,10 @@ bool ManualRepeat = 0;//<repeat>
 bool io_Auto_BS = 1;//i*o
 bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
 bool noClearStrand = 0; //<!>
-bool multiLine = 1; wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
+bool OutTabs = 1;
 bool multiblock = 0; //<~m>
 bool replacer = 0; //{}
 bool Unicode = 1;
-bool OutTabs = 1; wstring OutTab = L"\t";
 bool multiStrand = 1, showMultiStrand = 0, showMultiStrandElapsedOnly = 0;
 bool relink = 0;
 bool fail = 0;
@@ -408,7 +409,7 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 			if (!NoEscapeOrPause && GetAsyncKeyState(VK_ESCAPE)) break;
 			q = q.substr(q.find('{') + 1, q.find(L'}', q.find('{')) - q.find('{') - 1); tq = q;
 			if (q > L"") {
-				if (multiLine) { q = regex_replace(q, wregex(L"\n"), L""); q = regex_replace(q, wregex(L"\t"), L""); }
+				if (multiLineDelim[0] != '\\') { q = regex_replace(q, wregex(L"\n"), L""); q = regex_replace(q, wregex(L"\t"), L""); }
 				if (q[0] == '\'' && q != L"'") { tqg.replace(tqg.find('{'), 2 + q.length(), L""); q = tqg; continue; } //{'ignore}
 				q = loadVar(q);
 			}
@@ -770,10 +771,7 @@ void loadSe() {
 			case 1936://Kb_Key_Numpad_Enter:
 				Kb_Key_Numpad_Enter = v; break;
 			case 2066://DbMultiLineDelimiter:
-				if (v[0] != '\\') {
-					multiLine = 1; multiLineDelim = v[0];
-				} else { multiLine = 0; multiLineDelim = L'\n'; }
-				break;
+				multiLineDelim = v[0] != '\\' ? v[0] : L'\n'; break;
 			case 872://Replacer:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') replacer = stoi(v); else er(); } break;
 			case 1751://RSHIFT+CtrlKey_Keep:
@@ -1125,7 +1123,7 @@ auto cbGet(wstring cb = L"") {
 void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	HANDLE hC = GetStdHandle(STD_OUTPUT_HANDLE);
 	size_t x = 0; bool t = 0;
-	if (multiLine) { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
+	if (multiLineDelim[0] != '\\') { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
 	auto write = [&x, &t](wstring w) {
 		wcout << w; ++x; t = 1;
 	};
@@ -1205,7 +1203,7 @@ void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0
 void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	HANDLE hC = GetStdHandle(STD_OUTPUT_HANDLE);
 	size_t x = 0; bool t = 0;
-	if (multiLine) { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
+	if (multiLineDelim[0] != '\\') { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
 	auto write = [&x, &t](wstring w) {
 		wcout << w; ++x; t = 1;
 	};
@@ -1721,7 +1719,7 @@ void scanDb() {
 							break;
 						case 'p':
 							if (testqqb(L"<app:") || testqqb(L"<App:")) {//app activate, if app in foreground
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring gq = L""; if (qp[0] == '\'') { auto x = qp.find(qp[0], 1); if (x == string::npos) { gq = qp[0]; qp = qp.substr(1); } else { gq = qp.substr(1, x - 1); qp = qp.substr(gq.length() + 2 + (qp[gq.length() + 2] == ' ')); } }
 								if (qp == L"") { conn(); break; }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link.clear();//<app:a,x,ms,link>
@@ -2025,7 +2023,7 @@ void scanDb() {
 						switch (qq[2]) {
 						case 'f':
 							if (testqqb(L"<ifxy")) {//==, !=, <, <=, g, g=
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring gq = L""; if (qp[0] == '\'') { auto x = qp.find(qp[0], 1); if (x == string::npos) { gq = qp[0]; qp = qp.substr(1); } else { gq = qp.substr(1, x - 1); qp = qp.substr(gq.length() + 2 + (qp[gq.length() + 2] == ' ')); } }
 								if (qp == L"") { conn(); break; }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link.clear();//<ifxy:a a,x,ms,link link>
@@ -2179,7 +2177,7 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<ifcb")) {//Clipboard ==, !=, <, <=, g, g=, (f)ind, (F)ind, (n)ot
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring gq = L""; if (qp[0] == '\'') { auto x = qp.find(qp[0], 1); if (x == string::npos) { gq = qp[0]; qp = qp.substr(1); } else { gq = qp.substr(1, x - 1); qp = qp.substr(gq.length() + 2 + (qp[gq.length() + 2] == ' ')); } }
 								if (qp == L"") { conn(); break; }
 								wstring a = qp, x = L"1", ms = L"0", linkC; link.clear();//<ifcb:a,x,ms,link>
@@ -2394,7 +2392,7 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<if+")) {//<if+:> | stop if <+>
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (check_if_num(qp) == L"" || !qp[0]) { conn(); break; }
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (check_if_num(qp) == L"" || !qp[0]) { conn(); break; }
 								bool b = 0; int q = stoi(qp);
 								wstring l = L""; if (qp.find(' ') != string::npos) l = qp.substr(qp.find(' ') + 1);//<if+:# true:>
 								switch (qq[4]) {
@@ -2432,7 +2430,7 @@ void scanDb() {
 								else rei();
 							}
 							else if (testqqb(L"<if") && qq[3] != ':' && qq[3] != '-' && qq[3] != io[0]) {//<ift:> | (t)ime, (h)our, (m)in, (s)ec  =|e, !|n, <|l, <=|le, g(>), g=|ge, <ift+:5> | <ifs:+5,> (MultiStrand:1)
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring gq = L""; if (qp[0] == '\'') { auto x = qp.find(qp[0], 1); if (x == string::npos) { gq = qp[0]; qp = qp.substr(1); } else { gq = qp.substr(1, x - 1); qp = qp.substr(gq.length() + 2 + (qp[gq.length() + 2] == ' ')); } }
 								if (qp == L"") { conn(); break; }
 								wstring a = qp; a = a.substr(0, a.find(','));
@@ -2791,7 +2789,7 @@ void scanDb() {
 						case 'G':
 						case 'g':
 							if (testqqb(L"<RGB~:") || testqqb(L"<RGB:") || testqqb(L"<rgb:")) { //<rgb:r g b,x,ms,link>
-								if (multiLine) { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); }
 								wstring gq = L""; if (qp[0] == '\'') { auto x = qp.find(qp[0], 1); if (x == string::npos) { gq = qp[0]; qp = qp.substr(1); } else { gq = qp.substr(1, x - 1); qp = qp.substr(gq.length() + 2 + (qp[gq.length() + 2] == ' ')); } }//<rgb:'loop msg'
 								if (qp == L"") { conn(); break; }
 								wstring r, g, b, a = qp, x = L"1", ms = L"0", linkC; link.clear();
@@ -3151,7 +3149,7 @@ void scanDb() {
 						switch (qq[2]) {
 						case 'y':
 							if (testqqb(L"<xy:")) {
-								if ((multiLine) && qx[0] == '\n' || qx[0] == '\t' || qy[0] == '\n' || qy[0] == '\t') {
+								if (multiLineDelim[0] != '\\' && qx[0] == '\n' || qx[0] == '\t' || qy[0] == '\n' || qy[0] == '\t') {
 									qx = regex_replace(qx, wregex(L"\n"), L""); qx = regex_replace(qx, wregex(L"\t"), L"");
 									qy = regex_replace(qy, wregex(L"\n"), L""); qy = regex_replace(qy, wregex(L"\t"), L"");
 								}
@@ -3218,7 +3216,7 @@ void scanDb() {
 					}//<x>
 					break;
 				default:
-					if (multiLine) { if (ctail[0] == '\t' || ctail[0] == '\n') { sleep = 0; continue; } }
+					if (multiLineDelim[0] != '\\') { if (ctail[0] == '\t' || ctail[0] == '\n') { sleep = 0; continue; } }
 					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 90) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if !"#$%& ()*+ : > ?&AZ ^ _ {|}~
 					if (shft) kbHold(VK_LSHIFT);
 					kb(ctail[0]);
@@ -3317,7 +3315,7 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_LSHIFT)) {
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //RSHIFT+LSHIFT <
 				GetAsyncKeyState(cKey); bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (GetAsyncKeyState(cKey)) {
-					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? '<' : '\0'; prints(); x = 1; break; //rshift+lshift+cKey
+					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
 				} Sleep(frequency / 3); } if (x) continue;
 				++rri; if (rri > 1 && !ToggleKeep || rri && strand[0]) {
 					if(strand[0] == '<' && strand.length() > 1) {
@@ -3396,7 +3394,7 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find('>') == std::string::npos) {//x>
 				if (io[0] == ' ' && cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb();
-				clearAllKeys(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+				if (!strand[0]) { clearAllKeys(); } if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}//reg
 			else {
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
