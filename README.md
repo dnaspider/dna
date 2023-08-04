@@ -1,4 +1,4 @@
-&nbsp;<h1><span href="https://github.com/dnaspider/dna/releases" title="Get the latest dnaspider.exe release &#13;&#13;Press [WIN + PAUSE_BREAK] for system type">`🕷`</span>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Programmable keyboard software")</h1>
+&nbsp;<h1><span href="https://github.com/dnaspider/dna/releases" title="Get the latest dnaspider.exe release &#13;&#13;Press [WIN+PAUSE_BREAK] for system type">`🕷`</span>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Programmable keyboard software")</h1>
 Hello Friend, and thank you for your interest in dnaspider.exe 🙏.
 
 🥁 Introducing dnaspider.exe programmable keyboard software for Windows 11, 10 (32/64-bit) PCs! Tweak and execute simple or complex ⌨ and 🖱 functionality✨ to your liking. Use this functionality to automate and accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality seamlessly. 🦾🤖🦾.
@@ -42,11 +42,11 @@ Now run your code.
 Hold <kbd>RCTRL</kbd> press <kbd>LCTRL</kbd> then release <kbd>RCTRL</kbd> 
 
 ### Syntax
-<strong><span title="Settings&#013;=se.txt==========&#013;StrandLengthMode: 1&#013;StrandLength: 3&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#013;&#013;Database&#013;=db.txt==========&#013;hello&#013;===============&#13;&#013;Run&#013;Press H E L in a text area&#13;&#13;Program&#13;=dnaspider.exe=====&#013;strand: h&#013;strand: he&#013;strand: hel&#013;===============">`hello`</span>
- <span title="=se.txt==========&#013;StrandLengthMode: 0&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#13;&#13;=db.txt==========&#13;h:ello&#13;===============&#13;&#13;Run&#13;Clear strand then press H&#13;&#13;To clear strand, toggle RIGHT_CTRL, &#13;BACKSPACE, or LEFT_SHIFT + PAUSE_BREAK&#13;&#13;=dnaspider.exe=====&#013;strand: h&#013;===============">`h:ello`</span>
+<strong><span title="Settings&#013;=se.txt==========&#013;StrandLengthMode: 1&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#013;&#013;Database&#013;=db.txt==========&#013;hello&#013;===============&#13;&#013;Run&#013;Press H E L in a text area&#13;&#13;Program&#13;=dnaspider.exe=====&#013;strand: h&#013;strand: he&#013;strand: hel&#013;===============">`hello`</span>
+ <span title="=se.txt==========&#013;StrandLengthMode: 0&#013;CtrlScanOnlyMode: 0&#013;CloseCtrlMode: 0&#013;Ignore_A-Z: 0&#013;===============&#13;&#13;=db.txt==========&#13;h:ello&#13;===============&#13;&#13;Run&#13;Clear strand then press H&#13;&#13;To clear strand, toggle RIGHT_CTRL, &#13;BACKSPACE, or PAUSE_BREAK&#13;&#13;=dnaspider.exe=====&#013;strand: h&#013;===============">`h:ello`</span>
  <span title="Use minus sign for auto BACKSPACE&#13;&#13;=db.txt==========&#13;h-hello&#13;===============&#13;&#13;Run&#13;Clear strand then press H&#13;&#13;=dnaspider.exe=====&#013;strand: h&#013;===============">`h-hello`</span>
  <span title="Use > to remember input strand &#13;for SCROLL_LOCK repeat&#13; &#13;=db.txt==========&#13;h>ello&#13;===============&#13;&#13;Run&#13;Press H&#13;&#13;=dnaspider.exe=====&#013;strand: h&#013;===============">`h>ello`</span>
- <span title="=db.txt==========&#13;<h:ello&#13;===============&#13;&#13;Run&#13;Press RIGHT_CTRL, release RIGHT_CTRL, H&#13;Or press COMMA + ESC, H&#13;&#13;=dnaspider.exe=====&#013;strand: <&#13;strand: <h&#013;===============">`<h:ello`</span>
+ <span title="=db.txt==========&#13;<h:ello&#13;===============&#13;&#13;Run&#13;Press RIGHT_CTRL, release RIGHT_CTRL, H&#13;Or press COMMA+ESC, H&#13;&#13;=dnaspider.exe=====&#013;strand: <&#13;strand: <h&#013;===============">`<h:ello`</span>
  <span title="&#13;&#13;=db.txt==========&#13;<h-hello&#13;===============&#13;&#13;Run&#13;Press RIGHT_CTRL, release RIGHT_CTRL, H&#13;&#13;=dnaspider.exe=====&#013;strand: <&#13;strand: <h&#013;===============">`<h-hello`</span>
  <span title="Use > to remember input strand &#13;for SCROLL_LOCK repeat&#13;&#13;=db.txt==========&#13;<h>ello&#13;===============&#13;&#13;Run&#13;Press RIGHT_CTRL, release RIGHT_CTRL, H&#13;&#13;=dnaspider.exe=====&#013;strand: <&#13;strand: <h&#013;===============">`<h>ello`</span>
  <span title="Connect&#13;&#13;=db.txt========&#13;<i-><o->h<h:>!&#13;<o->hello!&#13;<h:>ello&#13;=============&#13;&#13;Run&#13;Press RIGHT_CTRL, release RIGHT_CTRL, I&#13;&#13;=dnaspider.exe=====&#013;strand: <i&#013;===============">`<h:>ello`</span>
@@ -55,6 +55,6 @@ Hold <kbd>RCTRL</kbd> press <kbd>LCTRL</kbd> then release <kbd>RCTRL</kbd>
 ### <a href="https://github.com/dnaspider/dna/wiki">Wiki</a> • <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">Codes</a> • <a href="https://github.com/dnaspider/dna/wiki/interface" title="UI">Interface</a>
 
 
-<h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;CTRL + SHIFT + B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">📂Source</a></h3>
+<h3><a href="https://github.com/dnaspider/dna/archive/master.zip" title="Extract dna-master folder from dna-master.zip to desktop&#13;&#13;dnaspider.vcxproj > Open with > Visual Studio&#13;&#13;Solution Explorer > Source Files > dnaspider.cpp&#13;&#13;Build (Release, x64)&#13;CTRL+SHIFT+B&#13;&#13;dnaspider.exe build can be found in dna/x64/release or dna/Release (x86)">📂Source</a></h3>
 
 Open project file <em>dnaspider.vcxproj</em> in Visual Studio.
