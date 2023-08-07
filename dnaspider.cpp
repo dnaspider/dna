@@ -153,7 +153,7 @@ struct Multi {
 	int cx{}, cy{}, speed_ = 0;
 	bool esc = 0, br = 0;//break
 	Multi() {}
-	Multi(wstring& r) {}
+	Multi(wstring& r) { t = r; }
 	void setSpeed(int& sl) { speed_ = sl; }
 	void setApp(wstring& app) {
 		a = app;
@@ -1441,7 +1441,9 @@ void scanDb() {
 				bool b = 0;	if (sv[0] != '<' && tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = sv + tail; b = 1; }
 				else tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
+				if (multiStrand) mainn.t = tail;
 				if (io_Auto_BS) bs_input();
+				if (multiStrand) tail = mainn.t;
 				if (!b) codes = tail;
 			}
 			else {
@@ -1462,7 +1464,9 @@ void scanDb() {
 				case '-':
 					tail = tail.substr(1, tail.length());
 					if (tail[0] == '>') tail = tail.substr(1, tail.length());
+					if (multiStrand) mainn.t = tail;
 					bs_input();
+					if (multiStrand) tail = mainn.t;
 					codes = tail;
 					break;
 				default:
@@ -1476,7 +1480,7 @@ void scanDb() {
 			f.close(); fail = 0; esc_pressed = 0;
 			Multi multi;
 			for (i = 0; i < tail.length(); ++i) {
-				if (multiStrand) { if (strand == sv && !noClearStrand) strand.clear(); }//multiStrand variant clear
+				if (multiStrand) { multi.t = tail; multi.get_i = i; if (strand + L">" == sv || strand == sv && !noClearStrand) strand = L""; }//multiStrand variant clear
 				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.get_i = i; multi.q = qq; multi.setSpeed(speed); } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
 				if (!NoEscapeOrPause) {
 					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { if (multi.esc == 1) {} else { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } }
@@ -1496,6 +1500,7 @@ void scanDb() {
 						if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 					}
 				}
+				if (multiStrand) { tail = mainn.t; i = multi.get_i; }
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { wcout << "ctail: " << OutTab << OutTab << (ctail[0] > 127 ? L"[?]" : ctail) << endl; }
 				switch (ctail[0]) {
@@ -2051,6 +2056,7 @@ void scanDb() {
 								if (multiStrand) { x = multi.getX(); } auto size{ 0 }, length{ stoi(x) };
 
 								auto sifxy = [&qqC, &multi, &a]() {
+									if (multiStrand) a = multi.a;
 									auto q = a.find(' ');
 									auto x = a.substr(0, q), y = a.substr(q + 1);
 									POINT pt; GetCursorPos(&pt);
@@ -2082,19 +2088,22 @@ void scanDb() {
 								};
 
 								wstring tar = a, app = a;
+								if (multiStrand) { x = multi.getX(); } length = stoi(x);
 								for (; size < length; ++size) { //cout << size << "ifxy:" << a << " *" << x << " " << ms << "ms" << endl;
 									if (!NoEscapeOrPause) {
-										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { esc_pressed = 1; pause_resume = 0; if (speed > 0) { speed = 0; } clearAllKeys(); strand.clear(); return; }//stop
+										GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { if (multi.esc == 1) {} else { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } }
 										GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {
-											showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
+											while (GetAsyncKeyState(PauseKey) != 0) { Sleep(frequency / 3); }
+											if (multiStrand) multi.setI();
+											if (showStrand) showOutsMsg(L"", OutsTemplate, L"PAUSE\n", 1);
 											pause_resume = 1;
 											wstring q = L"~PAUSE\n"; speed = 0;
-											Sleep(450); while (pause_resume) {
-												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { kbRelease(PauseKey); break; }
+											while (pause_resume) {
+												GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) { while (GetAsyncKeyState(PauseKey) != 0) { Sleep(frequency / 3); } break; }
 												GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { esc_pressed = 0; pause_resume = 0; multiblock = 0; q = L"~ESC\n"; kbRelease(VK_ESCAPE); break; }
 												if (!esc_pressed) Sleep(150);
 											}
-											showOutsMsg(L"", OutsTemplate, q, 1);
+											if (showStrand) showOutsMsg(L"", OutsTemplate, q, 1);
 											if (q[1] == 'E') break;
 											if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 										}
@@ -2102,7 +2111,7 @@ void scanDb() {
 									if (size >= length) { if (multiStrand) { ms = multi.getMS(); } f(); break; }
 									if (multiStrand) { a = multi.getApp(); qqC = multi.getQQ(); }
 
-									tar = regex_replace(tar, wregex(L"\\\\\\|"), L"  "); tar = regex_replace(tar, wregex(L"\\\\\\&"), L"  ");
+									if (tar.find('\\') != string::npos) { tar = regex_replace(tar, wregex(L"\\\\\\|"), L"  "); tar = regex_replace(tar, wregex(L"\\\\\\&"), L"  "); }
 									if (tar == L"") tar = a;
 									if (tar.find('|') != string::npos || tar.find('&') != string::npos) {// | &
 										wstring t = L"", ta = L"", q = L""; bool sor = 1, sand = 1;
@@ -2140,7 +2149,7 @@ void scanDb() {
 										if (sor) multi.br = 1; //sifxy
 									}
 									else {
-										a = regex_replace(a, wregex(L"\\\\\\|"), L"|");
+										if (a.find('\\') != string::npos) a = regex_replace(a, wregex(L"\\\\\\|"), L"|");
 										sifxy();
 									}
 									if (multi.getBreak()) break;
@@ -2165,7 +2174,7 @@ void scanDb() {
 											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
-										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
+										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { rei(); } break; }//false, continue
 									}
 									f(); break;
 								}
@@ -3279,7 +3288,7 @@ void repeat() {
 	kbRelease(reKey);
 	if (multiStrand) {
 		if (reTail.find(L"<^^>") != string::npos) reTail.replace(reTail.find(L"<^^>"), 4, L"");
-		thread thread(out, reTail); thread.detach();
+		strand = L""; re = L">" + reTail; thread thread(scanDb); thread.detach(); wcout.flush().clear();
 	}
 	else out(tail);
 }
@@ -3322,15 +3331,16 @@ int main() {//cout << "@dnaspider\n\n";
 				} Sleep(frequency / 3); } if (x) continue;
 				++rri; if (rri > 1 && !ToggleKeep || rri && strand[0]) {
 					if(strand[0] == '<' && strand.length() > 1) {
-						rri = 0; strand.append(L">"); scanDb();	strand.clear();
+						rri = 0; strand.append(L">"); prints(); i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); strand = L""; thread.detach();
 					} else if (strand[0] != '<') {
-						clearAllKeys(); strand = L"<";
+						if (qScanOnly) { clearAllKeys(); } strand = L"<";
 					} else {
 						strand.clear();
 					}
-					prints(); continue;
+					wcout.flush().clear(); prints(); continue;
 				}
-				clearAllKeys(); if (strandLengthMode) { strand = L"<"; rri = 0; } else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
+				if (qScanOnly) { clearAllKeys(); } if (strandLengthMode) { strand = L"<"; rri = 0; }
+				else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
 			}
 			if (LSHIFTCtrlKey) {
 				GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) { ++min;
@@ -3380,14 +3390,14 @@ int main() {//cout << "@dnaspider\n\n";
 					if (strand.find('>') != std::string::npos) strand.clear();
 					else {
 						if (strand.length() > 1) {
-							if (multiStrand) {
-								i = 0; if (cKey == VK_SPACE) { kb(VK_BACK); } if (RSHIFTLSHIFT_Only && !ToggleKeep) { rri = 0; } thread thread(key, L">"); Sleep(CloseCtrlSpacer); thread.detach();
-								if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+							strand.append(L">"); prints(); if (multiStrand) {
+								if (cKey == VK_SPACE) { kb(VK_BACK); } if (RSHIFTLSHIFT_Only && !ToggleKeep) { rri = 0; }
+								i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach();
 							} else {
-								key(L">");
+								scanDb();
 								if (strand[0]) { strand.clear(); prints(); }
+								continue;
 							}
-							continue;
 						}
 						else strand.clear();
 					}
@@ -3396,8 +3406,11 @@ int main() {//cout << "@dnaspider\n\n";
 				if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find('>') == std::string::npos) {//x>
-				if (io[0] == ' ' && cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb();
-				if (!strand[0]) { clearAllKeys(); } if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+				if (cKey == VK_SPACE) { kb(VK_BACK); }
+				strand.append(L">"); prints();
+				if (strand[0] != '<') {
+					i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); strand = L""; thread.detach();
+				}
 			}//reg
 			else {
 				if (close_ctrl_mode && strand.length() > 0) strand.clear();
@@ -3413,7 +3426,7 @@ int main() {//cout << "@dnaspider\n\n";
 					clearAllKeys(); strand = L"<";
 				}
 			}
-			prints(); continue;
+			wcout.flush().clear(); prints(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
