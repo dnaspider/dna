@@ -148,7 +148,7 @@ struct Mainn {
 };
 
 struct Multi {
-	wstring r, g, b, a, x, m, l, t = tail, q = qq;
+	wstring r, g, b, a, x, m, l, t = tail, q = qq, s = strand;
 	size_t get_i = i, icp = 0;
 	int cx{}, cy{}, speed_ = 0;
 	bool esc = 0, br = 0;//break
@@ -377,7 +377,7 @@ void clearAllKeys() {
 void printDb() {
 	wcout << database << "\n";
 	wifstream f(database); wstring cell;
-	f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
+	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	while (getline(f, cell)) { wcout << cell << endl; }
 	f.close(); cout << endl;
 }
@@ -1423,8 +1423,9 @@ void scanDb() {
 			|| a == b + L'>' //<x>
 			|| a == b + L'^' //<x^>
 		) {
-			if (multiStrand) { if (!re[0]) mainn.setStrand(cell); }
-			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1);
+			Multi multi; 
+			if (multiStrand) { strand = multi.s; if (!re[0]) mainn.setStrand(cell); }
+			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1); if (multiStrand) multi.s = strand;
 			if (re[0] && !strand[0]) {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
@@ -1435,19 +1436,21 @@ void scanDb() {
 				}
 			}
 			tail = re[0] && !sv[0] ? re : cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>'));
-			if (multiStrand) mainn.getStrand(cell);
+			if (multiStrand) { multi.t = tail; mainn.getStrand(cell); }
 			tail = isVar(tail); //<r:>
+			if (multiStrand) tail = multi.t;
 			if (tail[0] == io[0]) {//io:
 				bool b = 0;	if (sv[0] != '<' && tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = sv + tail; b = 1; }
 				else tail = tail.substr(1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
-				if (multiStrand) mainn.t = tail;
+				if (multiStrand) { multi.t = tail; strand = multi.s; }
 				if (io_Auto_BS) bs_input();
-				if (multiStrand) tail = mainn.t;
+				if (multiStrand) tail = multi.t;
 				if (!b) codes = tail;
 			}
 			else {
 				switch (tail[0]) {//set_tail
+					if (multiStrand) tail = multi.t;
 				case ':':
 					tail = tail.substr(1, tail.length());
 					if (tail[0] == '>') tail = tail.substr(1, tail.length());
@@ -1464,21 +1467,21 @@ void scanDb() {
 				case '-':
 					tail = tail.substr(1, tail.length());
 					if (tail[0] == '>') tail = tail.substr(1, tail.length());
-					if (multiStrand) mainn.t = tail;
+					if (multiStrand) multi.t = tail;
 					bs_input();
-					if (multiStrand) tail = mainn.t;
+					if (multiStrand) tail = multi.t;
 					codes = tail;
 					break;
 				default:
 					codes = cell;
 				}
+				if (multiStrand) multi.t = tail;
 			}
 			if (noClearStrand) noClearStrand = 0;
-			if (multiStrand) { reTail = codes; mainn.setTail(); }
+			if (multiStrand) { reTail = codes; tail = multi.t; }
 			if (showOuts && !showMultiStrand) { showOutsMsg(L"found: " + OutTab + OutTab, cell); showOutsMsg(L"tail: " + OutTab + OutTab, tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close(); fail = 0; esc_pressed = 0;
-			Multi multi;
 			for (i = 0; i < tail.length(); ++i) {
 				if (multiStrand) { multi.t = tail; multi.get_i = i; if (strand + L">" == sv || strand == sv && !noClearStrand) strand = L""; }//multiStrand variant clear
 				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.get_i = i; multi.q = qq; multi.setSpeed(speed); } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; } } sleep = 1; }
@@ -1500,7 +1503,7 @@ void scanDb() {
 						if (multiStrand) { tail = multi.t; i = multi.get_i; qq = multi.q; speed = multi.speed_; }
 					}
 				}
-				if (multiStrand) { tail = mainn.t; i = multi.get_i; }
+				if (multiStrand) { tail = multi.t; i = multi.get_i; }
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
 				if (showOuts) { wcout << "ctail: " << OutTab << OutTab << (ctail[0] > 127 ? L"[?]" : ctail) << endl; }
 				switch (ctail[0]) {
@@ -2150,6 +2153,7 @@ void scanDb() {
 									}
 									else {
 										if (a.find('\\') != string::npos) a = regex_replace(a, wregex(L"\\\\\\|"), L"|");
+										if (multiStrand) multi.a = a;
 										sifxy();
 									}
 									if (multi.getBreak()) break;
@@ -3231,6 +3235,7 @@ void scanDb() {
 					if (multiLineDelim[0] != '\\') { if (ctail[0] == '\t' || ctail[0] == '\n') { sleep = 0; continue; } }
 					if ((ctail[0] >= 33 && ctail[0] <= 38) || (ctail[0] >= 40 && ctail[0] <= 43) || ctail[0] == 58 || (ctail[0] >= 62 && ctail[0] <= 90) || ctail[0] == 94 || ctail[0] == 95 || (ctail[0] >= 123 && ctail[0] <= 126)) { shft = true; }//if !"#$%& ()*+ : > ?&AZ ^ _ {|}~
 					if (shft) kbHold(VK_LSHIFT);
+					if (multiStrand) { tail = multi.t; i = multi.get_i; ctail = tail.substr(i, 1); }
 					kb(ctail[0]);
 					if (shft) shftRelease();
 					GetAsyncKeyState(VkKeyScanW(ctail[0])); GetAsyncKeyState(ctail[0]);//clear
@@ -3337,10 +3342,10 @@ int main() {//cout << "@dnaspider\n\n";
 					} else {
 						strand.clear();
 					}
-					wcout.flush().clear(); prints(); continue;
+					wcout.flush().clear(); prints(); clearAllKeys(); continue;
 				}
-				if (qScanOnly) { clearAllKeys(); } if (strandLengthMode) { strand = L"<"; rri = 0; }
-				else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
+				if (strandLengthMode) { strand = L"<"; rri = 0; if (qScanOnly) { clearAllKeys(); } }
+				else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
 			}
 			if (LSHIFTCtrlKey) {
 				GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) { ++min;
@@ -3392,7 +3397,7 @@ int main() {//cout << "@dnaspider\n\n";
 						if (strand.length() > 1) {
 							strand.append(L">"); prints(); if (multiStrand) {
 								if (cKey == VK_SPACE) { kb(VK_BACK); } if (RSHIFTLSHIFT_Only && !ToggleKeep) { rri = 0; }
-								i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach();
+								i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); strand = L""; thread.detach();
 							} else {
 								scanDb();
 								if (strand[0]) { strand.clear(); prints(); }
@@ -3426,7 +3431,7 @@ int main() {//cout << "@dnaspider\n\n";
 					clearAllKeys(); strand = L"<";
 				}
 			}
-			wcout.flush().clear(); prints(); continue;
+			wcout.flush().clear(); prints(); clearAllKeys(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
