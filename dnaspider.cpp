@@ -57,9 +57,10 @@ short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
 short cKey = VK_SPACE; //<
 short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax, cKeyMax = 3;
+short RSHIFTLSHIFT_Only = 1, RSHIFTLSHIFTCtrlKey = 1;
 bool LSHIFTCtrlKey = 0; //<
 bool RSHIFTCtrlKeyToggle = 0;
-bool RSHIFTLSHIFT_Only = 1, ToggleKeep = 0;//Rshift+CtrlKey <
+bool ToggleKeep = 0;//Rshift+CtrlKey <
 bool ManualRepeat = 0;//<repeat>
 bool io_Auto_BS = 1;//i*o
 bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
@@ -558,8 +559,17 @@ void loadSe() {
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
-			case 1536://RSHIFT+LSHIFT_Only:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') RSHIFTLSHIFT_Only = stoi(v); else er(); } break;
+			case 1536://RSHIFT+LSHIFT_Only: (0 1)
+				{ if (check_if_num(v)[0]) {
+					if (v.find(' ') != string::npos) {
+						wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
+						v = v.substr(0, v.find(' '));
+						RSHIFTLSHIFTCtrlKey = stoi(max);
+					}
+					else RSHIFTLSHIFTCtrlKey = 1;
+					RSHIFTLSHIFT_Only = stoi(v);
+				}
+				else er(); } break;
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
@@ -816,7 +826,7 @@ void loadSe() {
 				} break;
 			case 1172://StartHidden:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') startHidden = stoi(v); else er(); } break;
-			case 760://CtrlKey: (vk enum, max)
+			case 760://CtrlKey: (vk_enum max)
 				{ if (check_if_num(v)[0]) {
 					if (v.find(' ') != string::npos) {
 						wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
@@ -891,14 +901,14 @@ void printSe() {
 		cout << "DbMultiLineDelimiter: "; if (multiLineDelim[0] == '\n') cout << "\\n\n"; else showOutsMsg(L"", multiLineDelim, L"\n", 1);
 		cout << "Replacer: " << replacer << '\n';
 		wcout << "ReplacerDb: " << replacerDb << '\n';
-		cout << "CtrlKey: " << cKey << '\n';
-		cout << "LSHIFT+CtrlKey: " << LSHIFTCtrlKey << '\n';
+		cout << "CtrlKey: " << cKey << ' ' << cKeyMax << '\n';
+		cout << "LSHIFT+CtrlKey: " << LSHIFTCtrlKey << ' ' << LSHIFTCtrlKeyMax << '\n';
 		cout << "CloseCtrlMode: " << close_ctrl_mode << '\n';
 		cout << "CloseCtrlSpacer: " << CloseCtrlSpacer << '\n';
-		cout << "RSHIFT+CtrlKey_Toggle: " << RSHIFTCtrlKeyToggle << '\n';
+		cout << "RSHIFT+CtrlKey_Toggle: " << RSHIFTCtrlKeyToggle << ' ' << RSHIFTCtrlKeyToggleMax << '\n';
 		cout << "RSHIFT+CtrlKey_Keep: " << ToggleKeep << '\n';
 		cout << "CtrlScanOnlyMode: " << qScanOnly << '\n';
-		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << '\n';
+		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << ' ' << RSHIFTLSHIFTCtrlKey << '\n';
 		cout << "StrandLengthMode: " << strandLengthMode << '\n';
 		cout << "RepeatKey: " << reKey << '\n';
 		cout << "PauseKey: " << PauseKey << '\n';
@@ -1042,7 +1052,7 @@ void toggle_visibility() {
 	else
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	Sleep(150);
-	strand.clear();
+	strand = L"";
 }
 
 wstring getAppT() {
@@ -3331,12 +3341,12 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //RSHIFT+LSHIFT <
-				GetAsyncKeyState(cKey); bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (GetAsyncKeyState(cKey)) {
+				GetAsyncKeyState(cKey); bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (GetAsyncKeyState(cKey) && RSHIFTLSHIFTCtrlKey) {
 					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
 				} Sleep(frequency / 3); } if (x) continue;
 				++rri; if (rri > 1 && !ToggleKeep || rri && strand[0]) {
 					if(strand[0] == '<' && strand.length() > 1) {
-						rri = 0; strand.append(L">"); prints(); i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); strand = L""; thread.detach();
+						rri = 0; strand.append(L">"); prints(); i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach();
 					} else if (strand[0] != '<') {
 						if (qScanOnly) { clearAllKeys(); } strand = L"<";
 					} else {
@@ -3344,7 +3354,7 @@ int main() {//cout << "@dnaspider\n\n";
 					}
 					wcout.flush().clear(); prints(); clearAllKeys(); continue;
 				}
-				if (strandLengthMode) { strand = L"<"; rri = 0; if (qScanOnly) { clearAllKeys(); } }
+				if (strandLengthMode) { strand = L"<"; rri = 0; if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } }
 				else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
 			}
 			if (LSHIFTCtrlKey) {
@@ -3397,7 +3407,7 @@ int main() {//cout << "@dnaspider\n\n";
 						if (strand.length() > 1) {
 							strand.append(L">"); prints(); if (multiStrand) {
 								if (cKey == VK_SPACE) { kb(VK_BACK); } if (RSHIFTLSHIFT_Only && !ToggleKeep) { rri = 0; }
-								i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); strand = L""; thread.detach();
+								i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach();
 							} else {
 								scanDb();
 								if (strand[0]) { strand.clear(); prints(); }
@@ -3414,7 +3424,7 @@ int main() {//cout << "@dnaspider\n\n";
 				if (cKey == VK_SPACE) { kb(VK_BACK); }
 				strand.append(L">"); prints();
 				if (strand[0] != '<') {
-					i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); strand = L""; thread.detach();
+					i = 0; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach();
 				}
 			}//reg
 			else {
@@ -3499,9 +3509,9 @@ int main() {//cout << "@dnaspider\n\n";
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
 				if (EscHAutoBs) { kb(VK_BACK); } GetAsyncKeyState(VK_ESCAPE);
-				toggle_visibility(); 
+				toggle_visibility();
 				if (showStrand && !qScanOnly) showOutsMsg(L"", OutsTemplate, strand + L"\n", 1);
-				continue; 
+				continue;
 			}
 			GetAsyncKeyState(VK_OEM_2); if (GetAsyncKeyState(VK_OEM_2)) { printCtrls(); continue; } //? + esc
 			if (Kb_Key_Esc[0]) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
