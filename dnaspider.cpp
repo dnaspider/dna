@@ -3304,7 +3304,7 @@ void repeat() {
 	kbRelease(reKey);
 	if (multiStrand) {
 		if (reTail.find(L"<^^>") != string::npos) reTail.replace(reTail.find(L"<^^>"), 4, L"");
-		strand = L""; re = reTail; i = -1; thread thread(scanDb); thread.detach(); wcout.flush().clear();
+		strand = L""; re = L">" + reTail; i = -1; thread thread(scanDb); thread.detach(); wcout.flush().clear();
 	}
 	else out(tail);
 }
