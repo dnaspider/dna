@@ -903,10 +903,10 @@ void printSe() {
 		cout << "Replacer: " << replacer << '\n';
 		wcout << "ReplacerDb: " << replacerDb << '\n';
 		cout << "CtrlKey: " << cKey << ' ' << cKeyMax << '\n';
-		cout << "LSHIFT+CtrlKey: " << LSHIFTCtrlKey << ' ' << LSHIFTCtrlKeyMax << '\n';
+		cout << "LSHIFT+CtrlKey: " << LSHIFTCtrlKey << '\n';
 		cout << "CloseCtrlMode: " << close_ctrl_mode << '\n';
 		cout << "CloseCtrlSpacer: " << CloseCtrlSpacer << '\n';
-		cout << "RSHIFT+CtrlKey_Toggle: " << RSHIFTCtrlKeyToggle << ' ' << RSHIFTCtrlKeyToggleMax << '\n';
+		cout << "RSHIFT+CtrlKey_Toggle: " << RSHIFTCtrlKeyToggle << '\n';
 		cout << "RSHIFT+CtrlKey_Keep: " << ToggleKeep << '\n';
 		cout << "CtrlScanOnlyMode: " << qScanOnly << '\n';
 		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << ' ' << RSHIFTLSHIFTCtrlKey << '\n';
