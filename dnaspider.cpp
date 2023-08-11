@@ -3294,8 +3294,11 @@ void key(wstring k) {
 	strand.append(k);
 	if (strandLengthMode && static_cast<int>(strand.length()) > strandLengthMode && strand[0] != '<') strand = strand.substr(strand.length() - strandLengthMode);
 	prints();
-	if (close_ctrl_mode && strand.find('>') != std::string::npos && strand[strand.length() - 1] != '>') { strand.clear(); prints(); return; }
-	if (multiStrand) { thread thread(scanDb); thread.detach(); return; } else scanDb();
+	auto x = strand.find('>') != std::string::npos;
+	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
+	x = x && k[0] == '>';
+	if (multiStrand) { if (x) { i = -1; } thread thread(scanDb); if (x) { Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand[0] = 0; } noClearStrand = 0; } thread.detach(); if (x) { if (showStrand) { wcout.flush().clear(); } clearAllKeys(); } return; }
+	else { scanDb(); if (x) { if (!noClearStrand) { strand.clear(); } noClearStrand = 0; clearAllKeys(); return; } }
 	if (!strand[0]) prints();
 }
 
@@ -3304,7 +3307,7 @@ void repeat() {
 	kbRelease(reKey);
 	if (multiStrand) {
 		if (reTail.find(L"<^^>") != string::npos) reTail.replace(reTail.find(L"<^^>"), 4, L"");
-		strand = L""; re = L">" + reTail; i = -1; thread thread(scanDb); thread.detach(); wcout.flush().clear();
+		strand = L""; re = L">" + reTail; i = -1; thread thread(scanDb); thread.detach(); if (showStrand) { wcout.flush().clear(); }
 	}
 	else out(tail);
 }
@@ -3353,7 +3356,7 @@ int main() {//cout << "@dnaspider\n\n";
 					} else {
 						strand.clear();
 					}
-					wcout.flush().clear(); prints(); clearAllKeys(); continue;
+					if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
 				}
 				if (strandLengthMode) { strand = L"<"; rri = 0; if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } }
 				else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
@@ -3444,7 +3447,7 @@ int main() {//cout << "@dnaspider\n\n";
 					clearAllKeys(); strand = L"<";
 				}
 			}
-			wcout.flush().clear(); prints(); clearAllKeys(); continue;
+			if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
