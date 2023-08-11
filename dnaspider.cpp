@@ -580,7 +580,7 @@ void loadSe() {
 			case 959://AutoBs_io:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') io_Auto_BS = stoi(v); else er(); } break;
 			case 274://io:
-				{ if (!v[0]) { v[0] = ' '; } io = v[0]; } break;
+				{ if (!v[0]) { v[0] = ' '; } io = v; } break;
 			case 2738://ShowMultiStrandElapsedOnly:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrandElapsedOnly = stoi(v); else er(); } break;
 				{ if (check_if_num(v)[0]) PauseKey = stoi(v); else er(); } break;
@@ -1396,7 +1396,7 @@ wstring randn(bool bg = 0) {
 }
 
 void bs_input() {
-	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] == 60 || ((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] > 127) { ++t; continue; } if (strand[t] == 60 || ((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 }
 
 void replace_q(wstring &a, wstring b, wstring c) {
@@ -1450,12 +1450,16 @@ void scanDb() {
 			if (multiStrand) { multi.t = tail; mainn.getStrand(cell); }
 			tail = isVar(tail); //<r:>
 			if (multiStrand) tail = multi.t;
-			if (tail[0] == io[0]) {//io:
-				bool b = 0;	if (sv[0] != '<' && tail[1] == '>') { tail = tail.substr(2, tail.length()); codes = sv + tail; b = 1; }
-				else tail = tail.substr(1, tail.length());
+			if (tail.substr(0, io.size()) == io) {//io:
+				bool b = 0;	if (sv[0] != '<' && tail[io[0] > 127 ? 2 : 1] == '>') {//x[io]>
+					if (cell[sv.length()] == '>') { sv = sv.substr(0, sv.length() - 1); }
+					tail = tail.substr(io[0] > 127 ? 2 + 1 : 2, tail.length());
+					codes = sv.substr(0, sv.length() - 1) + tail; b = 1;
+				}
+				else tail = tail.substr(io[0] > 127 ? 2 : 1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
 				if (multiStrand) { multi.t = tail; strand = multi.s; }
-				if (io_Auto_BS) bs_input();
+				if (io_Auto_BS && !b) bs_input();
 				if (multiStrand) tail = multi.t;
 				if (!b) codes = tail;
 			}
@@ -3296,7 +3300,7 @@ void key(wstring k) {
 	prints();
 	auto x = strand.find('>') != std::string::npos;
 	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
-	x = x && k[0] == '>';
+	x = x && k[k.length() - 1] == '>';
 	if (multiStrand) { if (x) { i = -1; } thread thread(scanDb); if (x) { Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand[0] = 0; } noClearStrand = 0; } thread.detach(); if (x) { if (showStrand) { wcout.flush().clear(); } clearAllKeys(); } return; }
 	else { scanDb(); if (x) { if (!noClearStrand) { strand.clear(); } noClearStrand = 0; clearAllKeys(); return; } }
 	if (!strand[0]) prints();
