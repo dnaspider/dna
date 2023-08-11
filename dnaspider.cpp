@@ -1454,7 +1454,7 @@ void scanDb() {
 				bool b = 0;	if (sv[0] != '<' && tail[io[0] > 127 ? 2 : 1] == '>') {//x[io]>
 					if (cell[sv.length()] == '>') { sv = sv.substr(0, sv.length() - 1); }
 					tail = tail.substr(io[0] > 127 ? 2 + 1 : 2, tail.length());
-					codes = sv.substr(0, sv.length() - 1) + tail; b = 1;
+					codes = sv[sv.length() - 1] == '>' ? sv.substr(0, sv.length() - 1) + tail : sv + tail; b = 1;
 				}
 				else tail = tail.substr(io[0] > 127 ? 2 : 1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1, tail.length());
