@@ -109,8 +109,8 @@ void repeat();
 
 #pragma region classo
 struct Store {
-	wstring v = strand;
-	Store() {};
+	wstring v;
+	Store() :v{ strand } {};
 };
 struct Mainn {
 	wstring s, s1, &t = tail;//strand
@@ -540,7 +540,7 @@ void kbPress(Multi multi, wstring s, short key) {
 	if (multiStrand) multi.get_i = i;
 }
 
-void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); Sleep(1); re.clear(); }
+void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
 
 void calc() {
 	if (assume) { i += qq.find('>'); return; }
@@ -1422,7 +1422,6 @@ void scanDb() {
 				return;
 		}
 	}
-	else if (strand[0] == '<' && strand[1] == '>') return;
 	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (!database[0]) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	wstring sv = strand;
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
@@ -3299,11 +3298,11 @@ void printIntro() {
 
 void key(wstring k) {
 	if (multiblock) return;
-	if (k.size() > 1 && k.find(' ') != string::npos) {
+	if (k.size() > 2 && k.find(' ') != string::npos) {
 		re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
 		strand.append(k);
-		Store s; if (b && strand[0] == '<') {
+		Store s; if (b && strand[0] == '<' || b && k[0] == '>' && strand.size() > 1 ) {
 			s.v = strand; out(re); strand = s.v;
 		}
 		else {
@@ -3312,8 +3311,8 @@ void key(wstring k) {
 			}
 		}
 	} else
-	strand.append(k);
-	if (strandLengthMode && static_cast<int>(strand.length()) > strandLengthMode && strand[0] != '<') strand = strand.substr(strand.length() - strandLengthMode);
+		strand.append(k); if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
+	if (strandLengthMode && strand.length() > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand.substr(strand.length() - strandLengthMode);
 	prints();
 	auto x = strand.find('>') != std::string::npos;
 	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
