@@ -151,11 +151,11 @@ struct Mainn {
 };
 
 struct Multi {
-	wstring qp, &r, g, b, a, x, m, l, t, q, s;
+	wstring qp, r, g, b, a, x, m, l, t, q, s;
 	size_t get_i, icp;
 	int cx, cy, speed_;
 	bool esc, br;//break
-	Multi() :qp{}, r{t}, g{}, b{}, a{}, x{}, m{}, l{}, t{ tail }, q{ qq }, s{ strand }, get_i{}, icp{}, cx{}, cy{}, speed_{}, esc{}, br{} {}
+	Multi() :qp{}, r{}, g{}, b{}, a{}, x{}, m{}, l{}, t{ tail }, q{ qq }, s{ strand }, get_i{}, icp{}, cx{}, cy{}, speed_{}, esc{}, br{} {}
 	void setSpeed(int& sl) { speed_ = sl; }
 	void setApp(wstring& app) {
 		a = app;
