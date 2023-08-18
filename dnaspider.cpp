@@ -3474,25 +3474,25 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			GetAsyncKeyState(0xBC); if (GetAsyncKeyState(0xBC)) {//esc + ,
 				if (EscCommaAutoBs) { kb(VK_BACK); GetAsyncKeyState(VK_BACK); }
-				if (strand[0] == '<' && close_ctrl_mode && strand.length() >= 1) {
+				switch (strand[0]) {
+				case '<':
 					if (strand == L"<") continue;
-					strand.append(L">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-					if (multiStrand) { thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); strand.clear(); continue; } else scanDb();
-					if (strand[0]) strand.clear();
-					if (strand == L"") prints();
-					continue;
+					break;
+				default:
+					if (strand[0]) break;
+					strand = L"<"; prints(); clearAllKeys(); continue;
 				}
-				else { 
-					if (strand[0] == '<') { strand.clear(); prints(); continue; }
-					if (strand[0] != '<' && close_ctrl_mode && strand.length() > 0) {
-						strand.append(L">"); prints(); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-						if (multiStrand) { thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); strand.clear(); continue; } else scanDb();
-						if (strand[0]) strand.clear();
-						if (strand == L"") prints();
-						continue;
-					}
-					clearAllKeys(); strand = L"<"; prints(); continue;
+				if (strand.length() > 0) {
+					kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
+					strand.append(L">"); prints();
+					if (multiStrand) { thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); }
+					else scanDb();
+					if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 				}
+				else continue;
+				if (!strand[0]) prints();
+				clearAllKeys();
+				continue;
 			}
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
