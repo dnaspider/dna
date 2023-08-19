@@ -3267,13 +3267,17 @@ void key(wstring k) {
 		k = k.substr(0, k.find(' '));
 		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = L"<"; prints(); } return; }  //qq < (Kb_Key_Q > '<bs>)
 		strand.append(k);
-		Store s; if (b && strand[0] == '<' || b && k[0] == '>' && strand.size() > 1 ) {
-			s.v = strand; out(re); strand = s.v;
-		}
-		else {
-			if (!b) {
+		{
+			bool y = showMultiStrandElapsedOnly; if (y) showMultiStrandElapsedOnly = 0;
+			Store s; if (b && strand[0] == '<' || b && k[0] == '>' && strand.size() > 1) {
 				s.v = strand; out(re); strand = s.v;
 			}
+			else {
+				if (!b) {
+					s.v = strand; out(re); strand = s.v;
+				}
+			}
+			if (y) showMultiStrandElapsedOnly = y;
 		}
 	} else
 		strand.append(k); if (Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
