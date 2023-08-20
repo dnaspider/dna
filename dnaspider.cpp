@@ -3262,11 +3262,19 @@ void printIntro() {
 
 void key(wstring k) {
 	if (multiblock) return;
-	if (k.size() > 2 && k.find(' ') != string::npos) {
+	bool bk = 0; if (k.size() > 2 && k.find(' ') != string::npos) {
 		re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
-		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = L"<"; prints(); } return; }  //qq < (Kb_Key_Q > '<bs>)
-		strand.append(k);
+		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
+			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = L"<"; prints(); return; }
+			else {
+				if (k[1] && strand[0] != '<') {
+					k = k.substr(1); bk = 1;
+				}
+				else return;
+			}
+		}
+		strand.append(k[0] == '>' ? L">" : k);
 		{
 			bool y = showMultiStrandElapsedOnly; if (y) showMultiStrandElapsedOnly = 0;
 			Store s; if (b && strand[0] == '<' || b && k[0] == '>' && strand.size() > 1) {
@@ -3280,8 +3288,9 @@ void key(wstring k) {
 			if (y) showMultiStrandElapsedOnly = y;
 		}
 	} else
-		strand.append(k); if (Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode && strand.length() > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand.substr(strand.length() - strandLengthMode);
+		strand.append(k);
+	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
+	if (strandLengthMode && strand.length() > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand.substr(strand.length() - strandLengthMode - (k[0] > 127));
 	prints();
 	auto x = strand.find('>') != std::string::npos;
 	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
@@ -3514,7 +3523,11 @@ int main() {//cout << "@dnaspider\n\n";
 			if (Kb_Key_Esc[0]) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
 			continue;
 		}
-		if (!strand[0] && Kb_QQ_k > 0 && GetAsyncKeyState(Kb_QQ_k)) { GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); Kb_QQ_i = 0; if (!qScanOnly && !RSHIFTLSHIFT_Only || qScanOnly && RSHIFTLSHIFT_Only) strand = L"<"; else strand = qScanOnly ? L"<" : L""; if (RSHIFTLSHIFT_Only) { ++rri; } prints(); if (qScanOnly || RSHIFTLSHIFT_Only) clearAllKeys(); } continue; } //qq < (Kb_Key_Q > '<bs>)
+		if (RSHIFTLSHIFT_Only && !strand[0] && Kb_QQ_k > 0 && GetAsyncKeyState(Kb_QQ_k)) {
+			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i;
+			if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); if (!qScanOnly && !RSHIFTLSHIFT_Only) strand = L"<"; else strand = qScanOnly ? L"<" : L""; if (RSHIFTLSHIFT_Only) { ++rri; } prints(); if (qScanOnly || RSHIFTLSHIFT_Only) clearAllKeys(); }
+			continue;
+		}
 		if (qScanOnly && strand[0] != '<') continue;
 		if (!rri && RSHIFTLSHIFT_Only && !strand[0]) { if (Kb_QQ_i > 0) { Kb_QQ_i = 0; } continue; }
 #pragma region input_strand
