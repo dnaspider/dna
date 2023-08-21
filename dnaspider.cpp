@@ -14,7 +14,7 @@ using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
 wstring
-	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L"q", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
+	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L">q '<bs>", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
 	Kb_Key_0 = L"0", Kb_Key_1 = L"1", Kb_Key_2 = L"2", Kb_Key_3 = L"3", Kb_Key_4 = L"4", Kb_Key_5 = L"5", Kb_Key_6 = L"6", Kb_Key_7 = L"7", Kb_Key_8 = L"8", Kb_Key_9 = L"9",
 	Kb_Key_F1 = L"!", Kb_Key_F2 = L"@", Kb_Key_F3 = L"#", Kb_Key_F4 = L"$", Kb_Key_F5 = L"%", Kb_Key_F6 = L"^", Kb_Key_F7 = L"&", Kb_Key_F8 = L"*", Kb_Key_F9 = L"(", Kb_Key_F10 = L")", Kb_Key_F11 = L"_", Kb_Key_F12 = L"+",
 	Kb_Key_Left = L"L", Kb_Key_Up = L"U", Kb_Key_Right = L"R", Kb_Key_Down = L"D",
@@ -51,13 +51,13 @@ int speed = 0; //<<
 int qxc = 0, qyc = 0;//<rp>
 int qxcc = 0, qycc = 0;//cc
 int CloseCtrlSpacer = 128;
-short Kb_QQ_i{}, Kb_QQ_k{}; //qq <, [Kb_Key_Q: > '<bs>]
+short Kb_QQ_i{}, Kb_QQ_k{}; //qq < [Kb_Key_Q: >q '<bs>]
 short strandLengthMode = 0;
 short PauseKey = 123; //VK_F12
 short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
-short cKey = VK_SPACE; //<
-short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax, cKeyMax = 3;
+short cKey = VK_SPACE, cKeyMax = 3; //<
+short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax;
 short RSHIFTLSHIFT_Only = 1, RSHIFTLSHIFTCtrlKey = 0;
 bool LSHIFTCtrlKey = 0; //<
 bool RSHIFTCtrlKeyToggle = 0;
@@ -1379,12 +1379,11 @@ void scanDb() {
 	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (!database[0]) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 	wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
-		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...	
+		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| strandLengthMode && sv[0] != '<' && sv.size() == .0+strandLengthMode + close_ctrl_mode && cell.substr(0, strandLengthMode) == b //xxx
-			|| strandLengthMode && sv[0] != '<' && cell.substr(0, (size_t)strandLengthMode - 1) == b //xxx
+			|| strandLengthMode && sv[0] != '<' && cell.substr(0, sv.size() - 1) == b //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
@@ -3290,7 +3289,7 @@ void key(wstring k) {
 	} else
 		strand.append(k);
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode && strand.length() > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand.substr(strand.length() - strandLengthMode - (k[0] > 127));
+	if (strandLengthMode && strand != k && strand.length() > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] > 127 ? strandLengthMode == 1 ? strand.substr(2) : strand.substr((size_t)2 - (strand.length() == (size_t)strandLengthMode * 2 ? k[0] > 127 ? 2 : 0 : 0)) : strand.substr(1);
 	prints();
 	auto x = strand.find('>') != std::string::npos;
 	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
