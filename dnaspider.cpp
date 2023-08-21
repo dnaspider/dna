@@ -1378,12 +1378,13 @@ void scanDb() {
 	wstring sv = strand;
 	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (!database[0]) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+	short svi = 0; if (strandLengthMode && sv.size() - close_ctrl_mode > 1) { for (auto c : sv) if (c > 127) ++svi; } //counter for non asciis
 	wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| strandLengthMode && sv[0] != '<' && cell.substr(0, sv.size() - 1) == b //xxx
+			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
@@ -3289,7 +3290,7 @@ void key(wstring k) {
 	} else
 		strand.append(k);
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode && strand != k && strand.length() > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] > 127 ? strandLengthMode == 1 ? strand.substr(2) : strand.substr((size_t)2 - (strand.length() == (size_t)strandLengthMode * 2 ? k[0] > 127 ? 2 : 0 : 0)) : strand.substr(1);
+	if (strandLengthMode && strand != k && strand.length() - (strand[0] > 127 || k[0] > 127) > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] < 128 ? strand.substr(1) : strandLengthMode == 1 ? strand.substr(2) : strand.substr((size_t)2 - (strand.length() == (size_t)strandLengthMode * 2 ? k[0] > 127 ? 2 : 0 : 0));
 	prints();
 	auto x = strand.find('>') != std::string::npos;
 	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
