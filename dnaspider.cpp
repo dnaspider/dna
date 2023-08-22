@@ -1378,7 +1378,7 @@ void scanDb() {
 	wstring sv = strand;
 	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (!database[0]) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-	short svi = 0; if (strandLengthMode && sv.size() - close_ctrl_mode > 1) { for (auto c : sv) if (c > 127) ++svi; } //counter for non asciis
+	short svi = 0; if (sv[0] != '<' && strandLengthMode && sv.size() - close_ctrl_mode > 1) { for (auto c : sv) if (c > 127) ++svi; } //counter for non asciis
 	wstring cell; relink = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
