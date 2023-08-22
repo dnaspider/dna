@@ -3263,7 +3263,7 @@ void printIntro() {
 void key(wstring k) {
 	if (multiblock) return;
 	bool bk = 0; if (k.size() > 2 && k.find(' ') != string::npos) {
-		re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
+		wstring re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
 		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
 			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = L"<"; prints(); return; }
@@ -3290,14 +3290,11 @@ void key(wstring k) {
 	} else
 		strand.append(k);
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode && strand != k && strand.length() - (strand[0] > 127 || k[0] > 127) > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] < 128 ? strand.substr(1) : strandLengthMode == 1 ? strand.substr(2) : strand.substr((size_t)2 - (strand.length() == (size_t)strandLengthMode * 2 ? k[0] > 127 ? 2 : 0 : 0));
+	if (strandLengthMode && strand != k && strand.length() - (strand[0] > 127 || k[0] > 127) > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] < 128 ? strand.substr(1) : strandLengthMode == 1 ? strand.substr(2) : strand.substr(2 - (strand.length() == strandLengthMode * 2 ? k[0] > 127 ? 2 : 0 : 0));
 	prints();
-	auto x = strand.find('>') != std::string::npos;
-	if (close_ctrl_mode && x && strand[strand.length() - 1] != '>' || strand == L">") { strand.clear(); prints(); return; }
-	x = x && k[k.length() - 1] == '>';
-	if (multiStrand) { if (x) { i = -1; } thread thread(scanDb); if (x) { Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand = L""; } noClearStrand = 0; } thread.detach(); if (x) { if (showStrand) { wcout.flush().clear(); } clearAllKeys(); } return; }
-	else { scanDb(); if (x) { if (!noClearStrand) { strand.clear(); } noClearStrand = 0; clearAllKeys(); return; } }
-	if (!strand[0]) prints();
+	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
+	if (multiStrand) { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb();
+	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (showStrand) { if (multiStrand) wcout.flush().clear(); } clearAllKeys();
 }
 
 void repeat() {
@@ -3336,11 +3333,12 @@ int main() {//cout << "@dnaspider\n\n";
 	for (;; Sleep(frequency)) {
 		if (GetAsyncKeyState(VK_BACK)) {
 			if (Kb_QQ_i > 0) Kb_QQ_i = 0;
-			if (rri && strand == L"<" || rri && !strand[0]) rri = 0;
+			if (rri && !strand[0]) rri = 0;
 			if (strand == L"") continue;
 			auto s = sizeof(wchar_t); if (strand[strand.length() - 1] < 127) s /= 2;
 			strand = strand.substr(0, strand.length() - s);
-			prints(); continue;
+			prints(); if (rri && !strand[0]) rri = 0;
+			continue;
 		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
 			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //RSHIFT+LSHIFT <
@@ -3525,7 +3523,8 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		if (RSHIFTLSHIFT_Only && !strand[0] && Kb_QQ_k > 0 && GetAsyncKeyState(Kb_QQ_k)) {
 			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i;
-			if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); if (!qScanOnly && !RSHIFTLSHIFT_Only) strand = L"<"; else strand = qScanOnly ? L"<" : L""; if (RSHIFTLSHIFT_Only) { ++rri; } prints(); if (qScanOnly || RSHIFTLSHIFT_Only) clearAllKeys(); }
+			if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = qScanOnly ? L"<" : L""; ++rri; prints(); clearAllKeys(); continue; }
+			Sleep(frequency / 3);
 			continue;
 		}
 		if (qScanOnly && strand[0] != '<') continue;
