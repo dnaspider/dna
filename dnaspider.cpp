@@ -3290,11 +3290,11 @@ void key(wstring k) {
 	} else
 		strand.append(k);
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode && strand != k && strand.length() - (strand[0] > 127 || k[0] > 127) > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] < 128 ? strand.substr(1) : strandLengthMode == 1 ? strand.substr(2) : strand.substr(2 - (strand.length() == strandLengthMode * 2 ? k[0] > 127 ? 2 : 0 : 0));
+	if (strandLengthMode && strand != k && strand.length() - (strand[0] > 127 || k[0] > 127) > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] < 128 ? strand.substr(1) : strandLengthMode == 1 ? strand.substr(2) : strand.substr(2+.0 - (strand.length() == strandLengthMode * 2+.0 ? k[0] > 127 ? 2 : 0 : 0));
 	prints();
 	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
 	if (multiStrand) { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb();
-	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (showStrand) { if (multiStrand) wcout.flush().clear(); } clearAllKeys();
+	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); } clearAllKeys(); Kb_QQ_i = 0;
 }
 
 void repeat() {
