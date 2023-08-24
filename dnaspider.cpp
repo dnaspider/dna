@@ -3266,7 +3266,7 @@ void key(wstring k) {
 		wstring re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
 		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
-			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = L"<"; prints(); return; }
+			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; if (k[1]) { kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); } strand = L"<"; prints(); return; }
 			else {
 				if (k[1] && strand[0] != '<') {
 					k = k.substr(1); bk = 1;
