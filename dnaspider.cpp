@@ -516,7 +516,31 @@ void loadSe() {
 		} if (se == cell + L":") v.clear();
 		if (v[0] && v != L" ") v = v.substr(v.find_first_not_of(L"\t "));
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
-		if (v[0] == '>' && se.substr(0, 7) == L"Kb_Key_") Kb_QQ_k = (short)se[se.length() - 2]; //set Kb_QQ_k
+		if (v[0] == '>' && se.substr(0, 7) == L"Kb_Key_") {//set Kb_QQ_k
+			wstring s = se.substr(7);
+			if (s.length() > 2) {
+				int x = 0; for (size_t i = 0; i <= s.length() - 2; ++i) x += s[i];
+				switch (x) {
+				case 391://Caps
+					Kb_QQ_k = VK_CAPITAL;
+					break;
+				case 283://Esc
+					Kb_QQ_k = VK_ESCAPE;
+					break;
+				case 779://Left_Alt
+					Kb_QQ_k = VK_LMENU;
+					break;
+				case 894://Right_Alt
+					Kb_QQ_k = VK_RMENU;
+					break;
+				case 493://Comma
+					Kb_QQ_k = VK_OEM_COMMA;
+					break;
+				}
+			}
+			else
+				Kb_QQ_k = (short)se[se.length() - 2];
+		}
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
 			case 1536://RSHIFT+LSHIFT_Only: (0 1)
