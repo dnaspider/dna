@@ -50,7 +50,7 @@ int frequency = 128; //>> ms response -> vk_
 int speed = 0; //<< 
 int qxc = 0, qyc = 0;//<rp>
 int qxcc = 0, qycc = 0;//cc
-int CloseCtrlSpacer = 128;
+int CloseCtrlSpacer = 96;
 short Kb_QQ_i{}, Kb_QQ_k{}; //qq < [Kb_Key_Q: >q '<bs>]
 short strandLengthMode = 0;
 short PauseKey = 123; //VK_F12
@@ -3364,38 +3364,58 @@ int main() {//cout << "@dnaspider\n\n";
 			prints(); if (rri && !strand[0]) rri = 0;
 			continue;
 		}
+		if (GetAsyncKeyState(VK_RSHIFT)) {
+			GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
+					bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+						if (RSHIFTLSHIFTCtrlKey) {
+							GetAsyncKeyState(cKey); if (GetAsyncKeyState(cKey)) {
+								if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); ++rri; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
+							}
+						} Sleep(frequency / 4);
+					} if (x) continue;
+					++rri; if (strand[0] || rri > 1 && !ToggleKeep) {
+						if (strand[0] == '<' && strand.length() > 1) {
+							rri = 0; strand.append(L">"); prints(); if (!multiStrand) { scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue; }
+							else { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach(); }
+						}
+						else if (strand[0] != '<') {
+							strand = L"<";
+						}
+						else {
+							strand = L"";
+						}
+						if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
+					}
+					if (strandLengthMode) { strand = L"<"; rri = 0; prints(); if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } continue; }
+					else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
+				}
+				Sleep(frequency / 4);
+			}
+			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
+			continue;
+		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
-			GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) { //RSHIFT+LSHIFT <
-				bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) { if (RSHIFTLSHIFTCtrlKey) { GetAsyncKeyState(cKey); if (GetAsyncKeyState(cKey)) {
-					if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); ++rri; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
-				} } Sleep(frequency / 3); } if (x) continue;
-				++rri; if (strand[0] || rri > 1 && !ToggleKeep) {
-					if (strand[0] == '<' && strand.length() > 1) {
-						rri = 0; strand.append(L">"); prints(); if (!multiStrand) { scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue; } else { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach(); }
-					} else if (strand[0] != '<') {
-						if (qScanOnly) { clearAllKeys(); } strand = L"<";
-					} else {
-						strand = L"";
+			while (GetAsyncKeyState(VK_LSHIFT) != 0) {
+				if (LSHIFTCtrlKey) {
+					GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
+						++min;
+						if (GetAsyncKeyState(cKey)) {
+							if (min >= max) { Sleep(frequency / 4); continue; } GetAsyncKeyState(VK_LSHIFT);
+							if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); rri = 1; while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 4); } break;
+						}
+						Sleep(frequency / 4);
 					}
-					if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
 				}
-				if (strandLengthMode) { strand = L"<"; rri = 0; if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } }
-				else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
+				Sleep(frequency / 4);
 			}
-			if (LSHIFTCtrlKey) {
-				GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) { ++min;
-					if (GetAsyncKeyState(cKey)) {
-						if (min >= max) { Sleep(frequency / 3); continue; } GetAsyncKeyState(VK_LSHIFT);
-						if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); rri = 1; while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 3); } break;
-					}
-					Sleep(frequency / 3);
-				}
-			}
+			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LCONTROL)) {
-			GetAsyncKeyState(VK_RCONTROL); if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 3); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } continue; }//rctrl+lctrl repeat
-			GetAsyncKeyState(83); while (GetAsyncKeyState(VK_LCONTROL) != 0) {
+			GetAsyncKeyState(VK_RCONTROL); GetAsyncKeyState(83); while (GetAsyncKeyState(VK_LCONTROL) != 0) {
+				if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 4); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } continue; }//rctrl+lctrl repeat
+				while (GetAsyncKeyState(VK_LCONTROL) != 0) {
 				if (GetAsyncKeyState(83)) { while (GetAsyncKeyState(83) != 0) { Sleep(frequency / 3); } 
 					if (SeHotReload_CtrlS && (FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())) {
 						loadSe(); clearAllKeys(); strand.clear(); prints();
@@ -3406,14 +3426,16 @@ int main() {//cout << "@dnaspider\n\n";
 					while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); }
 					break;
 				}//lctrl+s
-				Sleep(frequency / 3); 
+				Sleep(frequency / 4); 
+			}			
+				Sleep(frequency / 4);
 			}
-			continue;
+			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;continue;
 		}
 		if (GetAsyncKeyState(cKey) && cKeyMax > 0) {//toggle <
 			if (RSHIFTCtrlKeyToggle) {
 				short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
-				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { ++min; Sleep(frequency / 3); }
+				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT) && cKey != VK_RSHIFT) { while (GetAsyncKeyState(VK_RSHIFT) != 0) { ++min; Sleep(frequency / 4); }
 					if (min >= max) continue;
 					if (cKey == VK_SPACE) kb(VK_BACK);
 					clearAllKeys(); rri++; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); continue;
@@ -3421,8 +3443,8 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			if (cKeyMax > 0 || cKey == VK_RCONTROL) {
 				short min = 0, max = cKeyMax == 1 ? 3 : cKeyMax; GetAsyncKeyState(VK_LCONTROL); GetAsyncKeyState(cKey); while (GetAsyncKeyState(cKey) != 0) { ++min;
-					if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 3); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } min = max + 1; break; }//rctrl+lctrl
-				Sleep(frequency / 3); } if (min >= max) continue;
+					if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 4); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } min = max + 1; break; }//rctrl+lctrl
+				Sleep(frequency / 4); } if (min >= max) { clearAllKeys(); continue; }
 			}
 			if (RSHIFTLSHIFT_Only && !strand[0] && !rri) continue;
 			if (strand[0] == '<') {
