@@ -3641,8 +3641,22 @@ int main() {//cout << "@dnaspider\n\n";
 		if (GetAsyncKeyState(VK_TAB) && Kb_Key_Tab[0]) { key(Kb_Key_Tab); continue; }
 		if (GetAsyncKeyState(VK_LSHIFT) && Kb_Key_Left_Shift[0]) { key(Kb_Key_Left_Shift); continue; }
 		if (GetAsyncKeyState(VK_RSHIFT) && Kb_Key_Right_Shift[0]) { key(Kb_Key_Right_Shift); continue; }
-		if (GetAsyncKeyState(VK_LMENU) && Kb_Key_Left_Alt[0]) { key(Kb_Key_Left_Alt); continue; }
-		if (GetAsyncKeyState(VK_RMENU) && Kb_Key_Right_Alt[0]) { key(Kb_Key_Right_Alt); continue; }
+		if (GetAsyncKeyState(VK_LMENU)) {
+			if (Kb_Key_Left_Alt[0]) key(Kb_Key_Left_Alt);
+			else {
+				while (GetAsyncKeyState(VK_LMENU) != 0)	Sleep(frequency / 4);
+				clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
+			}
+			continue;
+		}
+		if (GetAsyncKeyState(VK_RMENU)) {
+			if (Kb_Key_Right_Alt[0]) key(Kb_Key_Right_Alt);
+			else {
+				while (GetAsyncKeyState(VK_RMENU) != 0)	Sleep(frequency / 4);
+				clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
+			}
+			continue;
+		}
 		if (GetAsyncKeyState(VK_LCONTROL) && Kb_Key_Left_Ctrl[0]) { key(Kb_Key_Left_Ctrl); continue; }
 		if (GetAsyncKeyState(VK_RCONTROL) && Kb_Key_Right_Ctrl[0]) { key(Kb_Key_Right_Ctrl); continue; }
 		if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Enter[0]) { key(Kb_Key_Enter); continue; }
