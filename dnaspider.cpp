@@ -3317,20 +3317,16 @@ void key(wstring k) {
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
 	if (strandLengthMode) {
 		if (strand[0] != '<' && strand.length() > strandLengthMode) {
-			if (strandLengthMode == 1)
-				strand = strand.substr((strand[0] > 127) + 1);
+			if (strandLengthMode == 1) {
+				if (strand != k) strand = strand.substr((strand[0] > 127) + 1);
+			}
 			else {
 				auto x = 0;
-				for (auto c : strand) if (c > 127) ++x;
+				for (auto c : strand) { if (c > 127) ++x; }
 				if (x > 0) x /= 2;
-				x = strandLengthMode - x;
-				if (x == strandLengthMode)
-					strand = strand.substr(1);
-				else {
-					if (auto sl = strand.length(); x && sl / 2 == 2 * x || !x && sl <= strandLengthMode * 2) {}
-					else if (x == strandLengthMode && sl > x || x <= 0 || sl >= strandLengthMode * 2 || x && sl > strandLengthMode && strandLengthMode * 2 - sl - x > 0)
-						strand = strand.substr(strand[0] > 127 ? 2 : 1);
-				}
+				x = strand.length() - x;
+				if (x > strandLengthMode)
+					strand = strand.substr(strand[0] > 127 ? 2 : 1);
 			}
 		}
 	}
