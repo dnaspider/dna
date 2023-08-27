@@ -1477,7 +1477,7 @@ void scanDb() {
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close(); fail = 0; esc_pressed = 0;
 			for (i = 0; i < tail.length(); ++i) {
-				if (multiStrand) { multi.t = tail; multi.i_ = i; if (strand + L">" == sv || strand == sv && !noClearStrand) strand = L""; }//multiStrand variant clear
+				if (multiStrand) { multi.t = tail; multi.i_ = i; }
 				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.i_ = i; multi.q = qq; multi.setSpeed(speed); } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.i_; qq = multi.q; } } sleep = 1; }
 				if (!NoEscapeOrPause) {
 					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { if (multi.esc == 1) {} else { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } }
@@ -1542,22 +1542,23 @@ void scanDb() {
 						else if (testqqb(L"<!!:")) {//multi run
 							wstring t = qq.substr(qq.find('>') + 1);//tail
 							wstring m = qq.substr(0, qq.find('>')) + L">";//q ms
-							wstring x = L""; x += io[0]; x += L">";
-							if (m.substr(m.length() - 2) == x || m.substr(m.length() - 2) == L":>" || m.substr(m.length() - 2) == L"->") m = to_wstring(CloseCtrlSpacer);
+							wstring x = L"", o = L""; x += io[0]; x += '>';
+							if (m.substr(m.length() - 2) == x || m.substr(m.length() - 2) == L":>" || m.substr(m.length() - 2) == L"->") { m = to_wstring(CloseCtrlSpacer); qp = qp.substr(0, qp.length() - (qp[0] != '<')); }
 							else {
-								m = m.substr(4); wstring io = L"";
-								if (m.find(::io[0]) != string::npos) io = ::io[0];
-								else if (m.find(':') != string::npos) io = L":";
-								else io = L"-";
-								qp = m.substr(0, m.find(io) + 1);
+								m = m.substr(4);
+								if (m.find(io[0]) != string::npos) o[0] = io[0];
+								else if (m.find(':') != string::npos) o[0] = ':';
+								else if (m.find('-') != string::npos) o[0] = '-';
+								if (o[0] && m.find(o[0]) != string::npos) qp = m.substr(0, m.find(o[0]) + (qp[0] == '<'));
+								else m.clear();
 								if (qp[0] == ' ') qp = qp.substr(1);
-								m = m.substr(m.find(io) + 1);
-								m = m.substr(0, m.length() - 1);
+								if (o[0]) { m = m.substr(m.find(o[0]) + 1); m = m.substr(0, m.length() - 1); }
 							}
-							if (m == L"" || m == L"0") m = L"1";
+							if (!m[0] || m[0] == '0') m[0] = '1';
 							unsigned int m1 = stoi(m);
-							strand = qp + L">"; thread thread(scanDb); Sleep(m1); thread.detach();
-							tail = t; i = -1;
+							{ Store store; store.v = t;
+							strand = qp; thread thread(scanDb); Sleep(m1); thread.detach(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+							tail = store.v; i = -1; }
 						}
 						else if (qqb(L"<!>") || qqb(L"<!:>") || testqqb(L"<!:")) { if (qq[2] == ':') { if (qq[3] == '>') { strand.clear(); clearAllKeys(); rei(); break; } strand = qp; if (showStrand) { showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); } } noClearStrand = 1; rei(); }
 						else conn();
@@ -3250,7 +3251,7 @@ void scanDb() {
 			if (strand[0] || re[0]) {
 				if (re == L"" || re == L" " || strandLengthMode) { re.clear(); reTail = tail = codes; }
 				clearAllKeys();
-				if (!noClearStrand && strand == sv) strand.clear(); 
+				if (!noClearStrand && strand == sv) strand.clear();
 			}
 			if (speed > 0) speed = 0;
 			break;
@@ -3314,10 +3315,29 @@ void key(wstring k) {
 	} else
 		strand.append(k);
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode && strand != k && strand.length() - (strand[0] > 127 || k[0] > 127) > strandLengthMode && strand[0] != '<' && k[0] != '>') strand = strand[0] < 128 ? strand.substr(1) : strandLengthMode == 1 ? strand.substr(2) : strand.substr(2+.0 - (strand.length() == strandLengthMode * 2+.0 ? k[0] > 127 ? 2 : 0 : 0));
+	if (strandLengthMode) {
+		if (strand[0] != '<' && strand.length() > strandLengthMode) {
+			if (strandLengthMode == 1)
+				strand = strand.substr((strand[0] > 127) + 1);
+			else {
+				auto x = 0;
+				for (auto c : strand) if (c > 127) ++x;
+				if (x > 0) x /= 2;
+				x = strandLengthMode - x;
+				if (x == strandLengthMode)
+					strand = strand.substr(1);
+				else {
+					if (auto sl = strand.length(); x && sl / 2 == 2 * x || !x && sl <= strandLengthMode * 2) {}
+					else if (x == strandLengthMode && sl > x || x <= 0 || sl >= strandLengthMode * 2 || x && sl > strandLengthMode && strandLengthMode * 2 - sl - x > 0)
+						strand = strand.substr(strand[0] > 127 ? 2 : 1);
+				}
+			}
+		}
+	}
 	prints();
 	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
-	if (multiStrand) { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb();
+	if (multiStrand) { i = -1; thread thread(scanDb); if (close_ctrl_mode && strand[strand.length() - 1] == '>') Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb();
+	if (!close_ctrl_mode) return;
 	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); } clearAllKeys(); Kb_QQ_i = 0;
 }
 
