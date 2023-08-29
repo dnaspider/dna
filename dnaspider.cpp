@@ -3503,10 +3503,10 @@ int main() {//cout << "@dnaspider\n\n";
 						if (strand[0]) { clearAllKeys(); strand.clear(); prints(); }
 						continue;
 					}
-					clearAllKeys(); strand = L"<";
+					if (qScanOnly) { clearAllKeys(); } strand = L"<";
 				}
 			}
-			if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
+			if (showStrand) { wcout.flush().clear(); } prints(); if (qScanOnly) clearAllKeys();
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
