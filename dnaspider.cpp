@@ -1557,7 +1557,7 @@ void scanDb() {
 							if (!m[0] || m[0] == '0') m[0] = '1';
 							unsigned int m1 = stoi(m);
 							{ Store store; store.v = t; store.v1 = cell[strand.length()] == '>' ? strand + tail : tail;
-							strand = qp + L">"; thread thread(scanDb); Sleep(m1); thread.detach(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+							strand = qp + (close_ctrl_mode ? L">" : L""); thread thread(scanDb); Sleep(m1); thread.detach(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 							tail = store.v; reTail = store.v1; i = -1; }
 						}
 						else if (qqb(L"<!>") || qqb(L"<!:>") || testqqb(L"<!:")) { if (qq[2] == ':') { if (qq[3] == '>') { strand.clear(); clearAllKeys(); rei(); break; } strand = qp; if (showStrand) { showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); } } noClearStrand = 1; rei(); }
