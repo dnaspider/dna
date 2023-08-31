@@ -69,7 +69,7 @@ bool noClearStrand = 0; //<!>
 bool OutTabs = 1;
 bool multiblock = 0; //<~m>
 bool Unicode = 1;
-bool multiStrand = 1, showMultiStrand = 0, showMultiStrandElapsedOnly = 0;
+bool multiStrand = 1, showMultiStrandElapsedOnly = 0;
 bool relink = 0;
 bool fail = 0;
 bool sleep = 1;
@@ -84,7 +84,6 @@ bool ignoreArrows = true;
 bool ignoreF1s = true;//f1-f12
 bool qScanOnly = true;
 bool showStrand = false; //cout <<
-bool showOuts = false; //cout << 
 bool showIntro = false;
 bool showSettings = true;
 bool shft = false;
@@ -112,79 +111,23 @@ struct Store {
 	wstring v, v1;
 };
 struct Mainn {
-	wstring s, s1, &t;//strand
-	ctp c1, c2;//elapsed
-	Mainn() :s{}, s1{}, t{ tail }, c1{}, c2{} {
+	wstring s = L"", s1 = L"", t = tail;//strand
+	ctp c1{}, c2{};//elapsed
+	Mainn() {
 		if (!multiStrand) return;
-		if (showMultiStrandElapsedOnly && !showMultiStrand) { clockr(c1); return; }
-		if (showMultiStrand) { wcout << "thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << endl; clockr(c1); }
-	}
-	void setStrand(wstring c) {
-		linkr = s1 = c.substr(0, strand.size());
-	}
-	wstring getStrand() {
-		return s1;
-	}
-	wstring getStrand(wstring &c) {
-		s = c.substr(0, strand.size() + !strandLengthMode);
-		if (showMultiStrand) {
-			wstring b = L">"; if (s[s.size() - 1] == '>' || s[s.size()] == '>' || strandLengthMode) b.clear();
-			wcout << "input: " << OutTab << OutTab << (linkr > L""? linkr + b : s + b) << endl;
-		}
-		return s;
-	}
-	void setTail() {
-		t = tail;
-		if (showMultiStrand) { wcout << "output: " << OutTab; showOutsMsg(L"", t, L"", 0); }
-	}
-	wstring getTail(wstring &t) {
-		return t;
+		if (showMultiStrandElapsedOnly) { clockr(c1); return; }
 	}
 	~Mainn() {
 		if (!multiStrand) return;
-		t.clear();
-		if (showMultiStrandElapsedOnly && !showMultiStrand) { clockr(c2); chrono::duration<double, milli> ts = c1 - c2; wstring q = L""; if (!showStrand) { q = strand[strand.size() - 1] == '>' ? L"" : strand.size() > 0 ? L">" : L""; wstring p = q; q = strand + p; } bool x = showStrand; showStrand = 1; showOutsMsg(L"", OutsTemplate, q, 1); showStrand = x; cout << dec << "(" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n"; return; }
-		if (showMultiStrand) {
-			clockr(c2); chrono::duration<double, milli> ts = c1 - c2;
-			wcout << "~thread: " << OutTab << "0x" << hex << GetCurrentThreadId() << dec << " (" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n";
-		}
+		if (showMultiStrandElapsedOnly) { clockr(c2); chrono::duration<double, milli> ts = c1 - c2; wstring q = L""; if (!showStrand) { q = strand[strand.size() - 1] == '>' ? L"" : strand.size() > 0 ? L">" : L""; wstring p = q; q = strand + p; } bool x = showStrand; showStrand = 1; showOutsMsg(L"", OutsTemplate, q, 1); showStrand = x; cout << dec << "(" << abs(static_cast<long>(ts.count())) << "ms elapsed)\n"; return; }
 	}
 };
 
 struct Multi {
-	wstring qp, r, g, b, a, x, m, l, t, q, s;
-	size_t i_, icp;
-	int cx, cy, speed_;
-	bool esc, br;//break
-	Multi() :qp{}, r{}, g{}, b{}, a{}, x{}, m{}, l{}, t{ tail }, q{ qq }, s{ strand }, i_{}, icp{}, cx{}, cy{}, speed_{}, esc{}, br{} {}
-	void setSpeed(int& sl) { speed_ = sl; }
-	void setApp(wstring& app) {
-		a = app;
-	}
-	void setLink(wstring& li) {
-		l = li;
-	}
-	void setMS(wstring mil) {
-		m = mil;
-	}
-	void setRGBr(wstring& red) {
-		r = red;
-	}
-	void setRGBg(wstring& gre) {
-		g = gre;
-	}
-	void setRGBb(wstring& blu) {
-		b = blu;
-	}
-	void setQxc(int& it) {
-		cx = it;
-	}
-	void setQyc(int& it) {
-		cy = it;
-	}
-	void setX(wstring& it) {
-		x = it;
-	}
+	wstring qp, r, g, b, a, x, m, l, t = tail, q = qq, s = strand;
+	size_t i_ = i, icp = 0;
+	int cx = 0, cy = 0, speed_ = 0;
+	bool esc = 0, br = 0;//break
 	//~Multi() {}
 };
 #pragma endregion
@@ -826,8 +769,6 @@ void loadSe() {
 				{ if (check_if_num(v)[0]) reKey = stoi(v); else er(); } break;
 			case 1649://AutoBs_RepeatKey:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') AutoBs_RepeatKey = stoi(v); else er(); } break;
-			case 902://ShowOuts:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showOuts = stoi(v); else er(); } break;
 			case 2913://SlightPauseInBetweenConnects:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 1571://CloseCtrlSpacer:
@@ -836,8 +777,6 @@ void loadSe() {
 				{ if (check_if_num(v)[0]) RgbScaleLayout = stod(v); else er(); } break;
 			case 1201://MultiStrand:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') multiStrand = stoi(v); else er(); } break;
-			case 1618://ShowMultiStrand:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrand = stoi(v); else er(); } break;
 			case 1098://AutoBs_EscH: | Ignore_F1-F12: | Kb_Key_PgUp:
 				{ if (se == L"AutoBs_EscH:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscHAutoBs = stoi(v); else er(); }
 				else if (se == L"Ignore_F1-F12:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreF1s = stoi(v); else er(); }
@@ -873,9 +812,7 @@ void printSe() {
 		cout << "ShowStrand: " << showStrand << '\n';
 		cout << "ClearStrandKey: " << ClearStrandKey << '\n';
 		cout << "MultiStrand: " << multiStrand << '\n';
-		cout << "ShowMultiStrand: " << showMultiStrand << '\n';
 		cout << "ShowMultiStrandElapsedOnly: " << showMultiStrandElapsedOnly << '\n';
-		cout << "ShowOuts: " << showOuts << '\n';
 		wcout << "OutsTemplate: " << OutsTemplate << '\n';
 		wcout << "OutTabs: " << OutTabs << '\n';
 		wcout << "Settings: " << settings << '\n';
@@ -1046,9 +983,7 @@ wstring getAppT() {
 }
 
 void getApp() {
-	bool b = showMultiStrand; showMultiStrand = 0;
 	out(L"<shift>,<shift->app:");
-	showMultiStrand = b;
 }
 
 wstring getRGB(bool b = 0, bool bg = 0) {
@@ -1414,8 +1349,8 @@ void scanDb() {
 			|| a == b + L'>' //<x>
 			|| a == b + L'^' //<x^>
 		) {
-			Multi multi; 
-			if (multiStrand) { strand = multi.s; if (!re[0]) mainn.setStrand(cell); }
+			Multi multi;
+			if (multiStrand) { strand = multi.s; if (!re[0]) mainn.s1 = linkr = cell.substr(0, strand.size()); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1); if (multiStrand) multi.s = strand;
 			if (re[0] && !strand[0]) {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
@@ -1428,7 +1363,7 @@ void scanDb() {
 			}
 			tail = re[0] && !sv[0] ? re : cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>'));
 			tail = isVar(tail); //<r:>
-			if (multiStrand) { multi.t = tail; mainn.getStrand(cell); tail = multi.t; }
+			if (multiStrand) multi.t = tail;
 			if (tail.substr(0, io.size()) == io) {//io:
 				bool b = 0;	if (sv[0] != '<' && tail[io[0] > 127 ? 2 : 1] == '>') {//x[io]>
 					if (cell[sv.length()] == '>') { sv = sv.substr(0, sv.length() - 1); }
@@ -1473,12 +1408,11 @@ void scanDb() {
 			}
 			if (noClearStrand) noClearStrand = 0;
 			if (multiStrand) { reTail = codes; tail = multi.t; }
-			if (showOuts && !showMultiStrand) { showOutsMsg(L"found: " + OutTab + OutTab, cell); showOutsMsg(L"tail: " + OutTab + OutTab, tail); }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
 			f.close(); fail = 0; esc_pressed = 0;
 			for (i = 0; i < tail.length(); ++i) {
 				if (multiStrand) { multi.t = tail; multi.i_ = i; }
-				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.i_ = i; multi.q = qq; multi.setSpeed(speed); } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.i_; qq = multi.q; } } sleep = 1; }
+				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.i_ = i; multi.q = qq; multi.speed_ = speed; } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.i_; qq = multi.q; } } sleep = 1; }
 				if (!NoEscapeOrPause) {
 					GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE) || esc_pressed) { if (multi.esc == 1) {} else { esc_pressed = 0; pause_resume = 0; multiblock = 0; break; } }
 					GetAsyncKeyState(PauseKey); if (GetAsyncKeyState(PauseKey)) {//int m = MessageBoxA(0, "Resume?", "dnaspider", MB_YESNO); if (m != IDYES) { break; } }
@@ -1499,13 +1433,11 @@ void scanDb() {
 				}
 				if (multiStrand) { tail = multi.t; i = multi.i_; multi.q = qq; }
 				wstring ctail = tail.substr(i, 1);//extracted char from tail
-				if (showOuts) { wcout << "ctail: " << OutTab << OutTab << (ctail[0] > 127 ? L"[?]" : ctail) << endl; }
 				switch (ctail[0]) {
 				case'<':
 					if (multiStrand) { i = multi.i_; qq = multi.q; }
 					qq = tail.substr(i, tail.length() - i); //<test>
 					if (multiStrand) { multi.q = qq; multi.i_ = i; }
-					if (showOuts) showOutsMsg(L"qq: " + OutTab + OutTab, qq);
 					if (qq.substr(0, qq.find('>')).find(':') != std::string::npos) { //<test:#>
 						qp = qq.substr(qq.find(':') + 1, qq.find('>') - qq.find(':') - 1);//#
 						if (qp[0]) {
@@ -1688,7 +1620,9 @@ void scanDb() {
 										Sleep(CommaSleep);
 									}
 								}
-								else Sleep(stoi(s));
+								else { Sleep(stoi(s)); 
+									if (multiStrand) { tail = multi.t; i = multi.i_; qq = multi.q; qp = multi.qp; speed = multi.speed_; }
+								}
 							}
 							else { printq(); break; };
 							if (multiStrand) rei(multi); else rei();
@@ -1761,7 +1695,7 @@ void scanDb() {
 								HWND h{}, h1{}; DWORD pid{};
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
-								if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 
 								auto sifapp = [&multi, &qqC, &pid, &h1, &h, &a]() {
@@ -1860,7 +1794,7 @@ void scanDb() {
 												linkC = linkC.substr(linkC.find(' ') + 1);
 											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find('>') + 1) : L"<" + linkC + L">";//<app:a,x,ms,<link->..., <app:a,x,ms,link->
-											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											if (mainn.s1 == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
@@ -2057,7 +1991,7 @@ void scanDb() {
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
-								if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 
 								auto sifxy = [&qqC, &multi, &a]() {
@@ -2178,7 +2112,7 @@ void scanDb() {
 												linkC = linkC.substr(linkC.find(' ') + 1);
 											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find('>') + 1) : L"<" + linkC + L">";//<xy:a a,x,ms,<link->..., <xy:a a,x,ms,link->
-											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											if (mainn.s1 == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { rei(); } break; }//false, continue
@@ -2227,7 +2161,7 @@ void scanDb() {
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << L"Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
-								if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								HANDLE hcb; wchar_t* c; wstring w;
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 							
@@ -2394,7 +2328,7 @@ void scanDb() {
 												linkC = linkC.substr(linkC.find(' ') + 1);//<t-<ifcb:a,*,ms, T: F:>
 											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find('>') + 1) : L"<" + linkC + L">";//<ifcb:a,x,ms,<link->..., <ifcb:a,x,ms,link->
-											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											if (mainn.s1 == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue | Use < in the false slot for continue | <ifcb:a,x,ms,link: <>
@@ -2471,7 +2405,7 @@ void scanDb() {
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find('>') + 1) << endl; };
-								if (multiStrand) { multi.setApp(a); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								chrono::system_clock::time_point np;
 								time_t n{};
 								char b[26]{};
@@ -2520,11 +2454,11 @@ void scanDb() {
 										noq = stoi(w.substr(4, 2));
 										pe(60);
 									}
-									if (multiStrand) multi.setApp(a);
+									if (multiStrand) multi.a = a;
 									int ans = 0, aa = stoi(a);
 									switch (qqC[4]) {
 									case '+': //+= hr, min, sec <ifm+:5>
-										multi.setMS(L"0");
+										multi.m = L"0";
 										{ int t = aa;
 										if (qqC[3] == 'm' || qqC[3] == 'h') t *= 60;
 										if (qqC[3] == 'h') t *= t;
@@ -2631,7 +2565,7 @@ void scanDb() {
 												linkC = linkC.substr(linkC.find(' ') + 1);
 											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find('>') + 1) : L"<" + linkC + L">";//<iftime:a,x,ms,<link->..., <iftime:a,x,ms,link->
-											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											if (mainn.s1 == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
@@ -2838,7 +2772,7 @@ void scanDb() {
 								if (check_if_num(r) == L"" || check_if_num(g) == L"" || b.find(' ') == string::npos && check_if_num(b) == L"") { printq(); break; }
 								linkC = link; wstring qqC = qq; bool mF = 0;
 								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find('>') + 1) << endl; };
-								if (multiStrand) { multi.setApp(a); multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); multi.setX(x); multi.setMS(ms); multi.setLink(link); }
+								if (multiStrand) { multi.a = a; multi.r = r; multi.g = g; multi.b = b; multi.x = x; multi.m = ms; multi.l = link; }
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 
 								auto sifrgb = [&multi, &r, &g, &b, &qqC]() {
@@ -2892,15 +2826,15 @@ void scanDb() {
 												b = a.substr(a.find(' ') + 1);
 												g = b.substr(0, b.find(' '));
 												b = b.substr(b.find(' ') + 1);
-												if (multiStrand) { multi.setRGBr(r); multi.setRGBg(g); multi.setRGBb(b); }
+												if (multiStrand) { multi.r = r; multi.g = g; multi.b = b; }
 												if (b.find(' ') != string::npos) {//X Y
 													wstring sx = b.substr(b.find(' ') + 1);
 													wstring sy = sx.substr(sx.find(' ') + 1);
 													if (sx != L"" && sy != L"") {
 														sx = sx.substr(0, sx.find(' '));
-														b = b.substr(0, b.find(' ')); if (multiStrand) { multi.setRGBb(b); }
+														b = b.substr(0, b.find(' ')); if (multiStrand) { multi.b = b; }
 														if (qqC[1] == 'R') {
-															qxc = stoi(sx); qyc = stoi(sy);	if (multiStrand) { multi.setQxc(qxc); multi.setQyc(qyc); }
+															qxc = stoi(sx); qyc = stoi(sy);	if (multiStrand) { multi.cx = qxc; multi.cy = qyc; }
 														}
 														else SetCursorPos(stoi(sx), stoi(sy));
 													}
@@ -2944,7 +2878,7 @@ void scanDb() {
 											auto sy = sx.substr(sx.find(' ') + 1);
 											sx = sx.substr(0, sx.find(' '));
 											if (qqC[1] == 'R') {
-												qxc = stoi(sx); qyc = stoi(sy);	if (multiStrand) { multi.setQxc(qxc); multi.setQyc(qyc); }
+												qxc = stoi(sx); qyc = stoi(sy);	if (multiStrand) { multi.cx = qxc; multi.cy = qyc; }
 											}
 											else SetCursorPos(stoi(sx), stoi(sy));
 										}
@@ -2969,7 +2903,7 @@ void scanDb() {
 												linkC = linkC.substr(linkC.find(' ') + 1);
 											if (linkC[0] == '<') relink = 0;
 											tail = linkC[0] == '<' ? linkC + L">" + qqC.substr(qqC.find('>') + 1) : L"<" + linkC + L">";//<rgb:r,g,b,*,ms,<link-> = <link->..., <rgb:r,g,b,*,ms,link-> = <link->
-											if (mainn.getStrand() == linkC || linkr == linkC) relink = 1;
+											if (mainn.s1 == linkC || linkr == linkC) relink = 1;
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
@@ -3270,7 +3204,7 @@ void printCtrls() {
 		case 145: return L"SCROLL_LOCK";
 		case 19: return L"PAUSE_BREAK";
 		case 32: return L"SPACEBAR";
-		case 123: return L"F12\t";
+		case 123: return L"F12";
 		default: return to_wstring(s) + L"\t";
 		}
 	};
@@ -3360,7 +3294,7 @@ int main() {//cout << "@dnaspider\n\n";
 			if (CreateDirectoryW(c.c_str(), NULL)) {//L"c:/dna"
 				wcout << database << " not found.\nPress [1] to auto create.\n\n";
 				for (;; Sleep(150)) { if (GetAsyncKeyState(VK_ESCAPE)) { RemoveDirectoryW(c.c_str()); Sleep(150); break; } if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
-				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n RIGHT_SHIFT+LEFT_SHIFT X or\n COMMA+ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n (?+ESC)\n\n<wr:><win>r<win-><app:run, 1, 6, :>\n<d-><app: " << L"\u25cf " << editorDb << L" | " << db << editor << L", 1, 1, odb->\n<odb-><wr:>" << database << "<enter>\n<s-><app: " << L"\u25cf " << editorSe << L" | " << se << editor << L", 1, 1, <ose->\n<ose-><wr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<a-<a:<alt\\g<alt-\\g><left6>\n<c-<a:<ctrl\\g<ctrl-\\g><left7>\n<sh-<a:<shift\\g<shift-\\g><left8>\n<w-><a:<win\\g<win-\\g><left6>\n\n RCTRL D: Open " << db.substr(0, db.length() - 2) << L"\n RCTRL S: Open " << se.substr(0, se.length() - 2); fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nShowOuts: 0\nOutsTemplate: \\R\\7strand:\\t\\t\\G\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nLSHIFT+CtrlKey: 1\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nRSHIFT+CtrlKey_Toggle: 0\nRSHIFT+CtrlKey_Keep: 0\nCtrlScanOnlyMode: 0\nRSHIFT+LSHIFT_Only: 0\nStrandLengthMode: 0\nRepeatKey: 145\nPauseKey: 123\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nKb_Key_Backslash:\nKb_Key_Caps:\nKb_Key_Comma:\nKb_Key_Delete:\nKb_Key_End:\nKb_Key_Enter:\nKb_Key_Esc:\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nKb_Key_Forwardslash:\nKb_Key_Grave_Accent:\nKb_Key_Print_Screen:\nKb_Key_Home:\nKb_Key_Insert:\nKb_Key_Left_Alt:\nKb_Key_Left_Bracket:\nKb_Key_Left_Ctrl:\nKb_Key_Left_Shift:\nKb_Key_Menu:\nKb_Key_Minus:\nKb_Key_Numpad_0:\nKb_Key_Numpad_1:\nKb_Key_Numpad_2:\nKb_Key_Numpad_3:\nKb_Key_Numpad_4:\nKb_Key_Numpad_5:\nKb_Key_Numpad_6:\nKb_Key_Numpad_7:\nKb_Key_Numpad_8:\nKb_Key_Numpad_9:\nKb_Key_Numlock:\nKb_Key_Numpad_Divide:\nKb_Key_Numpad_Multiply:\nKb_Key_Numpad_Minus:\nKb_Key_Numpad_Add:\nKb_Key_Numpad_Period:\nKb_Key_Numpad_Enter:\nKb_Key_PgDn:\nKb_Key_PgUp:\nKb_Key_Period:\nKb_Key_Quote:\nKb_Key_Right_Alt:\nKb_Key_Right_Bracket:\nKb_Key_Right_Ctrl:\nKb_Key_Right_Shift:\nKb_Key_Semicolon:\nKb_Key_Space: \nKb_Key_Tab:\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nEditorSe: " << editorSe << "\nEditorDb: " << editorDb << "\nLoop_Insert_Text: ,1,1000,->\nNoEscapeOrPause: 0\nio: *\nAutoBs_io: " << io_Auto_BS << "\nManualRepeat: " << ManualRepeat; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>notepad " + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>notepad " + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
+				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << "h-Hello\n<e->Enjoy\n<x:><bs><e->!\n\n Getting Started:\n Press H (strand: h),\n RIGHT_CTRL E (strand: <e), \n RIGHT_SHIFT+LEFT_SHIFT X or\n COMMA+ESC X (strand: <x)\n in a text area to run.\n\n Tip:\n Clear strand first by toggling\n RIGHT_CTRL, BACKSPACE, or \n PAUSE_BREAK.\n\n Press keys separately\n (RIGHT_CTRL, release RIGHT_CTRL, X).\n\n Each line in db.txt is a slot for strand:API.\n\n API's are placed in front of the first :, -, >, ->, or :> of each line.\n (?+ESC)\n\n<wr:><win>r<win-><app:run, 1, 6, :>\n<d-><app: " << L"\u25cf " << editorDb << L" | " << db << editor << L", 1, 1, odb->\n<odb-><wr:>" << database << "<enter>\n<s-><app: " << L"\u25cf " << editorSe << L" | " << se << editor << L", 1, 1, <ose->\n<ose-><wr:>" << settings << "<enter>\n<se-><se><''Update setting  ->  (se.txt CloseCtrlMode: 1)>\n< -<><left>\n<a-<a:<alt\\g<alt-\\g><left6>\n<c-<a:<ctrl\\g<ctrl-\\g><left7>\n<sh-<a:<shift\\g<shift-\\g><left8>\n<w-><a:<win\\g<win-\\g><left6>\n\n RCTRL D: Open " << db.substr(0, db.length() - 2) << L"\n RCTRL S: Open " << se.substr(0, se.length() - 2); fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << "ShowSettings: 1\nShowIntro: 1\nShowStrand: 1\nClearStrandKey: 19\nMultiStrand: 0\nShowMultiStrandElapsedOnly: 0\nOutsTemplate: \\R\\7strand:\\t\\t\\G\nOutTabs: 1\nSettings: " << settings << "\nDatabase: " << database << "\nDbMultiLineDelimiter: \\n\nReplacerDb: " << replacerDb << "\nCtrlKey: 163\nLSHIFT+CtrlKey: 1\nCloseCtrlMode: 0\nCloseCtrlSpacer: 120\nRSHIFT+CtrlKey_Toggle: 0\nRSHIFT+CtrlKey_Keep: 0\nCtrlScanOnlyMode: 0\nRSHIFT+LSHIFT_Only: 0\nStrandLengthMode: 0\nRepeatKey: 145\nPauseKey: 123\nAutoBs_RepeatKey: 0\nRgbScaleLayout: 1.00\nFrequency: 150\nIgnore_0-9: 0\nKb_Key_0: 0\nKb_Key_1: 1\nKb_Key_2: 2\nKb_Key_3: 3\nKb_Key_4: 4\nKb_Key_5: 5\nKb_Key_6: 6\nKb_Key_7: 7\nKb_Key_8: 8\nKb_Key_9: 9\nIgnore_A-Z: 0\nKb_Key_A: a\nKb_Key_B: b\nKb_Key_C: c\nKb_Key_D: d\nKb_Key_E: e\nKb_Key_F: f\nKb_Key_G: g\nKb_Key_H: h\nKb_Key_I: i\nKb_Key_J: j\nKb_Key_K: k\nKb_Key_L: l\nKb_Key_M: m\nKb_Key_N: n\nKb_Key_O: o\nKb_Key_P: p\nKb_Key_Q: q\nKb_Key_R: r\nKb_Key_S: s\nKb_Key_T: t\nKb_Key_U: u\nKb_Key_V: v\nKb_Key_W: w\nKb_Key_X: x\nKb_Key_Y: y\nKb_Key_Z: z\nIgnore_Arrows: 1\nKb_Key_Left: L\nKb_Key_Up: U\nKb_Key_Right: R\nKb_Key_Down: D\nKb_Key_Backslash:\nKb_Key_Caps:\nKb_Key_Comma:\nKb_Key_Delete:\nKb_Key_End:\nKb_Key_Enter:\nKb_Key_Esc:\nIgnore_F1-F12: 0\nKb_Key_F1: !\nKb_Key_F2: @\nKb_Key_F3: #\nKb_Key_F4: $\nKb_Key_F5: %\nKb_Key_F6: ^\nKb_Key_F7: &\nKb_Key_F8: *\nKb_Key_F9: (\nKb_Key_F10: )\nKb_Key_F11: _\nKb_Key_F12: +\nKb_Key_Forwardslash:\nKb_Key_Grave_Accent:\nKb_Key_Print_Screen:\nKb_Key_Home:\nKb_Key_Insert:\nKb_Key_Left_Alt:\nKb_Key_Left_Bracket:\nKb_Key_Left_Ctrl:\nKb_Key_Left_Shift:\nKb_Key_Menu:\nKb_Key_Minus:\nKb_Key_Numpad_0:\nKb_Key_Numpad_1:\nKb_Key_Numpad_2:\nKb_Key_Numpad_3:\nKb_Key_Numpad_4:\nKb_Key_Numpad_5:\nKb_Key_Numpad_6:\nKb_Key_Numpad_7:\nKb_Key_Numpad_8:\nKb_Key_Numpad_9:\nKb_Key_Numlock:\nKb_Key_Numpad_Divide:\nKb_Key_Numpad_Multiply:\nKb_Key_Numpad_Minus:\nKb_Key_Numpad_Add:\nKb_Key_Numpad_Period:\nKb_Key_Numpad_Enter:\nKb_Key_PgDn:\nKb_Key_PgUp:\nKb_Key_Period:\nKb_Key_Quote:\nKb_Key_Right_Alt:\nKb_Key_Right_Bracket:\nKb_Key_Right_Ctrl:\nKb_Key_Right_Shift:\nKb_Key_Semicolon:\nKb_Key_Space: \nKb_Key_Tab:\nStartHidden: 0\nSlightPauseInBetweenConnects: 1\nAutoBs_EscH: 1\nAutoBs_EscComma: 1\nAutoBs_EscEqual: 1\nKb_Key_Equal: =\nCommaSleep: 150\nSeHotReload_CtrlS: 1\nSeDbClearStrand_CtrlS: 1\nExit_EscX: 1\nAssume: 0\nUnicode: 1\nEditor: " << editor << "\nEditor1: " << editor1 << "\nEditorSe: " << editorSe << "\nEditorDb: " << editorDb << "\nLoop_Insert_Text: ,1,1000,->\nNoEscapeOrPause: 0\nio: *\nAutoBs_io: " << io_Auto_BS << "\nManualRepeat: " << ManualRepeat; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>notepad " + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>notepad " + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
 			}
 		}
 	}
@@ -3671,6 +3605,11 @@ int main() {//cout << "@dnaspider\n\n";
 				while (GetAsyncKeyState(VK_RMENU) != 0)	Sleep(frequency / 4);
 				clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			}
+			continue;
+		}
+		if (GetAsyncKeyState(VK_LWIN) || GetAsyncKeyState(VK_RWIN)) {
+			while (GetAsyncKeyState(VK_LWIN) != 0 || GetAsyncKeyState(VK_RWIN) != 0) Sleep(frequency / 4);
+			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LCONTROL) && Kb_Key_Left_Ctrl[0]) { key(Kb_Key_Left_Ctrl); continue; }
