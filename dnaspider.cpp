@@ -3315,7 +3315,7 @@ int main() {//cout << "@dnaspider\n\n";
 			continue;
 		}
 		if (GetAsyncKeyState(VK_RSHIFT)) {
-			GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
 					bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 						if (RSHIFTLSHIFTCtrlKey) {
@@ -3340,13 +3340,16 @@ int main() {//cout << "@dnaspider\n\n";
 					if (strandLengthMode) { strand = L"<"; rri = 0; prints(); if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } continue; }
 					else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
 				}
+				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
+					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
+				}
 				Sleep(frequency / 4);
 			}
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
-			while (GetAsyncKeyState(VK_LSHIFT) != 0) {
+			GetAsyncKeyState(VK_ESCAPE); while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 				if (LSHIFTCtrlKey) {
 					GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 						++min;
@@ -3356,6 +3359,9 @@ int main() {//cout << "@dnaspider\n\n";
 						}
 						Sleep(frequency / 4);
 					}
+				}
+				if (GetAsyncKeyState(VK_ESCAPE)) { //lshift + r + esc
+					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); out(L"<shift>,<shift->rgb: " + getRGB() + L" " + qx + L" " + qy + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">")); continue; }
 				}
 				Sleep(frequency / 4);
 			}
@@ -3465,14 +3471,8 @@ int main() {//cout << "@dnaspider\n\n";
 			}
 			GetAsyncKeyState(82); if (GetAsyncKeyState(82)) {//esc + r: <rgb:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
-				kb(VK_BACK); GetAsyncKeyState(VK_BACK); GetAsyncKeyState(VK_RSHIFT);
-				if (GetAsyncKeyState(VK_LSHIFT)) {//lshift + esc + r
-					out(L"<shift>,<shift->rgb: " + getRGB() + L" " + qx + L" " + qy + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">")); continue;
-				}
-				else if (GetAsyncKeyState(VK_RSHIFT)) {//rshift + esc + r
-					getRGB(1, 1); continue;
-				}
-				else getRGB(); out(tail); continue;
+				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
+				getRGB(); out(tail); continue;
 			}
 			GetAsyncKeyState(65); if (GetAsyncKeyState(65)) {//esc + a: <app:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
