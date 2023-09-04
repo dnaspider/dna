@@ -339,6 +339,7 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 	}
 	return q;
 }
+
 void scanDb(); wstring conn(bool bg = 0) {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find('>') + 1);
 	if (qqs.find(io[0]) != std::string::npos || qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
@@ -1215,58 +1216,58 @@ void rei(Multi multi) {
 
 wstring parse(int r, wstring &rs) {
 	switch (r) {
-	case 65: rs = L"A"; break;
-	case 66: rs = L"B"; break;
-	case 67: rs = L"C"; break;
-	case 68: rs = L"D"; break;
-	case 69: rs = L"E"; break;
-	case 70: rs = L"F"; break;
-	case 71: rs = L"G"; break;
-	case 72: rs = L"H"; break;
-	case 73: rs = L"I"; break;
-	case 74: rs = L"J"; break;
-	case 75: rs = L"K"; break;
-	case 76: rs = L"L"; break;
-	case 77: rs = L"M"; break;
-	case 78: rs = L"N"; break;
-	case 79: rs = L"O"; break;
-	case 80: rs = L"P"; break;
-	case 81: rs = L"Q"; break;
-	case 82: rs = L"R"; break;
-	case 83: rs = L"S"; break;
-	case 84: rs = L"T"; break;
-	case 85: rs = L"U"; break;
-	case 86: rs = L"V"; break;
-	case 87: rs = L"W"; break;
-	case 88: rs = L"X"; break;
-	case 89: rs = L"Y"; break;
-	case 90: rs = L"Z"; break;
-	case 97: rs = L"a"; break;
-	case 98: rs = L"b"; break;
-	case 99: rs = L"c"; break;
-	case 100: rs = L"d"; break;
-	case 101: rs = L"e"; break;
-	case 102: rs = L"f"; break;
-	case 103: rs = L"g"; break;
-	case 104: rs = L"h"; break;
-	case 105: rs = L"i"; break;
-	case 106: rs = L"j"; break;
-	case 107: rs = L"k"; break;
-	case 108: rs = L"l"; break;
-	case 109: rs = L"m"; break;
-	case 110: rs = L"n"; break;
-	case 111: rs = L"o"; break;
-	case 112: rs = L"p"; break;
-	case 113: rs = L"q"; break;
-	case 114: rs = L"r"; break;
-	case 115: rs = L"s"; break;
-	case 116: rs = L"t"; break;
-	case 117: rs = L"u"; break;
-	case 118: rs = L"v"; break;
-	case 119: rs = L"w"; break;
-	case 120: rs = L"x"; break;
-	case 121: rs = L"y"; break;
-	case 122: rs = L"z"; break;
+	case 65: rs = 'A'; break;
+	case 66: rs = 'B'; break;
+	case 67: rs = 'C'; break;
+	case 68: rs = 'D'; break;
+	case 69: rs = 'E'; break;
+	case 70: rs = 'F'; break;
+	case 71: rs = 'G'; break;
+	case 72: rs = 'H'; break;
+	case 73: rs = 'I'; break;
+	case 74: rs = 'J'; break;
+	case 75: rs = 'K'; break;
+	case 76: rs = 'L'; break;
+	case 77: rs = 'M'; break;
+	case 78: rs = 'N'; break;
+	case 79: rs = 'O'; break;
+	case 80: rs = 'P'; break;
+	case 81: rs = 'Q'; break;
+	case 82: rs = 'R'; break;
+	case 83: rs = 'S'; break;
+	case 84: rs = 'T'; break;
+	case 85: rs = 'U'; break;
+	case 86: rs = 'V'; break;
+	case 87: rs = 'W'; break;
+	case 88: rs = 'X'; break;
+	case 89: rs = 'Y'; break;
+	case 90: rs = 'Z'; break;
+	case 97: rs = 'a'; break;
+	case 98: rs = 'b'; break;
+	case 99: rs = 'c'; break;
+	case 100: rs = 'd'; break;
+	case 101: rs = 'e'; break;
+	case 102: rs = 'f'; break;
+	case 103: rs = 'g'; break;
+	case 104: rs = 'h'; break;
+	case 105: rs = 'i'; break;
+	case 106: rs = 'j'; break;
+	case 107: rs = 'k'; break;
+	case 108: rs = 'l'; break;
+	case 109: rs = 'm'; break;
+	case 110: rs = 'n'; break;
+	case 111: rs = 'o'; break;
+	case 112: rs = 'p'; break;
+	case 113: rs = 'q'; break;
+	case 114: rs = 'r'; break;
+	case 115: rs = 's'; break;
+	case 116: rs = 't'; break;
+	case 117: rs = 'u'; break;
+	case 118: rs = 'v'; break;
+	case 119: rs = 'w'; break;
+	case 120: rs = 'x'; break;
+	case 121: rs = 'y'; break;
+	case 122: rs = 'z'; break;
 	}
 	return rs;
 }
@@ -1290,10 +1291,10 @@ wstring randn(bool bg = 0) {
 		break;
 	case -112://'>R': <Rand> A-Z
 		r = (char)((rand() % ('Z' + 1 - 'A')) + 'A');//cout << (char)r;
-		[[fallthrough]];
+		break;
 	case -80://'>r': <rand> a-z
 		r = (char)((rand() % ('z' + 1 - 'a')) + 'a');//cout << (char)r;
-		[[fallthrough]];
+		break;
 	case -116://':R': <Rand:> A-Za-z
 		r = rand() % 2;
 		r = r == 1 ?
@@ -1462,6 +1463,7 @@ void scanDb() {
 						break;
 					case '#':
 						if (testqqb(L"<#:")) {//ascii_calc
+							if (qp.find('\\') != string::npos) qp = regex_replace(a, wregex(L"\\\\g"), L">");
 							int s{}; for (auto &x : qp) s += x;
 							auto q = to_wstring(s);	cbSet(q);
 							rei();
