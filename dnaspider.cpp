@@ -506,6 +506,7 @@ void loadSe() {
 				{ if (!v[0]) { v[0] = ' '; } io = v; } break;
 			case 2738://ShowMultiStrandElapsedOnly:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrandElapsedOnly = stoi(v); else er(); } break;
+			case 865://PauseKey:
 				{ if (check_if_num(v)[0]) PauseKey = stoi(v); else er(); } break;
 			case 1543://NoEscapeOrPause:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
