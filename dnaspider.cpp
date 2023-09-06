@@ -488,16 +488,12 @@ void loadSe() {
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
 			case 1536://RSHIFT+LSHIFT_Only: (0 1)
-				{ if (check_if_num(v)[0]) {
-					if (v.find(' ') != string::npos) {
-						wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
-						v = v.substr(0, v.find(' '));
-						RSHIFTLSHIFTCtrlKey = stoi(max);
-					}
-					else RSHIFTLSHIFTCtrlKey = 1;
-					RSHIFTLSHIFT_Only = stoi(v);
-				}
-				else er(); } break;
+				{ if (v.find(' ') != string::npos) {
+					wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
+					v = v.substr(0, v.find(' '));
+					RSHIFTLSHIFTCtrlKey = stoi(max);
+				} else RSHIFTLSHIFTCtrlKey = 1;
+				RSHIFTLSHIFT_Only = stoi(v); } break;
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
@@ -725,7 +721,6 @@ void loadSe() {
 				editor1 = v; break;
 			case 857://EditorSe:
 				editorSe = v; break;
-			//case 839://EditorDb:
 			case 680://Assume:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') assume = stoi(v); else er(); } break;
 			case 1095://ShowStrand:
@@ -753,13 +748,12 @@ void loadSe() {
 			case 1172://StartHidden:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey: (vk_enum max)
-				{ if (check_if_num(v)[0]) {
-					if (v.find(' ') != string::npos) {
-						wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
-						v = v.substr(0, v.find(' ')); 
-						cKeyMax = max == L"1" ? 3 : stoi(max);
-					} else cKeyMax = 1;
-				cKey = stoi(v); } else er(); } break;
+				{ if (v.find(' ') != string::npos) {
+					wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
+					v = v.substr(0, v.find(' ')); 
+					cKeyMax = max == L"1" ? 3 : stoi(max);
+				} else cKeyMax = 1;
+				cKey = stoi(v); } break;
 			case 999://ShowIntro:
 				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showIntro = stoi(v); else er(); } break;
 			case 1324://ShowSettings:
@@ -1535,7 +1529,7 @@ void scanDb() {
 						}
 						else if (testqqb(L"<+:")) {//calc +
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) multi.icp += stoi(qp); else ic += stoi(qp);
+							if (multiStrand) { multi.icp += stoi(qp); if (!assume) ic = (int)multi.icp; } else ic += stoi(qp);
 							calc();
 							break;
 						}
@@ -1544,7 +1538,7 @@ void scanDb() {
 					case'-':
 						if (testqqb(L"<-:")) {//-
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) multi.icp -= stoi(qp); else ic -= stoi(qp);
+							if (multiStrand) { multi.icp -= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic -= stoi(qp);
 							calc();
 							break;
 						}
@@ -1553,7 +1547,7 @@ void scanDb() {
 					case'*':
 						if (testqqb(L"<*:")) {//*
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) multi.icp *= stoi(qp); else ic *= stoi(qp);
+							if (multiStrand) { multi.icp *= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic *= stoi(qp);
 							calc();
 							break;
 						}
@@ -1562,7 +1556,7 @@ void scanDb() {
 					case'/':
 						if (testqqb(L"</:")) {//divide
 							if (check_if_num(qp) == L"" || stoi(qp) <= 0) { printq(); continue; }
-							if (multiStrand) multi.icp /= stoi(qp); else ic /= stoi(qp);
+							if (multiStrand) { multi.icp /= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic /= stoi(qp);
 							calc();
 							break;
 						}
@@ -1571,7 +1565,7 @@ void scanDb() {
 					case'%':
 						if (testqqb(L"<%:")) {//%
 							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) multi.icp %= stoi(qp); else ic %= stoi(qp);
+							if (multiStrand) { multi.icp %= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic %= stoi(qp);
 							calc();
 							break;
 						}
@@ -2348,8 +2342,8 @@ void scanDb() {
 								break;
 							}
 							else if (testqqb(L"<if+")) {//<if+:> | stop if <+>
-								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (check_if_num(qp) == L"" || !qp[0]) { conn(); break; }
-								bool b = 0; int q = stoi(qp);
+								if (multiLineDelim[0] != '\\') { qp = regex_replace(qp, wregex(L"\n"), L""); qp = regex_replace(qp, wregex(L"\t"), L""); } if (wstring x = qp.substr(0, qp.find(' ')); check_if_num(x) == L"" || !qp[0]) { conn(); break; }
+								bool b = 0; int q = stoi(qp.substr(0, qp.find(' ')));
 								wstring l = L""; if (qp.find(' ') != string::npos) l = qp.substr(qp.find(' ') + 1);//<if+:# true:>
 								switch (qq[4]) {
 									default:
