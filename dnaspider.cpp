@@ -43,6 +43,7 @@ wstring multiLineDelim = L"\n"; //DbMultiLineDelimiter:
 wstring OutTab = L"\t"; //OutTabs
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
+size_t qqLen = 2;
 int rri = 0; //++RSHIFTLSHIFT_Only
 int CommaSleep = 128;
 int ic = 0; //<+> icp
@@ -461,6 +462,7 @@ void loadSe() {
 		if (v[0] && v != L" ") v = v.substr(v.find_first_not_of(L"\t "));
 		int x = 0; for (size_t i = 0; i <= se.length(); ++i) x += se[i];
 		if (v[0] == '>' && se.substr(0, 7) == L"Kb_Key_") {//set Kb_QQ_k
+			auto x = v.substr(1, v.find(' ') - 1); auto l = x.length(); bool b = x[0] < 127; qqLen = l > 0 && b ? l + 1 : b ? 1 : l / 2 + 1; //Kb_Key_Comma >,, '<bs>
 			wstring s = se.substr(7);
 			if (s.length() > 2) {
 				int x = 0; for (size_t i = 0; i <= s.length() - 2; ++i) x += s[i];
@@ -3222,10 +3224,10 @@ void key(wstring k) {
 		wstring re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
 		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
-			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > 1) { Kb_QQ_i = 0; if (k[1]) { kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); } strand = L"<"; prints(); return; }
+			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > qqLen - 1) { Kb_QQ_i = 0; if (k[1]) { for (auto i = 0; i < qqLen; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); } strand = L"<"; prints(); return; }
 			else {
 				if (k[1] && strand[0] != '<') {
-					k = k.substr(1); bk = 1;
+					k = k.substr(1); if (k[0] < 127) k = k[0]; else k = k.substr(0, 2); bk = 1;
 				}
 				else return;
 			}
@@ -3252,7 +3254,7 @@ void key(wstring k) {
 				if (strand != k) strand = strand.substr((strand[0] > 127) + 1);
 			}
 			else {
-				auto x = 0;
+				size_t x = 0;
 				for (auto c : strand) { if (c > 127) ++x; }
 				if (x > 0) x /= 2;
 				x = strand.length() - x;
@@ -3516,7 +3518,7 @@ int main() {//cout << "@dnaspider\n\n";
 		}
 		if (RSHIFTLSHIFT_Only && !strand[0] && Kb_QQ_k > 0 && GetAsyncKeyState(Kb_QQ_k)) {
 			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i;
-			if (Kb_QQ_i > 1) { Kb_QQ_i = 0; kb(VK_BACK); kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = qScanOnly ? L"<" : L""; ++rri; prints(); clearAllKeys(); continue; }
+			if (Kb_QQ_i > qqLen - 1) { Kb_QQ_i = 0; for(auto i = 0; i < qqLen; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = qScanOnly ? L"<" : L""; ++rri; prints(); clearAllKeys(); continue; }
 			Sleep(frequency / 3);
 			continue;
 		}
