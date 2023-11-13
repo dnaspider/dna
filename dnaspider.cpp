@@ -3224,7 +3224,7 @@ void key(wstring k) {
 		wstring re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
 		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
-			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; if (Kb_QQ_i > k.length() - 1) { Kb_QQ_i = 0; if (k[1]) { for (auto i = 0; i < k.length(); ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); } strand = L"<"; prints(); return; }
+			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; size_t l = k[1] < 127 ? k.substr(1).length() : k.length() / 2; if (Kb_QQ_i > l) { Kb_QQ_i = 0; if (k[1]) { for (auto i = 0; i < l + 1; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); } strand = L"<"; prints(); return; }
 			else {
 				if (k[1] && strand[0] != '<') {
 					k = k.substr(1); if (k[0] < 127) k = k[0]; else k = k.substr(0, 2); bk = 1;
