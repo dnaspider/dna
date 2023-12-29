@@ -182,11 +182,11 @@ void kb(wchar_t b) {//out char
 	SendInput(2, ip, sizeof(ip[0]));
 }
 
-void kb(wstring b) {
+void kb(wstring &b) {
 	if (b.find('\\') != string::npos) b = regex_replace(b, wregex(L"\\\\g"), L">");
 	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
-	for (auto i : b) {
+	for (auto &i : b) {
 		ip[0].ki.wScan = i; ip[0].ki.wVk = 0;
 		ip[1] = ip[0]; ip[1].ki.dwFlags = KEYEVENTF_KEYUP;
 		SendInput(2, ip, sizeof(ip[0]));
