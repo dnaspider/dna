@@ -3297,19 +3297,22 @@ int main() {//cout << "@dnaspider\n\n";
 				wcout << database << " not found.\nPress [1] to auto create, [ESC] pro, [2] hacker.\nTo reset, delete c:\\dna folder then restart program.\n";
 				bool num2pressed = 0; for (;; Sleep(150)) { if (GetAsyncKeyState(50) && !num2pressed) { GetAsyncKeyState(50); num2pressed = 1; cout << "Hold [ESC] for hacker mode settings.\n"; } if (GetAsyncKeyState(VK_ESCAPE)) { GetAsyncKeyState(VK_ESCAPE); Sleep(150); if (GetAsyncKeyState(VK_ESCAPE)) {} else { RemoveDirectoryW(c.c_str()); } break; } if (GetAsyncKeyState(0x31) || GetAsyncKeyState(VK_NUMPAD1)) { break; } }
 				if (num2pressed) { cout << "Hacker mode settings enabled.\n";
-					db_ = LR"( Use H+ESC to toggle visibility,
- ?+ESC for help,
- X+ESC exit.
-
- Use RCTRL S E RCTRL to show settings.
- Or use RSHIFT+LSHIFT instead of RCTRL. 
-<se ><se>
+					db_ = LR"( Internals
+ H+ESC  Toggle visibility
+ ?+ESC  Help
+ X+ESC  Exit
 
  Use A, C, S, or W RCTRL to run.
 a <a:<alt\g<alt-\g><left6>
 c <a:<ctrl\g<ctrl-\g><left7>
 s <a:<shift\g<shift-\g><left8>
 w <a:<win\g<win-\g><left6>
+
+ Use RCTRL S E RCTRL to show settings.
+ Or use RSHIFT+LSHIFT instead of RCTRL
+ (Hold RSHIFT, press LSHIFT, release RSHIFT).
+ Can also use , , S E , or Q Q S E Q.
+<se ><se>
 
  Use SCLK or RCTRL+LCTRL for repeat.)";
 					se_ = LR"(StrandLengthMode    1
@@ -3322,7 +3325,7 @@ CtrlKey             163 9
 RgbScaleLayout      2.5)";
 					np = L"";
 					Kb_Key_Comma = L">, '<bs>"; RgbScaleLayout = 2.5; strandLengthMode = 1; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
-					Sleep(150); GetAsyncKeyState(VK_ESCAPE); kbRelease(VK_ESCAPE);
+					Sleep(250); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
 			}
