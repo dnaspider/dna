@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,185
- PRODUCTVERSION 1,0,0,185
+ FILEVERSION 1,0,0,186
+ PRODUCTVERSION 1,0,0,186
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,11 +69,11 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "dnaspider@live.com"
             VALUE "FileDescription", "dnaspider"
-            VALUE "FileVersion", "1.0.0.185"
+            VALUE "FileVersion", "1.0.0.186"
             VALUE "InternalName", "dnaspider.exe"
             VALUE "LegalCopyright", "Copyright (C) 2024"
             VALUE "ProductName", "dnaspider"
-            VALUE "ProductVersion", "1.0.0.185"
+            VALUE "ProductVersion", "1.0.0.186"
         END
     END
     BLOCK "VarFileInfo"
