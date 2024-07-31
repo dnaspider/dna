@@ -1312,10 +1312,10 @@ wstring randn(bool bg = 0) {
 }
 
 void bs_input(wstring x = L"") {
-	wstring y = x; if (x > L"") y[0] = x[x.length() - 1];
+	wstring y = x; if (x > L"") y[0] = x[x.length() - close_ctrl_mode];
 	if (ltslm && x[x.length() - 1] == '>') { ltslm = 0; x = x.substr(0, x.length() - 1); }
 	for (size_t t = 0; t < x.length(); ++t) { if (x[t] > 127) { ++t; continue; } if (x[t] == 60 || ((Kb_Key_Menu[0]) && x[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (x[t] == Kb_Key_F1[0] || x[t] == Kb_Key_F2[0] || x[t] == Kb_Key_F3[0] || x[t] == Kb_Key_F4[0] || x[t] == Kb_Key_F5[0] || x[t] == Kb_Key_F6[0] || x[t] == Kb_Key_F7[0] || x[t] == Kb_Key_F8[0] || x[t] == Kb_Key_F9[0] || x[t] == Kb_Key_F10[0] || x[t] == Kb_Key_F11[0] || x[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && x[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && x[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && x[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && x[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && x[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && x[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && x[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && x[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
-	if (!strand[0]) strand = x + y[0];
+	if (close_ctrl_mode && !strand[0]) strand = x + y[0];
 }
 
 void replace_q(wstring &a, wstring b, wstring c) {
@@ -1344,7 +1344,7 @@ void scanDb() {
 	short svi = 0; if (sv[0] != '<' && strandLengthMode && sv.size() - close_ctrl_mode > 1) { for (auto c : sv) if (c > 127) ++svi; } //counter for non asciis
 	wstring cell; relink = 0; bool fallthrough = 0; ft_bs = L""; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		
-		if (fallthrough) {
+		if (fallthrough && close_ctrl_mode) {
 			fallthrough = 0;
 			if (!cell[0]) { f.close();
 				break;
@@ -1386,7 +1386,7 @@ void scanDb() {
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| b == cell //fallthrough
+			|| b == cell && close_ctrl_mode //fallthrough
 			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
@@ -1394,7 +1394,7 @@ void scanDb() {
 			|| a == b + L'^' //<x^>
 		) {
 			
-			if (cell == sv.substr(0, sv.length() - close_ctrl_mode)) {//fallthrough
+			if (close_ctrl_mode && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {//fallthrough
 				fallthrough = 1;
 				if (sv == cell) {
 					bs_input(strand);
@@ -1429,7 +1429,7 @@ void scanDb() {
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
 
-			if (ltslm && tail[0] == '>') {
+			if (close_ctrl_mode && ltslm && tail[0] == '>') {
 				ltslm = 0;
 				tail[0] = !sv[0] ? cell[sv.length() - 2] : io[0];
 				multi.t = reTail = codes = tail;
@@ -1444,11 +1444,11 @@ void scanDb() {
 				else tail = tail.substr(io[0] > 127 ? 2 : 1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1);
 				if (io_Auto_BS && !b) {
-					if (ft_bs[0]) {
+					if (close_ctrl_mode && ft_bs[0]) {
 						bs_input(ft_bs);//ii
 						ft_bs = L"";
 					}
-					else if (strand[0] == '<') {
+					else if (close_ctrl_mode && strand[0] == '<') {
 						wstring x = strand;
 						x = x.substr(1);
 						x = x.substr(0, x.length() - (x[x.length() - 1] == io[0]));
@@ -1480,7 +1480,7 @@ void scanDb() {
 					if (tail[0] == '>') tail = tail.substr(1);
 					if (multiStrand) multi.t = tail;
 
-					if (strand[0] == '<') {
+					if (close_ctrl_mode && strand[0] == '<') {
 						wstring x = strand;
 						x = x.substr(1);
 						x = x.substr(0, x.length() - (x[x.length() - 1] == '-'));
