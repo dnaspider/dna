@@ -22,6 +22,7 @@ wstring&&
 	Kb_Key_Print_Screen = L"", Kb_Key_Insert = L"", Kb_Key_Delete = L"", Kb_Key_Home = L"", Kb_Key_End = L"", Kb_Key_PgUp = L"", Kb_Key_PgDn = L"",
 	Kb_Key_Numpad_0 = L"", Kb_Key_Numpad_1 = L"", Kb_Key_Numpad_2 = L"", Kb_Key_Numpad_3 = L"", Kb_Key_Numpad_4 = L"", Kb_Key_Numpad_5 = L"", Kb_Key_Numpad_6 = L"", Kb_Key_Numpad_7 = L"", Kb_Key_Numpad_8 = L"", Kb_Key_Numpad_9 = L"", Kb_Key_Numlock = L"", Kb_Key_Numpad_Divide = L"", Kb_Key_Numpad_Multiply = L"", Kb_Key_Numpad_Minus = L"", Kb_Key_Numpad_Add = L"", Kb_Key_Numpad_Period = L"", Kb_Key_Numpad_Enter = L""
 ;
+wstring&& ft_bs = L""; //fallthrough_bs
 wstring&& pre = L""; //previous reTail
 wstring&& io = L" ";//i*o
 wstring&& linkr = L"";
@@ -60,6 +61,7 @@ short reKey = VK_PAUSE; //repeat
 short cKey = VK_SPACE, cKeyMax = 3; //<
 short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax;
 short RSHIFTLSHIFT_Only = 1, RSHIFTLSHIFTCtrlKey = 0;
+bool ltslm = 0; //< strandLengthMode
 bool LSHIFTCtrlKey = 0; //<
 bool RSHIFTCtrlKeyToggle = 0;
 bool ToggleKeep = 0;//Rshift+CtrlKey <
@@ -1309,8 +1311,11 @@ wstring randn(bool bg = 0) {
 	return rs;
 }
 
-void bs_input() {
-	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] > 127) { ++t; continue; } if (strand[t] == 60 || ((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+void bs_input(wstring x = L"") {
+	wstring y = x; if (x > L"") y[0] = x[x.length() - 1];
+	if (ltslm && x[x.length() - 1] == '>') { ltslm = 0; x = x.substr(0, x.length() - 1); }
+	for (size_t t = 0; t < x.length(); ++t) { if (x[t] > 127) { ++t; continue; } if (x[t] == 60 || ((Kb_Key_Menu[0]) && x[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (x[t] == Kb_Key_F1[0] || x[t] == Kb_Key_F2[0] || x[t] == Kb_Key_F3[0] || x[t] == Kb_Key_F4[0] || x[t] == Kb_Key_F5[0] || x[t] == Kb_Key_F6[0] || x[t] == Kb_Key_F7[0] || x[t] == Kb_Key_F8[0] || x[t] == Kb_Key_F9[0] || x[t] == Kb_Key_F10[0] || x[t] == Kb_Key_F11[0] || x[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && x[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && x[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && x[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && x[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && x[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && x[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && x[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && x[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+	if (!strand[0]) strand = x + y[0];
 }
 
 void replace_q(wstring &a, wstring b, wstring c) {
@@ -1337,14 +1342,44 @@ void scanDb() {
 	wifstream f(database); if (!f) { showOutsMsg(L"\nDatabase \"", database, L"\" not found!", 0); if (!database[0]) { cout << "Create c:\\dna\\db.txt manually\n\n?+ESC\n\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>)); //properties, general, language standard, >c++14 //_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 	short svi = 0; if (sv[0] != '<' && strandLengthMode && sv.size() - close_ctrl_mode > 1) { for (auto c : sv) if (c > 127) ++svi; } //counter for non asciis
-	wstring cell; relink = 0; bool fallthrough = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
+	wstring cell; relink = 0; bool fallthrough = 0; ft_bs = L""; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		
 		if (fallthrough) {
 			fallthrough = 0;
+			if (!cell[0]) { f.close();
+				break;
+			}
 			if (sv[sv.length() - 1] != '>')
 				sv = cell.substr(0, strandLengthMode);
-			else
-				sv = cell.substr(0, sv.length() - close_ctrl_mode) + L">";
+			else {
+				if (cell[0] == '<') {
+					
+					if (sv[sv.length() - 1] == '>') {
+						ft_bs = sv.substr(0, sv.length() - 1);//bs_input(ft_bs)
+					}
+
+					sv = cell.substr(0, cell.find('>') + 1);
+					codes = cell.substr(sv.length());
+					if (ltslm && sv == cell.substr(0, sv.length())) {
+						ltslm = 0;
+					}
+					else {
+						sv = strand = sv;
+						ltslm = 1;
+					}
+				}
+				else {
+					if (sv[sv.length() - 1] == '>' && sv.length() - 1 < strandLengthMode) {
+						if (cell[strandLengthMode] == io[0] || cell[strandLengthMode] == ':' || cell[strandLengthMode] == '>' || cell[strandLengthMode] == '-') {
+						}
+						else {
+							ltslm = 1;
+							fallthrough = 1; continue;
+						}
+					}
+					sv = cell.substr(0, strandLengthMode) + L">";
+				}
+			}
 		}
 		
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
@@ -1359,16 +1394,24 @@ void scanDb() {
 			|| a == b + L'^' //<x^>
 		) {
 			
-			if (cell == sv.substr(0, sv.length() - close_ctrl_mode)) { //fallthrough
+			if (cell == sv.substr(0, sv.length() - close_ctrl_mode)) {//fallthrough
 				fallthrough = 1;
 				if (sv == cell) {
-					bs_input();
+					bs_input(strand);
 					strand = L"";
-					continue;
 				}
-				else if (sv.length() < strandLengthMode + close_ctrl_mode) sv += L">";
+				else if (sv[sv.length() - 1] == '>' && sv.length() - 1 < strandLengthMode) {
+					ltslm = 1;
+					if (strand[0] != '<') {
+						wstring x = strand;
+						x = x.substr(0, x.length() - (x[x.length() - 1] == '>'));
+						bs_input(x);
+					}
+					else bs_input(strand);
+					strand = L"";
+				}
 				continue;
-			}
+			}//
 
 			Multi multi;
 			if (multiStrand) { strand = multi.s; if (!re[0]) mainn.s1 = linkr = cell.substr(0, strand.size()); }
@@ -1385,6 +1428,13 @@ void scanDb() {
 			tail = re[0] && !sv[0] ? re : cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>'));
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
+
+			if (ltslm && tail[0] == '>') {
+				ltslm = 0;
+				tail[0] = !sv[0] ? cell[sv.length() - 2] : io[0];
+				multi.t = reTail = codes = tail;
+			}
+
 			if (tail.substr(0, io.size()) == io) {//io:
 				bool b = 0;	if (sv[0] != '<' && tail[io[0] > 127 ? 2 : 1] == '>') {//x[io]>
 					if (cell[sv.length()] == '>') { sv = sv.substr(0, sv.length() - 1); }
@@ -1393,10 +1443,21 @@ void scanDb() {
 				}
 				else tail = tail.substr(io[0] > 127 ? 2 : 1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1);
-				if (multiStrand) { multi.t = tail; strand = multi.s; }
-				if (io_Auto_BS && !b) bs_input();
-				if (multiStrand) tail = multi.t;
+				if (io_Auto_BS && !b) {
+					if (ft_bs[0]) {
+						bs_input(ft_bs);//ii
+						ft_bs = L"";
+					}
+					else if (strand[0] == '<') {
+						wstring x = strand;
+						x = x.substr(1);
+						x = x.substr(0, x.length() - (x[x.length() - 1] == io[0]));
+						bs_input(x);//<i >
+					}else
+					bs_input(strand);
+				}
 				if (!b) codes = tail;
+				multi.t = tail;
 			}
 			else {
 				switch (tail[0]) {//set_tail
@@ -1418,7 +1479,15 @@ void scanDb() {
 					tail = tail.substr(1);
 					if (tail[0] == '>') tail = tail.substr(1);
 					if (multiStrand) multi.t = tail;
-					bs_input();
+
+					if (strand[0] == '<') {
+						wstring x = strand;
+						x = x.substr(1);
+						x = x.substr(0, x.length() - (x[x.length() - 1] == '-'));
+						bs_input(x);
+					}else
+					bs_input(strand);
+
 					if (multiStrand) tail = multi.t;
 					codes = tail;
 					break;
