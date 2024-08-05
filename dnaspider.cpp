@@ -1382,8 +1382,8 @@ void scanDb() {
 					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt-><,1>"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">"); }
 				}
 			}
-						
-			tail = re[0] && !sv[0] ? re : cell[0] == '<' ?
+
+			tail = re[0] && !sv[0] ? re : !close_ctrl_mode ? cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>')) : cell[0] == '<' ?
 				sv == cell.substr(0, sv.size()) ?
 				cell.substr(sv.size() - 2) : //<xx>
 				cell.substr(sv.size() - 1) //<xx >
@@ -3211,6 +3211,9 @@ void scanDb() {
 					GetAsyncKeyState(VkKeyScanW(ctail[0])); GetAsyncKeyState(ctail[0]);//clear
 				}
 			}
+			
+			if (!close_ctrl_mode && !noClearStrand && strand == sv && tail == L"") break;//x
+
 			if (strand[0] || re[0]) {
 				if (re == L"" || re == L" " || strandLengthMode) { re.clear(); reTail = tail = codes; }
 				clearAllKeys();
