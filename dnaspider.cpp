@@ -1365,7 +1365,7 @@ void scanDb() {
 			|| a == b + L'^' //<x^>
 		) {
 			
-			if (close_ctrl_mode && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {//fallthrough
+			if (close_ctrl_mode && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
 				fallthrough = 1;
 				continue;
 			}
@@ -1414,7 +1414,6 @@ void scanDb() {
 					break;
 				case '>':
 					tail = tail.substr(1);
-					//if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.size()) + tail : strand + tail;
 					if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.size()) + tail : sv.substr(0, sv.length() - 1) + tail;
 					break;
 				case '^'://i^o
