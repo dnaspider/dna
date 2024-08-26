@@ -1,7 +1,7 @@
 &nbsp;<h1><span href="https://github.com/dnaspider/dna/releases" title="Get the latest dnaspider.exe release &#13;&#13;Press [WIN+PAUSE_BREAK] for system type">`🕷`</span>[dnaspider.exe](https://github.com/dnaspider/dna/releases "Programmable keyboard software")</h1>
 Hello Friend, and thank you for your interest in dnaspider.exe 🙏.
 
-🥁 Introducing dnaspider.exe programmable keyboard software for Windows 11, 10 (32/64-bit) PCs! Tweak and execute simple or complex ⌨ and 🖱 functionality✨ to your liking. Use this functionality to automate and accelerate through daily tasks like a pro. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality seamlessly. 🦾🤖🦾.
+🥁 Introducing dnaspider.exe programmable keyboard software for Windows (32/64-bit) PCs! Tweak and execute simple or complex ⌨ and 🖱 functionality✨. Use it and build apon your functionality. With the help of dnaspider.exe, you will have the ability to strategically execute your custom built functionality seamlessly! 🦾🤖🦾.
 
 ### How it works
 dnaspider.exe builds an input strand from keyboard keys you press... 
@@ -11,18 +11,18 @@ dnaspider.exe builds an input strand from keyboard keys you press...
 <span title="The [T] key on the keyboard was pressed">strand: <kbd>test</kbd></span>
 <span title="The input sequence [test] was found in the &#13;beginning of one of the lines in db.txt and will trigger a run. &#13;&#13;Press or hold ESC to stop.">strand: <kbd>test></kbd></span></pre>
 
-This [input strand](https://github.com/dnaspider/dna/wiki/Input-map "View input strand map") will be our shortcut and is the text that dnaspider.exe looks for in the beginning of each line in <span title="Database">db.txt</span>. If found, the program executes the trailing text. We'll call this trailing text the <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a> which is the code we'll write which simulates keyboard and mouse functionality as instructed. 
+This input [strand](https://github.com/dnaspider/dna/wiki/Input-map "View input strand map") <kbd>test&gt;</kbd> will be our shortcut and is what dnaspider.exe searches for in the beginning of each line in <span title="Database">db.txt</span>. If found, the program executes the trailing text. This trailing text is our <a href="https://github.com/dnaspider/dna/wiki/api" title="Application programming interface">output</a> and is the code we'll write which simulates functionality we instruct. 
 
 ### db.txt
-<pre title="db.txt"><kbd title="Input strand &#13;&#13;Clear strand with BACKSPACE then type 'test' to run">test</kbd><span title="Use :, -, >, or io:* from se.txt to link the input:output">:</span><span title="Presses BACKSPACE four times">&lt;bs4&gt;</span><span title="Types hi">hi</span><span title="Holds SHIFT">&lt;shift&gt;</span><span title="Presses LEFT twice">&lt;left2&gt;</span><span title="Releases SHIFT">&lt;shift-&gt;</span>
+<pre title="db.txt"><span title="Input strand &#13;&#13;Clear strand with BACKSPACE then type 'test' to run">test</span><span title="Use :, -, >, or io:* from se.txt to link the input:output">:</span><span title="Presses BACKSPACE four times">&lt;bs4&gt;</span><span title="Types hi">hi</span><span title="Holds SHIFT">&lt;shift&gt;</span><span title="Presses LEFT twice">&lt;left2&gt;</span><span title="Releases SHIFT">&lt;shift-&gt;</span>
 </pre>
 
 Input the strand <kbd>test</kbd> in a text area for the effect.
 
 Lets adjust db.txt to use the auto <span title="-">backspace</span> and <span title="<connect:> or <connect->">connect</span> options.
-<pre title="db.txt"><span title="Clear strand then press T, RCTRL to run"><kbd>t</kbd><kbd>-</kbd></span>hi&lt;connect:&gt;
-<span title="Use RCTRL, RSHIFT+LSHIFT, or COMMA+ESC for &lt; then type 'connect' followed by RCTRL to run"><kbd>&lt;</kbd><kbd>connect</kbd><kbd>:&gt;</kbd></span>&lt;shift&gt;&lt;left2&gt;&lt;shift-&gt;
-<kbd>test</kbd><kbd>:</kbd>&lt;bs4&gt;hi&lt;connect:&gt;</pre>
+<pre title="db.txt"><span title="Clear strand then press T, RCTRL to run">t-</span>hi&lt;connect:&gt;
+<span title="Use RCTRL, RSHIFT+LSHIFT, or COMMA+ESC for &lt; then type 'connect' followed by RCTRL to run">&lt;connect:&gt;</span>&lt;shift&gt;&lt;left2&gt;&lt;shift-&gt;
+test:&lt;bs4&gt;hi&lt;connect:&gt;</pre>
 
 Save then press <kbd>T</kbd> to run.
 
@@ -33,7 +33,7 @@ Lets adjust a setting in se.txt to make <kbd title="Line 3">test</kbd> work.
 
 <span title="se.txt &#13;&#13;EditorSe: se.txt - Visual Studio Code">Press <kbd>LCTRL+S</kbd> to🔥save.</span>
 
-Now run your code.
+Now run your code!
 
 ### Repeat
 Use <span title="Hold RCTRL, press LCTRL, then release RCTRL"><kbd>RCTRL+LCTRL</kbd></span>, <span><kbd>EQUAL+ESC</kbd></span>, or <span title="se.txt &#13;&#13;RepeatKey: 19"><kbd>PAUSE_BREAK</kbd></span>.
