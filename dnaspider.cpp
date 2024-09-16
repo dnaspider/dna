@@ -2956,23 +2956,113 @@ void scanDb() {
 							}
 							else if (testqqb(L"<RGB") || testqqb(L"<rgb") && qq[4] != '~') {// << RGBXY to cb | <RGB> <RGB|> <RGB&> | <RGB|3,> <RGB|3~> | -xy if lowercase, 3sec
 								if (qq[5] == ':' && qq[6] == '>') { rei(); conn(); }
-								if (testqqb(L"<rgbxy>") || qqb(L"<rgbxy:>") || testqqb(L"<rgbxy")) { getRGB(1, 1); rei(); break; }//rshift + esc + r
-								wstring w = qq.substr(5, qq.find('>') - 5);
-								wstring b = L""; if (w[w.size() - 1] == ',' || w[w.size() - 1] == '~') { b = w[w.size() - 1]; w = w.substr(0, w.length() - 1); }
+								if (testqqb(L"<rgbxy>") || qqb(L"<rgbxy:>")) { getRGB(1, 1); rei(); break; }//rshift + esc + r
+								wstring w; switch (qq[4]) {
+								case 'x':
+								case 'X':
+									w += qq.substr(7);
+									break;
+								case '|':
+								case '&':
+									w += qq.substr(5);
+									break;
+								}
+								w += qq.substr(7);
+
+								wstring b = L""; if (w[w.size() - 2] == ',' || w[w.size() - 2] == '~') { 
+									b = w[w.size() - 2];
+								}
+
+								w = w.substr(0, w.find_first_of(L"~,>"));
+								
 								if (check_if_num(w) == L"") w = L"0";
 								size_t n = stoi(w);
-								wstring rgb = getRGB(1), rgbc = rgb, h = qq.substr(0, 4) + (b[0] == '~' && qq[1] == 'R' ? L"~" : L"") + L": " + rgb + (qq[1] == 'r' ? L"" : L" " + qx + L" " + qy), hq;
+								
+								wstring rgb = getRGB(1), rgbc = rgb, 
+									h = qq.substr(0, 4) +
+									(b[0] == '~' && qq[1] == 'R' ? L"~" : L"") +
+									L": " + rgb + (qq[4] == 'x' || qq[4] == 'X' ? L" " + qx + L" " + qy : L""), hq;
+
 								if (showStrand) wcout << h;
+								wstring hh = h.substr(0, h.find_first_of(L":") + 1);
 								for (size_t i = 0; i < (n * 10); ++i) {// <rgb|3>
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { GetAsyncKeyState(VK_ESCAPE); break; }
 									Sleep(95);
 									rgb = getRGB(1);
 									if (rgb == rgbc) continue;
-									hq = L" " + qq.substr(4, 1) + L" " + rgb + (qq[1] == 'r' ? L"" : L" " + qx + L" " + qy); h += hq;// & |
+									switch (qq[4]){
+									case 'x':
+									case 'X':
+										hq = L" " + qq.substr(6, 1) + L" " + rgb +  L" " + qx + L" " + qy;
+										break;
+									case '&':
+									case '|':
+										hq = L" " + qq.substr(4, 1) + L" " + rgb;
+										break;
+									}
+									h += hq;
+
 									if (showStrand) wcout << hq;
 									rgbc = rgb;
 								}
-								if (showStrand) cout << '>' << '\n';
+								
+								//<RGBXY&2> hoverless
+								if (qq[4] == 'X') {
+									if (showStrand) cout << ">";
+									Sleep(2048);
+
+									h = h.substr(h.find_first_of(L":") + 2);
+									auto y{ 0 };
+									auto ss{ 0 };
+									wstring hc = L"";
+									for (size_t i = 0; i < h.size(); ++i) {
+										if (h[i] == ' ') ss += 1;
+										if (ss == 3) {
+											h = h.substr(i + 1);
+											ss = 0;
+											i = 0;
+											size_t tt{ 0 }; tt += h.find_first_of(L"&|") + 2;
+											if (tt == 1) hc += h; else hc += h.substr(0, tt);
+											h = h.substr(tt);
+											continue;
+										}
+										if (h[i] == '|' || h[i] == '&') {
+											y += 1;
+											h = h.substr(h.find_first_of(' '));
+											i = 0;
+										}
+									}
+									wstring hcc = L"";
+									wstring xxc = L"";
+									wstring yyc = L"";
+									COLORREF color; HDC hDC;
+									for (size_t i = 0; i < hc.size(); ++i) {
+										hDC = GetDC(NULL);
+										if (hDC != NULL) {
+											xxc = hc.substr(0, hc.find(L" "));
+											yyc = hc.substr(hc.find(L" "));
+											if (yyc.find(L"|") != string::npos || yyc.find(L"&") != string::npos) {
+												yyc = yyc.substr(1, yyc.find(L" ", 1));
+											}
+											color = GetPixel(hDC, stoi(xxc) * RgbScaleLayout, stoi(yyc) * RgbScaleLayout);
+											ReleaseDC(NULL, hDC);
+											if (color != CLR_INVALID) {
+												wstring c = to_wstring(GetRValue(color)) + L" " + to_wstring(GetGValue(color)) + L" " + to_wstring(GetBValue(color));
+												if (bool a{ hc.find('|') != string::npos }, b{ hc.find('&') != string::npos }; a || b) {
+													hcc += c + L" " + xxc + L" " + yyc; if (a) { hcc += L"| "; } if (b) { hcc += L"& "; }
+													hc = hc.substr(hc.find_first_of(L"&|") + 2);
+												}
+												else {
+													hcc += c + L" " + xxc + yyc;
+													hc = L"";
+													h = hh + L" " + hcc;
+												}
+												i = 0;
+											}
+										}
+									}
+								}
+								if (showStrand) { if (qq[4] != 'X') cout << '>'; cout << '\n'; }
 								
 								//filter
 								wstring q = L"", c = L"", f = h.substr(0, h.find(':') + 2);
@@ -3239,7 +3329,240 @@ void printCtrls() {
 		default: return to_wstring(s) + L"\t";
 		}
 	};
-	wcout << L"Interface\n?+ESC\t\t\tdnaspider.exe\nESC\t\t\tStop\nX+ESC\t\t\tExit (Or press: CTRL+C or CTRL+BREAK)\nF11\t\t\tFullscreen\nH+ESC\t\t\tToggle visibility\n" << enm(cKey) << L"\t\tToggle < or run (>) (se.txt CtrlKey: " << to_wstring((short)cKey) << " | Or try CtrlKey: 145, RepeatKey: 19, PauseKey: 123, ClearStrandKey: 123 instead/SCRLK, PAUSE, F12)\nCOMMA+ESC\t\t< (>)\nRSHIFT+LSHIFT\t\tToggle <\nLSHIFT+CtrlKey\t\tHard < (se.txt LSHIFT+CtrlKey: 1 | Increase for more time. 0 for off)\nRSHIFT+CtrlKey\t\tToggle se.txt CtrlScanOnlyMode & CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off). For running i^o codes\nRSHIFT+LSHIFT+CtrlKey\n" << enm(ClearStrandKey) << " (LSHIFT)\t\tClear/Reset strand (se.txt ClearStrandKey: " << to_wstring((short)ClearStrandKey) << ")\n" << enm(PauseKey) << "\t\t\tPause/Resume\nP+ESC\t\t\t<xy:>\nA+ESC\t\t\t<app:>\nR+ESC (SHIFT)\t\t<rgb:> (se.txt RgbScaleLayout: 1.25 | Match with desktop System > Display, Scale & layout, Scale [125%]) | Use LSHIFT for loop, RSHIFT for <rgbxy> copy (3 second delay)\n" << enm(reKey) << "\t\tRepeat (se.txt RepeatKey: " << to_wstring((short)reKey) << ")\nEQUAL+ESC\nHold RCTRL, Press LCTRL, Release RCTRL\n\nAPI\nA-Z 0-9 etc.\t\tdnaspider will press key/run\n\t\t\t<test->A-Z 0-9 etc.\n<connect_line>\t\tUse <line_name:> or <line_name->\n\t\t\t<test1-><test-> (se.txt CloseCtrlMode: 1)\n<db>\t\t\tPrint database to console\n\t\t\t<test-><db>\n<se>\t\t\tLoad settings\n\t\t\t<test-><SE> \n\t\t\t(se.txt ShowSettings: 1 to print current settings to console if lowercase)\n\t\t\tOr press LCTRL+S inside \"" << editorSe << L"\" (se.txt EditorSe)\n<v>\t\t\tToggle visibility\n\t\t\t<test-><v>\n<,>\t\t\t150ms sleep (se.txt CommaSleep: 150)\n\t\t\t<test->1<,>1\n<,1>\t\t\tSleep for\n<ms:1>\t\t\t<test->1<,1000>1\n<sleep:1>\n<xy:0 0>\t\tMove pointer to x y (P+ESC to get)\n\t\t\tUse . for current\n\t\t\t<test-><xy:. 0><rc>\n<x:>\n<y:>\n<xy>\t\t\tPrint x y\n<rp>\t\t\tReturn pointer/cursor (xy)\n\t\t\t<test-><xy:0 0><,1000><rp>\n<XY:><XY>\t\tSet, return xy\n\t\t\t<test-><xy:0 0><,1000><XY>\n<~><~~>\t\t\tLong set, return cursor (xy)\n\t\t\t<test-><~><connect:><~~>\n<~m>\t\t\tAuto lock/unlock (se.txt MultiStrand: 1)\n<~~m>\t\t\tEnable MultiStrand\n<^^>\t\t\tToggle CtrlScanOnlyMode & CloseCtrlMode\n\t\t\ttest^1 or test^>1 for auto <^^>\n\t\t\tUse i^o to toggle back from RSHIFT+CtrlKey mode\n<lc>\t\t\tLEFT, RIGHT, MIDDLE->CLICK, HOLD, RELEASE\n<rc>\n<mc>\n<lh>\n<rh>\n<mh>\n<lr>\n<rr>\n<mr>\n<sl>\t\t\tSCROLL LEFT, UP, RIGHT, DOWN\n<su>\n<sr>\n<sd>\n<ctrl>\t\t\tHold key\n<shift>\n<alt>\n<win>\n<ctrl->\t\t\tRelease key\n<shift->\n<alt->\n<win->\n<up>\t\t\tPress key\n<right>\n<down>\n<left>\n<delete>\n<esc>\n<bs>\n<home>\n<end>\n<space>\n<tab>\n<enter>\n<pause>\n<caps>\n<win1>\t\t\tPress* \n\t\t\t<test><bs4>1\n<menu>\t\t\tMENU key\n<ins>\t\t\tINSERT\n<ps>\t\t\tPRINT_SCREEN\n<pu><pd>\t\tPAGE_UP, PAGE_DOWN\n<f1>\t\t\tF1 (F1-F12) \n<yesno:>\t\tVerify message\n\t\t\t<test-><yesno:Continue?>1\n<beep>\t\t\tAlert sound\n<a:>\t\t\tCodes\n\t\t\t<test-><a:<shift\\g<shift-\\g><left8>\n<speed:>\t\tOutput\n\t\t\t<test->1<speed:1000>11\n<+:>\t\t\tCalc. (No print, se.txt Assume: 1)\n<-:>\t\t\t<test-><+:1><+:-1>\n<*:>\n</:>\n<%:>\n<+>\t\t\tTotal\n\t\t\t<test-><+><*:7>\n<down+>\t\t\tVariable press* <+>\n\t\t\t<test:><speed:1000><+:1><tab+><test:>\n<bs++>\t\t\tVariable press.Auto increment <+>\n\t\t\t<test-><speed:1000><esc++><<:\\+\\n><test->\n<if+:>\t\t\tStop if <+> (Use \" \" for true)\n\t\t\t<test-><+:1><<:\\+:)\\n><if+g:3 true:><test->\n\t\t\t<true:>1\n<'>\t\t\tPrint to console\n<''>\t\t\tIgnore rest of line\n<'''>\t\t\tIgnore rest of db \n\t\t\t<test->1<'bs>1<''test>0\n\t\t\t<'''block>\n<app:>\t\t\tContinue if set app to foreground\n\t\t\tSignature: <app:TITLE|TITLE,*,ms,true- else->\n\t\t\t<test-><app:Calculator>1+1<enter>\n\t\t\tDefault: <app:'Calculator,1,333,else:>1\n\t\t\tUse | for OR: TITLE|TITLE\n\t\t\tUse \" \" to expand connect option: true- false-\n\t\t\tUse < to reconnect: <true- <false-\n\t\t\tUse < in true or false slot for continue\n\t\t\tUse ' or '?' after : to print to console\n\t\t\t<test-><app:'Calculator,1,150,true- false->\n\t\t\t<true->1+1<enter>\n\t\t\t<false-><win>r<win-><app:Run,9,6>calc<enter><app:Calculator,><,1111><true->\n\t\t\tSignature for loop: (Use - : or ,)\n\t\t\t<app:T,*,ms,->\n\t\t\t<app:T,*,ms,:>\n\t\t\t<app:T,>\n\t\t\tCheck, continue: <app:T,*,ms,>\n<App:>\t\t\tContinue if App in foreground\n\t\t\t<test-><App:Calculator,>1+1<enter>\n<app>\t\t\tTITLE to cb\n\t\t\t<test-><speed:1><alt><esc><alt-><app><app:\u25cf " + db + editor + L" | " + db + editor + L"><ctrl>v<ctrl->\n<rgb:>\t\t\tContinue if rgb in xy location (R+ESC to get)\n\t\t\tSignature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n\t\t\tUse & for AND, | for OR\n\t\t\t<test-><rgb:255 255 255 0 0>1\n<RGB:>\t\t\tContinue if RGB in XY location\n\t\t\t<test-><RGB:255 255 255 0 0>1\n<RGB~:>\t\t\tIf RGB is true, go to its XY (RSHIFT+R+ESC)\n\t\t\t<test-><RGB~:'loop msg'0 0 0 0 0 | 1 1 1 0 0,><rc>\n<rgb>\t\t\tPrint rgb\n\t\t\t<test-><shift>,<shift->rgb:<rgb>>\n<RGB&>\t\t\tRGBXY to cb (No XY if lowercase. Optional , or ~)\n<RGB|>\t\t\t<test-><RGB&3,> (Generate for 3 sec.)\n<rgbxy>\t\t\tRGBXY to cb (3 second delay. For hoverless rgb)\n<rgbxy:>\n<cb:>\t\t\tSet clipboard (Auto CTRL+V if CAPS)\n\t\t\t<test-><cb:Test>\n<cl>\t\t\tCb length\n<ifxy:>\t\t\tContinue if xy\n<ifcb:>\t\t\tContinue if cb ==\n<ifcb!:>\t\t!=\n<ifcbg:>\t\tg\n<ifcbge:>\t\tg=\n<ifcbl:>\t\t<\n<ifcble:>\t\t<=\n<ifcbf:>\t\tRegex find\n<ifcbF:>\t\tFind\n<ifcbA:1 x>\t\tOffset find x\n<ifcbS:>\t\tStarts with\n<ifcbE:>\t\tEnds with\n<ifcba:0 1 x>\t\tFind substr\n<ifcblen:>\t\tLength\n\t\t\tSignature: <ifcb:#|#,*,ms,t- f->\n\t\t\t<test-><ifcbge:1>1\n<replace:>\t\tRegex replace (cb)\n\t\t\t<test-><replace:T,t><replace:\\r\\n,>\n<upper>\t\t\tUppercase (cb)\n<lower>\n<time:>\t\t\tPrint timestamp\n<time>\n<ift:>\t\t\tContinue if time\n<ifh:>\t\t\tHour\n<ifm:>\t\t\tMinute\n<ifs:>\t\t\tSecond\n\t\t\tOptions: ==, !=, <, <=, g, g=, +\n\t\t\tSignature: <ifh:#,*,ms,t- f->\n\t\t\t<test-><ifh<=:5>1\n<rand:>\t\t\tPrint random #, A-Z, a-z, or A-Za-z\n<Rand>\t\t\t<test-><rand:0,1>\n<rand>\n<Rand:>\n<dna:>\t\t\tTitle\n\t\t\t<dna:new>\n<dna>\t\t\tInit.\n\t\t\t<dna><<:Welcome\\n>\n<<:>\t\t\tCustom message\n\t\t\tOptions: \n\t\t\t\\1-9\tColor\n\t\t\t\\n\tNewline\n\t\t\t\\t\tTab\n\t\t\t\\T\tTime\n\t\t\t\\'\tBlank\n\t\t\t\\g\t\">\"\n\t\t\t\\c\tCb\n\t\t\t\\a\tBeep\n\t\t\t\\+\t<+>\n\t\t\t\\d\tRun <+>\n\t\t\t\\m\t<ml>\n\t\t\t<test-><<:<test-\\g>\n<se:>\t\t\t(se.txt Settings)\n\t\t\t<test-><se:c:\\dna\\s.txt>\n<db:>\t\t\t(se.txt Database)\n\t\t\t<test-><DB:c:\\dna\\d.txt> (Print if caps)\n{}\t\t\tReplacer \n{'}\t\t\t{'ignore}\n<r:>\t\t\t(se.txt ReplacerDb)\n\t\t\t<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n\t\t\ttest:1\n<ml>\t\t\tPrint DbMultiLineDelimiter\n<!>\t\t\tNo clear strand after run\n<!:>\t\t\tSet strand after run\n<!!:>\t\t\tMulti run\n<!!!:>\t\t\tSet repeat; end\n<~esc>\t\t\tse.txt NoEscapeOrPause: 0\n<~~esc>\t\t\tNoEscapeOrPause: 1\n<#:>\t\t\tascii_calc to cb\n\t\t\t<test-><#:x>\n<repeat>\t\t(se.txt ManualRepeat: 1)\n\t\t\t<test-><repeat>\n<audio:>\t\t<audio:play c:\\dna\\1.mp3>\n<Audio:>\t\t<Audio:c:\\dna\\1.wav>\n\n";
+	wcout <<
+L"Interface\n"
+"?+ESC\t\t\t"			"dnaspider.exe\n"
+"ESC\t\t\t"				"Stop\n"
+"X+ESC\t\t\t"			"Exit (Or press: CTRL+C or CTRL+BREAK)\n"
+"F11\t\t\t"				"Fullscreen\n"
+"H+ESC\t\t\t"			"Toggle visibility\n"
+<< enm(cKey) <<			L"\t\tToggle < or run (>) (se.txt CtrlKey: " << to_wstring((short)cKey) << " | Or try CtrlKey: 145, RepeatKey: 19, PauseKey: 123, ClearStrandKey: 123 instead/SCRLK, PAUSE, F12)\n"
+"COMMA+ESC\t\t"			"< (>)\n"
+"RSHIFT+LSHIFT\t\t"		"Toggle <\n"
+"LSHIFT+CtrlKey\t\t"	"Hard < (se.txt LSHIFT+CtrlKey: 1 | Increase for more time. 0 for off)\n"
+"RSHIFT+CtrlKey\t\t"	"Toggle se.txt CtrlScanOnlyMode & CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off). For running i^o codes\n"
+"RSHIFT+LSHIFT+CtrlKey\n"
+<< enm(ClearStrandKey) << " (LSHIFT)\t\tClear/Reset strand (se.txt ClearStrandKey: " << to_wstring((short)ClearStrandKey) << ")\n"
+<< enm(PauseKey) <<		"\t\t\tPause/Resume\n"
+"P+ESC\t\t\t"			"<xy:>\n"
+"A+ESC\t\t\t"			"<app:>\n"
+"R+ESC (SHIFT)\t\t"		"<rgb:> (se.txt RgbScaleLayout: 1.25 | Match with desktop System > Display, Scale & layout, Scale [125%]) | Use LSHIFT for loop, RSHIFT for <rgbxy> copy (3 second delay)\n"
+<< enm(reKey) <<		"\t\tRepeat (se.txt RepeatKey: " << to_wstring((short)reKey) << ")\n"
+"EQUAL+ESC\n"			"Hold RCTRL, Press LCTRL, Release RCTRL\n"
+"\n"
+"API\n"
+"A-Z 0-9 etc.\t\t"		"dnaspider will press key/run\n"
+"\t\t\t"				"<test->A-Z 0-9 etc.\n"
+"<connect_line>\t\t"	"Use <line_name:> or <line_name->\n"
+"\t\t\t"				"<test1-><test-> (se.txt CloseCtrlMode: 1)\n"
+"<db>\t\t\t"			"Print database to console\n"
+"\t\t\t"				"<test-><db>\n"
+"<se>\t\t\t"			"Load settings\n"
+"\t\t\t"				"<test-><SE> \n"
+"\t\t\t"				"(se.txt ShowSettings: 1 to print current settings to console if lowercase)\n"
+"\t\t\t"				"Or press LCTRL+S inside \"" << editorSe << L"\" (se.txt EditorSe)\n"
+"<v>\t\t\t"				"Toggle visibility\n"
+"\t\t\t"				"<test-><v>\n"
+"<,>\t\t\t"				"150ms sleep (se.txt CommaSleep: 150)\n"
+"\t\t\t"				"<test->1<,>1\n"
+"<,1>\t\t\t"			"Sleep for\n"
+"<ms:1>\t\t\t"			"<test->1<,1000>1\n"
+"<sleep:1>\n"
+"<xy:0 0>\t\t"			"Move pointer to x y (P+ESC to get)\n"
+"\t\t\t"				"Use . for current\n"
+"\t\t\t"				"<test-><xy:. 0><rc>\n"
+"<x:>\n"
+"<y:>\n"
+"<xy>\t\t\t"			"Print x y\n"
+"<rp>\t\t\t"			"Return pointer/cursor (xy)\n"
+"\t\t\t"				"<test-><xy:0 0><,1000><rp>\n"
+"<XY:><XY>\t\t"			"Set, return xy\n"
+"\t\t\t"				"<test-><xy:0 0><,1000><XY>\n"
+"<~><~~>\t\t\t"			"Long set, return cursor (xy)\n"
+"\t\t\t"				"<test-><~><connect:><~~>\n"
+"<~m>\t\t\t"			"Auto lock/unlock (se.txt MultiStrand: 1)\n"
+"<~~m>\t\t\t"			"Enable MultiStrand\n"
+"<^^>\t\t\t"			"Toggle CtrlScanOnlyMode & CloseCtrlMode\n"
+"\t\t\t"				"test^1 or test^>1 for auto <^^>\n"
+"\t\t\t"				"Use i^o to toggle back from RSHIFT+CtrlKey mode\n"
+"<lc>\t\t\t"			"LEFT, RIGHT, MIDDLE->CLICK, HOLD, RELEASE\n"
+"<rc>\n"
+"<mc>\n"
+"<lh>\n"
+"<rh>\n"
+"<mh>\n"
+"<lr>\n"
+"<rr>\n"
+"<mr>\n"
+"<sl>\t\t\t"			"SCROLL LEFT, UP, RIGHT, DOWN\n"
+"<su>\n"
+"<sr>\n"
+"<sd>\n"
+"<ctrl>\t\t\t"			"Hold key\n"
+"<shift>\n"
+"<alt>\n"
+"<win>\n"
+"<ctrl->\t\t\t"			"Release key\n"
+"<shift->\n"
+"<alt->\n"
+"<win->\n"
+"<up>\t\t\t"			"Press key\n"
+"<right>\n"
+"<down>\n"
+"<left>\n"
+"<delete>\n"
+"<esc>\n"
+"<bs>\n"
+"<home>\n"
+"<end>\n"
+"<space>\n"
+"<tab>\n"
+"<enter>\n"
+"<pause>\n"
+"<caps>\n"
+"<win1>\t\t\t"			"Press* \n"
+"\t\t\t"				"<test><bs4>1\n"
+"<menu>\t\t\t"			"MENU key\n"
+"<ins>\t\t\t"			"INSERT\n"
+"<ps>\t\t\t"			"PRINT_SCREEN\n"
+"<pu><pd>\t\t"			"PAGE_UP, PAGE_DOWN\n"
+"<f1>\t\t\t"			"F1 (F1-F12) \n"
+"<yesno:>\t\t"			"Verify message\n"
+"\t\t\t"				"<test-><yesno:Continue?>1\n"
+"<beep>\t\t\t"			"Alert sound\n"
+"<a:>\t\t\t"			"Codes\n"
+"\t\t\t"				"<test-><a:<shift\\g<shift-\\g><left8>\n"
+"<speed:>\t\t"			"Output\n"
+"\t\t\t"				"<test->1<speed:1000>11\n"
+"<+:>\t\t\t"			"Calc. (No print, se.txt Assume: 1)\n"
+"<-:>\t\t\t"			"<test-><+:1><+:-1>\n"
+"<*:>\n"
+"</:>\n"
+"<%:>\n"
+"<+>\t\t\t"				"Total\n"
+"\t\t\t"				"<test-><+><*:7>\n"
+"<down+>\t\t\t"			"Variable press* <+>\n"
+"\t\t\t"				"<test:><speed:1000><+:1><tab+><test:>\n"
+"<bs++>\t\t\t"			"Variable press.Auto increment <+>\n"
+"\t\t\t"				"<test-><speed:1000><esc++><<:\\+\\n"
+"><test->\n"
+"<if+:>\t\t\t"			"Stop if <+> (Use \" \" for true)\n"
+"\t\t\t"				"<test-><+:1><<:\\+:)\\n><if+g:3 true:><test->\n"
+"\t\t\t"				"<true:>1\n"
+"<'>\t\t\t"				"Print to console\n"
+"<''>\t\t\t"			"Ignore rest of line\n"
+"<'''>\t\t\t"			"Ignore rest of db \n"
+"\t\t\t"				"<test->1<'bs>1<''test>0\n"
+"\t\t\t"				"<'''block>\n"
+"<app:>\t\t\t"			"Continue if set app to foreground\n"
+"\t\t\t"				"Signature: <app:TITLE|TITLE,*,ms,true- else->\n"
+"\t\t\t"				"<test-><app:Calculator>1+1<enter>\n"
+"\t\t\t"				"Default: <app:'Calculator,1,333,else:>1\n"
+"\t\t\t"				"Use | for OR: TITLE|TITLE\n"
+"\t\t\t"				"Use \" \" to expand connect option: true- false-\n"
+"\t\t\t"				"Use < to reconnect: <true- <false-\n"
+"\t\t\t"				"Use < in true or false slot for continue\n"
+"\t\t\t"				"Use ' or '?' after : to print to console\n"
+"\t\t\t"				"<test-><app:'Calculator,1,150,true- false->\n"
+"\t\t\t"				"<true->1+1<enter>\n"
+"\t\t\t"				"<false-><win>r<win-><app:Run,9,6>calc<enter><app:Calculator,><,1111><true->\n"
+"\t\t\t"				"Signature for loop: (Use - : or ,)\n"
+"\t\t\t"				"<app:T,*,ms,->\n"
+"\t\t\t"				"<app:T,*,ms,:>\n"
+"\t\t\t"				"<app:T,>\n"
+"\t\t\t"				"Check, continue: <app:T,*,ms,>\n"
+"<App:>\t\t\t"			"Continue if App in foreground\n"
+"\t\t\t"				"<test-><App:Calculator,>1+1<enter>\n"
+"<app>\t\t\t"			"TITLE to cb\n"
+"\t\t\t"				"<test-><speed:1><alt><esc><alt-><app><app:\u25cf " + db + editor + L" | " + db + editor + L"><ctrl>v<ctrl->\n"
+"<rgb:>\t\t\t"			"Continue if rgb in xy location (R+ESC to get)\n"
+"\t\t\t"				"Signature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n"
+"\t\t\t"				"Use & for AND, | for OR\n"
+"\t\t\t"				"<test-><rgb:255 255 255 0 0>1\n"
+"<RGB:>\t\t\t"			"Continue if RGB in XY location\n"
+"\t\t\t"				"<test-><RGB:255 255 255 0 0>1\n"
+"<RGB~:>\t\t\t"			"If RGB is true, go to its XY (RSHIFT+R+ESC)\n"
+"\t\t\t"				"<test-><RGB~:'loop msg'0 0 0 0 0 | 1 1 1 0 0,><rc>\n"
+"<rgb>\t\t\t"			"Print rgb\n"
+"\t\t\t"				"<test-><shift>,<shift->rgb:<rgb>>\n"
+"<RGB&>\t\t\t"			"RGB to cb (Optional XY , or ~)\n"
+"<RGB|>\t\t\t"			"<test-><RGBXY&3~> (Generate for 3 sec. Hoverless)\n"
+"<rgbxy>\t\t\t"			"RGBXY to cb (3 second delay. For hoverless rgb)\n"
+"<rgbxy:>\n"
+"<cb:>\t\t\t"			"Set clipboard (Auto CTRL+V if CAPS)\n"
+"\t\t\t"				"<test-><cb:Test>\n"
+"<cl>\t\t\t"			"Cb length\n"
+"<ifxy:>\t\t\t"			"Continue if xy\n"
+"<ifcb:>\t\t\t"			"Continue if cb ==\n"
+"<ifcb!:>\t\t"			"!=\n"
+"<ifcbg:>\t\t"			"g\n"
+"<ifcbge:>\t\t"			"g=\n"
+"<ifcbl:>\t\t"			"<\n"
+"<ifcble:>\t\t"			"<=\n"
+"<ifcbf:>\t\t"			"Regex find\n"
+"<ifcbF:>\t\t"			"Find\n"
+"<ifcbA:1 x>\t\t"		"Offset find x\n"
+"<ifcbS:>\t\t"			"Starts with\n"
+"<ifcbE:>\t\t"			"Ends with\n"
+"<ifcba:0 1 x>\t\t"		"Find substr\n"
+"<ifcblen:>\t\t"		"Length\n"
+"\t\t\t"				"Signature: <ifcb:#|#,*,ms,t- f->\n"
+"\t\t\t"				"<test-><ifcbge:1>1\n"
+"<replace:>\t\t"		"Regex replace (cb)\n"
+"\t\t\t"				"<test-><replace:T,t><replace:\\r\\n,>\n"
+"<upper>\t\t\t"			"Uppercase (cb)\n"
+"<lower>\n"
+"<time:>\t\t\t"			"Print timestamp\n"
+"<time>\n"
+"<ift:>\t\t\t"			"Continue if time\n"
+"<ifh:>\t\t\t"			"Hour\n"
+"<ifm:>\t\t\t"			"Minute\n"
+"<ifs:>\t\t\t"			"Second\n"
+"\t\t\t"				"Options: ==, !=, <, <=, g, g=, +\n"
+"\t\t\t"				"Signature: <ifh:#,*,ms,t- f->\n"
+"\t\t\t"				"<test-><ifh<=:5>1\n"
+"<rand:>\t\t\t"			"Print random #, A-Z, a-z, or A-Za-z\n"
+"<Rand>\t\t\t"			"<test-><rand:0,1>\n"
+"<rand>\n"
+"<Rand:>\n"
+"<dna:>\t\t\t"			"Title\n"
+"\t\t\t"				"<dna:new>\n"
+"<dna>\t\t\t"			"Init.\n"
+"\t\t\t"				"<dna><<:Welcome\\n>\n"
+"<<:>\t\t\t"			"Custom message\n"
+"\t\t\t"				"Options: \n"
+"\t\t\t"				"\\1-9\t"	"Color\n"
+"\t\t\t"				"\\n\t"		"Newline\n"
+"\t\t\t"				"\\t\t"		"Tab\n"
+"\t\t\t"				"\\T\t"		"Time\n"
+"\t\t\t"				"\\'\t"		"Blank\n"
+"\t\t\t"				"\\g\t"		">\n"
+"\t\t\t"				"\\c\t"		"Cb\n"
+"\t\t\t"				"\\a\t"		"Beep\n"
+"\t\t\t"				"\\+\t"		"<+>\n"
+"\t\t\t"				"\\d\t"		"Run <+>\n"
+"\t\t\t"				"\\m\t"		"<ml>\n"
+"\t\t\t"				"<test-><<:<test-\\g>\n"
+"<se:>\t\t\t"			"(se.txt Settings)\n"
+"\t\t\t"				"<test-><se:c:\\dna\\s.txt>\n"
+"<db:>\t\t\t"			"(se.txt Database)\n"
+"\t\t\t"				"<test-><DB:c:\\dna\\d.txt> (Print if caps)\n"
+"{}\t\t\t"				"Replacer \n"
+"{'}\t\t\t"				"{'ignore}\n"
+"<r:>\t\t\t"			"(se.txt ReplacerDb)\n"
+"\t\t\t"				"<test->{'test}<R:C:\\dna\\db.txt>{test:}<cb:{test:}>\n"
+"\t\t\t"				"test:1\n"
+"<ml>\t\t\t"			"Print DbMultiLineDelimiter\n"
+"<!>\t\t\t"				"No clear strand after run\n"
+"<!:>\t\t\t"			"Set strand after run\n"
+"<!!:>\t\t\t"			"Multi run\n"
+"<!!!:>\t\t\t"			"Set repeat; end\n"
+"<~esc>\t\t\t"			"se.txt NoEscapeOrPause: 0\n"
+"<~~esc>\t\t\t"			"NoEscapeOrPause: 1\n"
+"<#:>\t\t\t"			"ascii_calc to cb\n"
+"\t\t\t"				"<test-><#:x>\n"
+"<repeat>\t\t"			"(se.txt ManualRepeat: 1)\n"
+"\t\t\t"				"<test-><repeat>\n<audio:>\t\t<audio:play c:\\dna\\1.mp3>\n<Audio:>\t\t<Audio:c:\\dna\\1.wav>\n\n";
 }
 
 void printIntro() {
@@ -3353,9 +3676,9 @@ ShowStrand          0
 RSHIFT+LSHIFT_Only  0 0
 CtrlScanOnlyMode    0
 Kb_Key_Comma        >, '<bs>
-CtrlKey             163 9		
+CtrlKey             163 9
 RgbScaleLayout      2.5)";
-					np = L"";	
+					np = L"";
 					Kb_Key_Space = L" "; Kb_Key_Comma = L">, '<bs>"; RgbScaleLayout = 2.5; strandLengthMode = 1; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
