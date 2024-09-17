@@ -2967,7 +2967,6 @@ void scanDb() {
 									w += qq.substr(5);
 									break;
 								}
-								w += qq.substr(7);
 
 								wstring b = L""; if (w[w.size() - 2] == ',' || w[w.size() - 2] == '~') { 
 									b = w[w.size() - 2];
@@ -2977,23 +2976,42 @@ void scanDb() {
 								
 								if (check_if_num(w) == L"") w = L"0";
 								size_t n = stoi(w);
+
+								auto t = qq.substr(0, 4); if (b[0] == ',' && Loop_Insert_Text == L"") t = L"";
 								
 								wstring rgb = getRGB(1), rgbc = rgb, 
-									h = qq.substr(0, 4) +
+									h = t +
 									(b[0] == '~' && qq[1] == 'R' ? L"~" : L"") +
-									L": " + rgb + (qq[4] == 'x' || qq[4] == 'X' ? L" " + qx + L" " + qy : L""), hq;
+									(t > L"" ? L": " : L"") + (qq[4] == 'X' ? qx + L" " + qy : qq[4] == 'x' ? rgb + L" " + qx + L" " + qy : rgb), hq;
 
 								if (showStrand) wcout << h;
 								wstring hh = h.substr(0, h.find_first_of(L":") + 1);
 								for (size_t i = 0; i < (n * 10); ++i) {// <rgb|3>
 									GetAsyncKeyState(VK_ESCAPE); if (GetAsyncKeyState(VK_ESCAPE)) { GetAsyncKeyState(VK_ESCAPE); break; }
-									Sleep(95);
-									rgb = getRGB(1);
-									if (rgb == rgbc) continue;
+									
+									Sleep(96);
+									if (qq[4] == 'X') {
+										POINT pt; GetCursorPos(&pt);
+										auto x = to_wstring(pt.x);
+										auto y = to_wstring(pt.y);
+										if (qx == x && qy == y) continue;
+										hq = L" " + qq.substr(6, 1) + L" " + to_wstring(pt.x) + L" " + to_wstring(pt.y);
+										qx = x;
+										qy = y;
+										if (showStrand) wcout << hq;
+
+									}
+									else {
+										rgb = getRGB(1);
+										if (rgb == rgbc) continue;
+									}
+
 									switch (qq[4]){
 									case 'x':
+										hq = L" " + qq.substr(6, 1) + L" " + rgb + L" " + qx + L" " + qy;
+										break;
 									case 'X':
-										hq = L" " + qq.substr(6, 1) + L" " + rgb +  L" " + qx + L" " + qy;
+										hq = L" " + qq.substr(6, 1) + L" " + qx + L" " + qy;
 										break;
 									case '&':
 									case '|':
@@ -3003,7 +3021,9 @@ void scanDb() {
 									h += hq;
 
 									if (showStrand) wcout << hq;
-									rgbc = rgb;
+									
+									if (qq[4] != 'X') 
+										rgbc = rgb;
 								}
 								
 								//<RGBXY&2> hoverless
@@ -3012,26 +3032,8 @@ void scanDb() {
 									Sleep(2048);
 
 									h = h.substr(h.find_first_of(L":") + 2);
-									auto y{ 0 };
-									auto ss{ 0 };
-									wstring hc = L"";
-									for (size_t i = 0; i < h.size(); ++i) {
-										if (h[i] == ' ') ss += 1;
-										if (ss == 3) {
-											h = h.substr(i + 1);
-											ss = 0;
-											i = 0;
-											size_t tt{ 0 }; tt += h.find_first_of(L"&|") + 2;
-											if (tt == 1) hc += h; else hc += h.substr(0, tt);
-											h = h.substr(tt);
-											continue;
-										}
-										if (h[i] == '|' || h[i] == '&') {
-											y += 1;
-											h = h.substr(h.find_first_of(' '));
-											i = 0;
-										}
-									}
+
+									wstring hc = h;
 									wstring hcc = L"";
 									wstring xxc = L"";
 									wstring yyc = L"";
@@ -3065,7 +3067,7 @@ void scanDb() {
 								if (showStrand) { if (qq[4] != 'X') cout << '>'; cout << '\n'; }
 								
 								//filter
-								wstring q = L"", c = L"", f = h.substr(0, h.find(':') + 2);
+								wstring q = L"", c = L"";
 								size_t i = 0, x = b[0] == '~';
 								wstring r = L"\\" + qq.substr(4, 1) + L"  \\" + qq.substr(4, 1), s = L" \\" + qq.substr(4, 1) + L" $";
 								while (h.find(qq[4]) != string::npos) {
@@ -3088,14 +3090,15 @@ void scanDb() {
 									h = regex_replace(h, wregex(s), L"");
 								}
 								else {
-									h += (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
+									h += (Loop_Insert_Text == L"" && b[0] == ',' ? L"" : Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
 									cbSet(h);
 									rei();
 									break;
 								}
-								if (b[0] == ',' || b[0] == '~') h = f + h + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
+								if (b[0] == ',' || b[0] == '~') {
+									h = t + h + (Loop_Insert_Text == L"" && b[0] == ',' ? L"" : Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
+								}
 
-								cbSet(h);
 								rei();
 							}
 							else conn();
@@ -3474,7 +3477,7 @@ L"Interface\n"
 "<App:>\t\t\t"			"Continue if App in foreground\n"
 "\t\t\t"				"<test-><App:Calculator,>1+1<enter>\n"
 "<app>\t\t\t"			"TITLE to cb\n"
-"\t\t\t"				"<test-><speed:1><alt><esc><alt-><app><app:\u25cf " + db + editor + L" | " + db + editor + L"><ctrl>v<ctrl->\n"
+"\t\t\t"				"<test-><speed:1><alt><esc><alt-><app><app:" << L"\u25cf " << db + editor + L" | " + db + editor + L"><ctrl>v<ctrl->\n"
 "<rgb:>\t\t\t"			"Continue if rgb in xy location (R+ESC to get)\n"
 "\t\t\t"				"Signature <rgb:RED GREEN BLUE X Y,*,ms,true: false:>\n"
 "\t\t\t"				"Use & for AND, | for OR\n"
