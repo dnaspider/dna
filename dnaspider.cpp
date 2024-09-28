@@ -14,7 +14,7 @@ using ctp = chrono::steady_clock::time_point;
 
 #pragma region global_var
 wstring&&
-	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L">q '<bs>", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
+	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L"q", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
 	Kb_Key_0 = L"0", Kb_Key_1 = L"1", Kb_Key_2 = L"2", Kb_Key_3 = L"3", Kb_Key_4 = L"4", Kb_Key_5 = L"5", Kb_Key_6 = L"6", Kb_Key_7 = L"7", Kb_Key_8 = L"8", Kb_Key_9 = L"9",
 	Kb_Key_F1 = L"!", Kb_Key_F2 = L"@", Kb_Key_F3 = L"#", Kb_Key_F4 = L"$", Kb_Key_F5 = L"%", Kb_Key_F6 = L"^", Kb_Key_F7 = L"&", Kb_Key_F8 = L"*", Kb_Key_F9 = L"(", Kb_Key_F10 = L")", Kb_Key_F11 = L"_", Kb_Key_F12 = L"+",
 	Kb_Key_Left = L"L", Kb_Key_Up = L"U", Kb_Key_Right = L"R", Kb_Key_Down = L"D",
@@ -3447,8 +3447,7 @@ L"Interface\n"
 "<down+>\t\t\t"			"Variable press* <+>\n"
 "\t\t\t"				"<test:><speed:1000><+:1><tab+><test:>\n"
 "<bs++>\t\t\t"			"Variable press.Auto increment <+>\n"
-"\t\t\t"				"<test-><speed:1000><esc++><<:\\+\\n"
-"><test->\n"
+"\t\t\t"				"<test-><speed:1000><esc++><<:\\+\\n><test->\n"
 "<if+:>\t\t\t"			"Stop if <+> (Use \" \" for true)\n"
 "\t\t\t"				"<test-><+:1><<:\\+:)\\n><if+g:3 true:><test->\n"
 "\t\t\t"				"<true:>1\n"
@@ -3488,10 +3487,9 @@ L"Interface\n"
 "\t\t\t"				"<test-><RGB~:'loop msg'0 0 0 0 0 | 1 1 1 0 0,><rc>\n"
 "<rgb>\t\t\t"			"Print rgb\n"
 "\t\t\t"				"<test-><shift>,<shift->rgb:<rgb>>\n"
-"<RGB&>\t\t\t"			"RGB to cb (Optional XY , or ~)\n"
-"<RGB|>\t\t\t"			"<test-><RGBXY&3~> (Generate for 3 sec. Hoverless)\n"
-"<rgbxy>\t\t\t"			"RGBXY to cb (3 second delay. For hoverless rgb)\n"
-"<rgbxy:>\n"
+"<rgbxy>\t\t\t"			"RGBXY to cb\n"
+"<RGB&>\t\t\t"			"<test-><RGBXY&3,>\n"
+"<rgbxy:>\t\t"			"Place cursor where you want it. Run the code then hover around where you want the data. When you see > move cursor away. (Options: & | XY xy , ~)\n"
 "<cb:>\t\t\t"			"Set clipboard (Auto CTRL+V if CAPS)\n"
 "\t\t\t"				"<test-><cb:Test>\n"
 "<cl>\t\t\t"			"Cb length\n"
@@ -3565,8 +3563,10 @@ L"Interface\n"
 "<#:>\t\t\t"			"ascii_calc to cb\n"
 "\t\t\t"				"<test-><#:x>\n"
 "<repeat>\t\t"			"(se.txt ManualRepeat: 1)\n"
-"\t\t\t"				"<test-><repeat>\n<audio:>\t\t<audio:play c:\\dna\\1.mp3>\n<Audio:>\t\t<Audio:c:\\dna\\1.wav>\n\n";
-}
+"\t\t\t"				"<test-><repeat>\n"
+"<audio:>\t\t"			"<audio:play c:\\dna\\1.mp3>\n"
+"<Audio:>\t\t"			"<Audio:c:\\dna\\1.wav>\n\n"
+;}
 
 void printIntro() {
 	if (showIntro) {
@@ -3661,6 +3661,7 @@ int main() {//cout << "@dnaspider\n\n";
  X+ESC  Exit
 
  Use A, C, S, or W RCTRL to run.
+al
 a <a:<alt\g<alt-\g><left6>
 c <a:<ctrl\g<ctrl-\g><left7>
 s <a:<shift\g<shift-\g><left8>
@@ -3669,20 +3670,21 @@ w <a:<win\g<win-\g><left6>
  Use RCTRL S E RCTRL to show settings.
  Or use RSHIFT+LSHIFT instead of RCTRL
  (Hold RSHIFT, press LSHIFT, release RSHIFT).
- Can also use , , S E , or Q Q S E Q.
+ Can also use S E RCTRL or J J S E J
+se
 <se ><se>
 
  Use SCLK or RCTRL+LCTRL for repeat.)";
-					se_ = LR"(StrandLengthMode    1
+					se_ = LR"(StrandLengthMode    2
 StartHidden         1
 ShowStrand          0
 RSHIFT+LSHIFT_Only  0 0
 CtrlScanOnlyMode    0
-Kb_Key_Comma        >, '<bs>
+Kb_Key_J            >j '<bs>
 CtrlKey             163 9
-RgbScaleLayout      2.5)";
+RgbScaleLayout      1.0)";
 					np = L"";
-					Kb_Key_Space = L" "; Kb_Key_Comma = L">, '<bs>"; RgbScaleLayout = 2.5; strandLengthMode = 1; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
+					Kb_Key_Space = L" "; Kb_Key_J = L">j '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
