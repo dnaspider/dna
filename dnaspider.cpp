@@ -365,7 +365,7 @@ void scanDb(); wstring conn(bool bg = 0) {//<connect:>
 				re = L" ";//codes
 				return L"";
 			}
-		} f.close(); if (fail) { if (showStrand) { wcout << "Fail: " << OutTab << OutTab << qqs << endl; } fail = 0; i = tail.length(); return L""; } printq();
+		} f.close(); if (fail) { if (showStrand && !assume) { wcout << "Fail: " << OutTab << OutTab << qqs << endl; } fail = 0; i = tail.length(); return L""; } printq();
 	}
 	else printq();
 	return L"";
@@ -994,7 +994,7 @@ wstring getRGB(bool b = 0, bool bg = 0) {
 			rs = 1;
 			if (qq[6] == '>' || qq[6] == ':') Sleep(3000); else { Sleep(1000 * stoi(qq.substr(6, qq.length() - 1))); }
 		}
-		color = GetPixel(hDC, x * RgbScaleLayout, y * RgbScaleLayout);
+		color = GetPixel(hDC, int(x * RgbScaleLayout), int(y * RgbScaleLayout));
 		ReleaseDC(NULL, hDC);
 		if (color != CLR_INVALID) {
 			wstring c = to_wstring(GetRValue(color)) + L" " + to_wstring(GetGValue(color)) + L" " + to_wstring(GetBValue(color));//cb
@@ -1365,7 +1365,7 @@ void scanDb() {
 			|| a == b + L'^' //<x^>
 		) {
 			
-			if (close_ctrl_mode && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
+			if (close_ctrl_mode && cell[0] && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
 				fallthrough = 1;
 				continue;
 			}
@@ -1722,7 +1722,7 @@ void scanDb() {
 								}
 								HWND h{}, h1{}; DWORD pid{};
 								linkC = link; wstring qqC = qq; bool mF = 0;
-								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand && !assume) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
 								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 
@@ -2018,7 +2018,7 @@ void scanDb() {
 									if (check_if_num(x) == L"") { printq(); break; }
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
 								linkC = link; wstring qqC = qq; bool mF = 0;
-								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand && !assume) { wcout << "Fail: " << OutTab << OutTab; showOutsMsg(L"", qqC.substr(0, qqC.find('>') + 1), L"", 0); } };
 								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 
@@ -2432,7 +2432,7 @@ void scanDb() {
 									if (check_if_num(x) == L"") { printq(); break; }
 								}//cout << a << " " << x << " " << ms << " " << link << endl;
 								linkC = link; wstring qqC = qq; bool mF = 0;
-								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find('>') + 1) << endl; };
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand && !assume) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find('>') + 1) << endl; };
 								if (multiStrand) { multi.a = a; multi.x = x; multi.m = ms; multi.l = link; }
 								chrono::system_clock::time_point np;
 								time_t n{};
@@ -2799,7 +2799,7 @@ void scanDb() {
 								wstring app = a;
 								if (check_if_num(r) == L"" || check_if_num(g) == L"" || b.find(' ') == string::npos && check_if_num(b) == L"") { printq(); break; }
 								linkC = link; wstring qqC = qq; bool mF = 0;
-								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find('>') + 1) << endl; };
+								auto f = [qqC, &mF]() { mF = 1; i = tail.length(); if (showStrand && !assume) wcout << "Fail: " << OutTab << OutTab << qqC.substr(0, qqC.find('>') + 1) << endl; };
 								if (multiStrand) { multi.a = a; multi.r = r; multi.g = g; multi.b = b; multi.x = x; multi.m = ms; multi.l = link; }
 								if (multiStrand) { x = multi.x; } auto size{ 0 }, length{ stoi(x) };
 
@@ -2808,7 +2808,7 @@ void scanDb() {
 									POINT pt; COLORREF color; HDC hDC;
 									hDC = GetDC(NULL); GetCursorPos(&pt);
 									if (multiStrand) { r = multi.r; g = multi.g; b = multi.b; }
-									if (qqC[1] == 'R') { if (multiStrand) { qxc = multi.cx; qyc = multi.cy; } color = GetPixel(hDC, qxc * RgbScaleLayout, qyc * RgbScaleLayout); } else { color = GetPixel(hDC, pt.x * RgbScaleLayout, pt.y * RgbScaleLayout); }
+									if (qqC[1] == 'R') { if (multiStrand) { qxc = multi.cx; qyc = multi.cy; } color = GetPixel(hDC, int(qxc * RgbScaleLayout), int(qyc * RgbScaleLayout)); } else { color = GetPixel(hDC, int(pt.x * RgbScaleLayout), int(pt.y * RgbScaleLayout)); }
 									ReleaseDC(NULL, hDC);
 									if (color != CLR_INVALID && GetRValue(color) == stoi(r) && GetGValue(color) == stoi(g) && GetBValue(color) == stoi(b.substr(0, b.find(' ')))) {
 										multi.br = 1;
@@ -3029,7 +3029,7 @@ void scanDb() {
 								//<RGBXY&2> hoverless
 								if (qq[4] == 'X') {
 									if (showStrand) cout << ">";
-									Sleep(2048);
+									Sleep(DWORD((n * 1024 > 2048) ? DWORD(n * 1024) : 2048));
 
 									h = h.substr(h.find_first_of(L":") + 2);
 
@@ -3046,7 +3046,7 @@ void scanDb() {
 											if (yyc.find(L"|") != string::npos || yyc.find(L"&") != string::npos) {
 												yyc = yyc.substr(1, yyc.find(L" ", 1));
 											}
-											color = GetPixel(hDC, stoi(xxc) * RgbScaleLayout, stoi(yyc) * RgbScaleLayout);
+											color = GetPixel(hDC, int(stoi(xxc) * RgbScaleLayout), int(stoi(yyc) * RgbScaleLayout));
 											ReleaseDC(NULL, hDC);
 											if (color != CLR_INVALID) {
 												wstring c = to_wstring(GetRValue(color)) + L" " + to_wstring(GetGValue(color)) + L" " + to_wstring(GetBValue(color));
@@ -3487,9 +3487,9 @@ L"Interface\n"
 "\t\t\t"				"<test-><RGB~:'loop msg'0 0 0 0 0 | 1 1 1 0 0,><rc>\n"
 "<rgb>\t\t\t"			"Print rgb\n"
 "\t\t\t"				"<test-><shift>,<shift->rgb:<rgb>>\n"
-"<rgbxy>\t\t\t"			"RGBXY to cb\n"
-"<RGB&>\t\t\t"			"<test-><RGBXY&3,>\n"
-"<rgbxy:>\t\t"			"Place cursor where you want it. Run the code then hover around where you want the data. When you see > move cursor away. (Options: & | XY xy , ~)\n"
+"<rgbxy&>\t\t"			"rgbxy to cb (Options: & | XY xy , ~)\n"
+"\t\t\t"				"<test-><RGBXY&3,>\n"
+"\t\t\t"				"Place cursor over target. Run. Then hover over the data you want. When you see > move cursor away\n"
 "<cb:>\t\t\t"			"Set clipboard (Auto CTRL+V if CAPS)\n"
 "\t\t\t"				"<test-><cb:Test>\n"
 "<cl>\t\t\t"			"Cb length\n"
@@ -3519,7 +3519,7 @@ L"Interface\n"
 "<ifh:>\t\t\t"			"Hour\n"
 "<ifm:>\t\t\t"			"Minute\n"
 "<ifs:>\t\t\t"			"Second\n"
-"\t\t\t"				"Options: ==, !=, <, <=, g, g=, +\n"
+"\t\t\t"				"Options: == != < <= g g= +\n"
 "\t\t\t"				"Signature: <ifh:#,*,ms,t- f->\n"
 "\t\t\t"				"<test-><ifh<=:5>1\n"
 "<rand:>\t\t\t"			"Print random #, A-Z, a-z, or A-Za-z\n"
