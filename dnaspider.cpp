@@ -1339,7 +1339,7 @@ void scanDb() {
 	short svi = 0; if (sv[0] != '<' && strandLengthMode && sv.size() - close_ctrl_mode > 1) { for (auto c : sv) if (c > 127) ++svi; } //counter for non asciis
 	wstring cell; relink = 0; bool fallthrough = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		
-		if (fallthrough) {
+		if (fallthrough && strandLengthMode) {
 			fallthrough = 0;
 			if (cell.length() <= strandLengthMode) {
 				if (cell == L"") { f.close(); return; }
@@ -3606,7 +3606,15 @@ void key(wstring k) {
 	} else
 		strand.append(k);
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
-	if (strandLengthMode) {
+	if (k[0] == '<' || k[0] == '>') {
+		strand = strand.substr(0, strand.size() - 1);
+		if (k[1] == '-') {
+			kb(VK_BACK); GetAsyncKeyState(VK_BACK);
+			strand = strand.substr(0, strand.size() - 1);
+		}
+		!strand[0] ? strand.append(L"<") : strand.append(L">");
+	}
+	else if (strandLengthMode) {
 		if (strand[0] != '<' && strand.length() > strandLengthMode) {
 			if (strandLengthMode == 1) {
 				if (strand != k) strand = strand.substr((strand[0] > 127) + 1);
