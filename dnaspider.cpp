@@ -3581,8 +3581,8 @@ void key(wstring k) {
 	bool bk = 0; if (k.size() > 2 && k.find(' ') != string::npos) {
 		wstring re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
 		k = k.substr(0, k.find(' '));
-		if (k[0] == '>' && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
-			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; size_t l = k[1] < 127 ? k.substr(1).length() : k.length() / 2; if (Kb_QQ_i > l) { Kb_QQ_i = 0; if (k[1]) { for (auto i = 0; i < l + 1; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); } strand = L"<"; prints(); return; }
+		if ((k[0] == '>' || k[0] == '<') && !RSHIFTLSHIFT_Only && strand[0] != '<') { //qq < (Kb_Key_Q >q '<bs>)
+			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i; size_t l = k[1] < 127 ? k.substr(1).length() : k.length() / 2; if (Kb_QQ_i > l) { Kb_QQ_i = 0; if (k[1]) { for (auto i = 0; i < l + 1; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); } if (k[1] && k[1] != ' ') { strand = L"<"; prints(); return; } }
 			else {
 				if (k[1] && strand[0] != '<') {
 					k = k.substr(1); if (k[0] < 127) k = k[0]; else k = k.substr(0, 2); bk = 1;
@@ -3590,7 +3590,7 @@ void key(wstring k) {
 				else return;
 			} 
 		}
-		strand.append(k[0] == '>' ? L">" : k);
+		strand.append(strand[0] == '<' ? L">" : k);
 		{
 			bool y = showMultiStrandElapsedOnly; if (y) showMultiStrandElapsedOnly = 0;
 			Store s; if (b && strand[0] == '<' || b && k[0] == '>' && strand.size() > 1) {
@@ -3688,11 +3688,12 @@ StartHidden         1
 ShowStrand          0
 RSHIFT+LSHIFT_Only  0 0
 CtrlScanOnlyMode    0
+Kb_Key_F2           >
 Kb_Key_J            >j '<bs>
 CtrlKey             163 9
 RgbScaleLayout      1.0)";
 					np = L"";
-					Kb_Key_Space = L" "; Kb_Key_J = L">j '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
+					Kb_Key_Space = L" "; Kb_Key_F2 = L">";  Kb_Key_J = L">j '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
