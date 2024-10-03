@@ -3031,7 +3031,7 @@ void scanDb() {
 									if (showStrand) cout << ">";
 									Sleep(DWORD((n * 1024 > 2048) ? DWORD(n * 1024) : 2048));
 
-									h = h.substr(h.find_first_of(L":") + 2);
+									if (h.find(L":") != string::npos) h = h.substr(h.find_first_of(L":") + 2);
 
 									wstring hc = h;
 									wstring hcc = L"";
