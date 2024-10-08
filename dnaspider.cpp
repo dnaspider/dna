@@ -3678,7 +3678,7 @@ w <a:<win\g<win-\g><left6>
  Use RCTRL S E RCTRL to show settings.
  Or use RSHIFT+LSHIFT instead of RCTRL
  (Hold RSHIFT, press LSHIFT, release RSHIFT).
- Can also use S E RCTRL or J J S E J
+ Can also use S E RCTRL or Q Q S E Q
 se
 <se ><se>
 
@@ -3689,11 +3689,11 @@ ShowStrand          0
 RSHIFT+LSHIFT_Only  0 0
 CtrlScanOnlyMode    0
 Kb_Key_F2           >
-Kb_Key_J            >j '<bs>
+Kb_Key_Q            >q '<bs>
 CtrlKey             163 9
 RgbScaleLayout      1.0)";
 					np = L"";
-					Kb_Key_Space = L" "; Kb_Key_F2 = L">";  Kb_Key_J = L">j '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
+					Kb_Key_Space = L" "; Kb_Key_F2 = L">";  Kb_Key_Q = L">q '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
