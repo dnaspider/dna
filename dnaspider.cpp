@@ -1347,7 +1347,7 @@ void scanDb() {
 				}
 			}
 			auto xl = io + L">:-";
-			sv = cell.substr(0, cell.find_first_of(xl) + 1 + (cell[0] == '<'));
+			sv = cell.substr(cell.substr(0) == L"<", cell.find_first_of(xl) + 1);
 		}
 		
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
@@ -1380,12 +1380,7 @@ void scanDb() {
 				}
 			}
 
-			tail = re[0] && !sv[0] ? re : !close_ctrl_mode ? cell.substr(sv.size() - (sv[sv.size() - 1] == '>'), cell.size() - sv.size() + (sv[sv.size() - 1] == '>')) : cell[0] == '<' ?
-				sv == cell.substr(0, sv.size()) ?
-				cell.substr(sv.size() - 2) : //<xx>
-				cell.substr(sv.size() - 1) //<xx >
-				:
-				cell.substr(sv.size() - 1); //xx>
+			tail = cell[0] == '>' ? tail : cell.substr(cell.find_first_of(io + L">:-"));
 
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
@@ -1411,8 +1406,9 @@ void scanDb() {
 					break;
 				case '>':
 					tail = tail.substr(1);
-					if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.size()) + tail : sv.substr(0, sv.length() - 1) + tail;
-					break;
+					if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.size()) + tail
+						: sv.substr(sv[0] == '<', (sv.size() - (sv[0] == '<') - (sv[sv.size() - 1] == '>'))) + tail;
+ 					break;
 				case '^'://i^o
 					close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly;//<^^>
 					if (tail[1] == '>' && sv[0] != '<') { tail = tail.substr(2); codes = strand + tail; break; }
@@ -3318,7 +3314,7 @@ void scanDb() {
 	if (rri && RSHIFTLSHIFT_Only) rri = 0;
 	if (toggle_ccm && !strand[0]) {
 		toggle_ccm = 0;
-		close_ctrl_mode = 0;
+		close_ctrl_mode = 1;
 	}
 }
 
@@ -3684,17 +3680,19 @@ se
 <se ><se>
 
  Use SCLK or RCTRL+LCTRL for repeat.)";
-					se_ = LR"(StrandLengthMode    2
-StartHidden         1
-ShowStrand          0
-RSHIFT+LSHIFT_Only  0 0
-CtrlScanOnlyMode    0
-Kb_Key_F2           >
-Kb_Key_Q            >q '<bs>
-CtrlKey             163 9
-RgbScaleLayout      1.0)";
+					se_ = LR"(StrandLengthMode	2
+StartHidden			1
+ShowStrand			0
+RSHIFT+LSHIFT_Only	0 0
+CtrlScanOnlyMode	0
+Kb_Key_F2			>
+Kb_Key_Q			>q '<bs>
+CtrlKey				163 9
+Ignore_F1-F12		0
+Kb_Key_Space  
+RgbScaleLayout		1.0)";
 					np = L"";
-					Kb_Key_Space = L" "; RSHIFTCtrlKeyToggle = 1; ignoreF1s = 0; Kb_Key_Semicolon = L";"; Kb_Key_F2 = L">";  Kb_Key_Q = L">q '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
+					Kb_Key_Space = L" "; ignoreF1s = 0; Kb_Key_F2 = L">";  Kb_Key_Q = L">q '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
@@ -3718,15 +3716,12 @@ RgbScaleLayout      1.0)";
 			continue;
 		}
 		if (GetAsyncKeyState(VK_RSHIFT)) {
+			short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
 			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(cKey); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
-					bool x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
-						if (RSHIFTLSHIFTCtrlKey) {
-							GetAsyncKeyState(cKey); if (GetAsyncKeyState(cKey)) {
-								if (cKey == VK_SPACE) { kbRelease(VK_RSHIFT); kb(VK_BACK); } clearAllKeys(); ++rri; qScanOnly = !qScanOnly; close_ctrl_mode = !close_ctrl_mode; strand = qScanOnly ? L"<" : L""; prints(); x = 1; break; //rshift+lshift+cKey
-							}
-						} Sleep(frequency / 4);
-					} if (x) continue;
+					while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+					Sleep(frequency / 4);
+					}
 					++rri; if (strand[0] || rri > 1) {
 						if (strand[0] == '<' && strand.length() > 1) {
 							rri = 0; strand.append(L">"); prints(); if (!multiStrand) { scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue; }
@@ -3746,9 +3741,13 @@ RgbScaleLayout      1.0)";
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
 					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
 				}
+				++min;
 				Sleep(frequency / 4);
 			}
 			if (GetAsyncKeyState(cKey) && RSHIFTCtrlKeyToggle) {
+				if (min >= max) continue;
+				if (cKey == VK_SPACE) kb(VK_BACK);
+				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) continue;
 				close_ctrl_mode = 0;
 				toggle_ccm = 1;
 				continue;
