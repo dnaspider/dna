@@ -134,7 +134,7 @@ struct Multi {
 #pragma endregion
 
 #pragma region global_sub
-wstring getTime(wstring& w) {
+static wstring getTime(wstring& w) {
 	auto np = chrono::system_clock::now();
 	auto n = chrono::system_clock::to_time_t(np);
 	char b[26];
@@ -150,7 +150,7 @@ ctp clockr(ctp& t) {
 	return t = chrono::high_resolution_clock::now();
 }
 
-wstring check_if_num(wstring &s) {
+static wstring check_if_num(wstring &s) {
 	if (assume) return s;
 	if (s > L"") {
 		int c = 0, d = 0;
@@ -173,7 +173,7 @@ wstring check_if_num(wstring &s) {
 	return s;
 }
 
-void kb(wchar_t b) {//out char
+static void kb(wchar_t b) {//out char
 	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
 	if (VkKeyScanW(b) == -1) { ip[0].ki.wScan = b; ip[0].ki.wVk = 0; }
@@ -182,7 +182,7 @@ void kb(wchar_t b) {//out char
 	SendInput(2, ip, sizeof(ip[0]));
 }
 
-void kb(wstring &b) {
+static void kb(wstring &b) {
 	if (b.find('\\') != string::npos) b = regex_replace(b, wregex(L"\\\\g"), L">");
 	INPUT ip[2]{}; ip[0].type = INPUT_KEYBOARD;
 	ip[0].ki.dwFlags = KEYEVENTF_UNICODE;
@@ -193,18 +193,18 @@ void kb(wstring &b) {
 	}
 }
 
-void kbHold(short key) {
+static void kbHold(short key) {
 	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key; ip.ki.time = 0;
 	if (key == VK_LMENU || key == VK_CONTROL) ip.ki.dwFlags = 0; else ip.ki.dwFlags = 1;
 	SendInput(1, &ip, sizeof(INPUT));
 }
 
-void kbRelease(short key) {
+static void kbRelease(short key) {
 	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key;
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; SendInput(1, &ip, sizeof(INPUT));
 }
 
-void mouseEvent(short key) {
+static void mouseEvent(short key) {
 	INPUT ip{}; ip.type = INPUT_MOUSE; ip.mi.time = 0;
 	ip.mi.dwFlags = key;
 	if (key == MOUSEEVENTF_HWHEEL) {
@@ -216,7 +216,7 @@ void mouseEvent(short key) {
 	SendInput(1, &ip, sizeof(ip));
 }
 
-void shftRelease() {
+static void shftRelease() {
 	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.dwFlags = 2;
 	ip.ki.wVk = VK_LSHIFT;
 	SendInput(1, &ip, sizeof(INPUT));
@@ -225,19 +225,19 @@ void shftRelease() {
 	if (shft) { shft = false; }
 }
 
-void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
+static void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
 
-void prints() { if (showStrand) { auto s = L""+strand; OutsTemplate[0] == '\\' && OutsTemplate[OutsTemplate.length() - 2] == '\\' ? s = s.replace(0, s.length(), OutsTemplate.substr(0, 2) + s + OutsTemplate.substr(OutsTemplate.length() - 2)) : s = s.replace(0, s.length(), L"\\G" + s + L"\\7"); showOutsMsg(L"", OutsTemplate + s, L"\n", 1); } }
+static void prints() { if (showStrand) { auto s = L""+strand; OutsTemplate[0] == '\\' && OutsTemplate[OutsTemplate.length() - 2] == '\\' ? s = s.replace(0, s.length(), OutsTemplate.substr(0, 2) + s + OutsTemplate.substr(OutsTemplate.length() - 2)) : s = s.replace(0, s.length(), L"\\G" + s + L"\\7"); showOutsMsg(L"", OutsTemplate + s, L"\n", 1); } }
 
-bool qqb(const wstring s) {
+static bool qqb(const wstring s) {
 	return qq.substr(0, s.length()) == s && qq.find('>') != string::npos;
 }
 
-bool testqqb(const wstring s) {
+static bool testqqb(const wstring s) {
 	return qqb(s) && qq[s.length()] != '>';
 }
 
-void clearAllKeys() {
+static void clearAllKeys() {
 	if (!ignoreAZ) for (int i = 65; i <= 90; ++i) { GetAsyncKeyState(i); }
 	if (!ignore09) for (int i = 48; i <= 57; ++i) { GetAsyncKeyState(i); }
 	GetAsyncKeyState(reKey);
@@ -273,7 +273,7 @@ void clearAllKeys() {
 	if (Kb_Key_Menu[0]) GetAsyncKeyState(VK_APPS); //menu
 }
 
-void printDb() {
+static void printDb() {
 	wcout << database << "\n";
 	wifstream f(database); wstring cell;
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
@@ -281,7 +281,7 @@ void printDb() {
 	f.close(); cout << endl;
 }
 
-wstring loadVar(wstring q = L"") {
+static wstring loadVar(wstring q = L"") {
 	wifstream f(replacerDb); if (!f) { showOutsMsg(L"\nReplacerDb \"", replacerDb, L"\" not found!", 0); return q; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	wstring cell, se; GetAsyncKeyState(VK_ESCAPE); while (getline(f, cell, multiLineDelim[0])) {
@@ -300,7 +300,7 @@ wstring loadVar(wstring q = L"") {
 	return q;
 }
 
-wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
+static wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 	if (!replacerDb[0]) return q;
 	if (q.find('{') != string::npos) {
 		wstring tqg = q, tq{};
@@ -341,7 +341,7 @@ wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r:>
 	return q;
 }
 
-void scanDb(); wstring conn(bool bg = 0) {//<connect:>
+static void scanDb(); static wstring conn(bool bg = 0) {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find('>') + 1);
 	if (qqs.find(io[0]) != std::string::npos || qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
 		wstring x = L""; x += io[0]; x += L">";
@@ -371,7 +371,7 @@ void scanDb(); wstring conn(bool bg = 0) {//<connect:>
 	return L"";
 }
 
-void setQxQy(wstring x, size_t z = 0) {
+static void setQxQy(wstring x, size_t z = 0) {
 	if (x.find(',') != string::npos) {
 		qx = x.substr(z, x.find(','));//x <xy:#,#>
 		qy = x.substr(x.find(',') + 1, x.find('>') - x.find(',') - 1);//y
@@ -383,7 +383,7 @@ void setQxQy(wstring x, size_t z = 0) {
 	else { qx.clear(), qy.clear(); } //wcout << "x: " << x  << "\nqx: " << qx << "\nqy: " << qy << endl;
 }
 
-void kbPress(Multi multi, wstring s, short key) {
+static void kbPress(Multi multi, wstring s, short key) {
 	if (multiStrand) qq = multi.q;
 	if (qq.find('>') == std::string::npos) { printq(); return; }
 	wstring n = s;
@@ -439,9 +439,9 @@ void kbPress(Multi multi, wstring s, short key) {
 	if (multiStrand) multi.i_ = i;
 }
 
-void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
+static void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
 
-void calc() {
+static void calc() {
 	if (assume) { i += qq.find('>'); return; }
 	qq = to_wstring(ic) + qq.substr(qq.find('>') + 1, qq.length());
 	i = -1;
@@ -450,7 +450,7 @@ void calc() {
 	tail = qq;
 }
 
-void loadSe() {
+static void loadSe() {
 	wifstream f(settings); if (!f) { showOutsMsg(L"\nSettings \"", settings, L"\" not found!", 0); if (!settings[0]) { cout << "Create c:\\dna\\se.txt manually\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	wstring cell; while (getline(f, cell)) {
@@ -799,7 +799,7 @@ void loadSe() {
 	f.close();
  }
 
-void printSe() {
+static void printSe() {
 	loadSe();
 	if (showSettings) {
 		if (qq[1] == 'S') return;
@@ -957,7 +957,7 @@ void printSe() {
 	}
 }
 
-void toggle_visibility() {
+static void toggle_visibility() {
 	if (IsWindowVisible(GetConsoleWindow())) {
 		SetForegroundWindow(GetConsoleWindow());
 		kb(VK_F12);//if title "Select dnaspider"
@@ -969,7 +969,7 @@ void toggle_visibility() {
 	strand = L"";
 }
 
-wstring getAppT() {
+static wstring getAppT() {
 	HWND h = GetForegroundWindow();
 	int l = GetWindowTextLength(h);
 	wstring title(l, 0);
@@ -978,11 +978,11 @@ wstring getAppT() {
 	return title;
 }
 
-void getApp() {
+static void getApp() {
 	out(L"<shift>,<shift->app:");
 }
 
-wstring getRGB(bool b = 0, bool bg = 0) {
+static wstring getRGB(bool b = 0, bool bg = 0) {
 	POINT pt; GetCursorPos(&pt); COLORREF color; HDC hDC;
 	hDC = GetDC(NULL);
 	if (hDC != NULL) {
@@ -1031,7 +1031,7 @@ void cbSet(wstring& s) {
 	}
 }
 
-auto cbGet(wstring cb = L"") {
+static auto cbGet(wstring cb = L"") {
 	OpenClipboard(0);
 	HANDLE c = GetClipboardData(CF_UNICODETEXT);
 	if (c != nullptr) {
@@ -1043,7 +1043,7 @@ auto cbGet(wstring cb = L"") {
 	return cb;
 }
 
-void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0) {
+static void showOutsMsg(Multi multi, wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	HANDLE hC = GetStdHandle(STD_OUTPUT_HANDLE);
 	size_t x = 0; bool t = 0;
 	if (multiLineDelim[0] != '\\') { w = regex_replace(w, wregex(L"\n"), L""); w = regex_replace(w, wregex(L"\t"), L""); }
@@ -1203,13 +1203,13 @@ void showOutsMsg(wstring s, wstring w, wstring s1 = L"", bool b = 0) {
 	if (!b) cout << '\n';
 }
 
-void rei() { i += qq.find('>'); }
+static void rei() { i += qq.find('>'); }
 
-void rei(Multi multi) {
+static void rei(Multi multi) {
 	tail = multi.t; qp = multi.qp;  qq = multi.q;; i = multi.i_; i += qq.find('>'); multi.i_ = i;
 }
 
-wstring parse(int r, wstring &rs) {
+static wstring parse(int r, wstring &rs) {
 	switch (r) {
 	case 65: rs = 'A'; break;
 	case 66: rs = 'B'; break;
@@ -1306,11 +1306,11 @@ wstring randn(bool bg = 0) {
 	return rs;
 }
 
-void bs_input() {
+static void bs_input() {
 	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] > 127) { ++t; continue; } if (strand[t] == 60 || ((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 }
 
-void replace_q(wstring &a, wstring b, wstring c) {
+static void replace_q(wstring &a, wstring b, wstring c) {
 	if (a.find(L"\\" + c) == string::npos) return;
 	const wstring y = (L":" + c + L":_:" + c + L":"); //:g:_:g: placeholder
 	a = regex_replace(a, wregex(L"\\\\\\\\" + c), y);
@@ -3318,7 +3318,7 @@ void scanDb() {
 	}
 }
 
-void printCtrls() {
+static void printCtrls() {
 	auto enm = [](short s, wstring l = L"") -> wstring {
 		switch (s) {
 		case 163: return L"RCTRL\t";
@@ -3565,7 +3565,7 @@ L"Interface\n"
 "<Audio:>\t\t"			"<Audio:c:\\dna\\1.wav>\n\n"
 ;}
 
-void printIntro() {
+static void printIntro() {
 	if (showIntro) {
 		printCtrls();
 		printSe();
@@ -3573,7 +3573,7 @@ void printIntro() {
 	}
 }
 
-void key(wstring k) {
+static void key(wstring k) {
 	if (multiblock) return;
 	bool bk = 0; if (k.size() > 2 && k.find(' ') != string::npos) {
 		wstring re = k.substr(k.find(' ') + 1); bool b = re[0] == '\''; if (b) { re = re.substr(1); if (re[0] == '\'') b = 0; }
@@ -3614,7 +3614,7 @@ void key(wstring k) {
 	else if (strandLengthMode) {
 		if (strand[0] != '<' && strand.length() > strandLengthMode) {
 			if (strandLengthMode == 1) {
-				if (strand != k) strand = strand.substr((strand[0] > 127) + 1);
+				if (strand != k) strand = strand.substr(size_t((strand[0] > 127) + 1));
 			}
 			else {
 				size_t x = 0;
