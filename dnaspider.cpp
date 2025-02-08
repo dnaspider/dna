@@ -1362,7 +1362,7 @@ void scanDb() {
 			|| a == b + L'^' //<x^>
 		) {
 			
-			if (close_ctrl_mode && cell[0] && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
+			if ((close_ctrl_mode || toggle_ccm) && cell[0] && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
 				fallthrough = 1;
 				continue;
 			}
@@ -3312,9 +3312,9 @@ void scanDb() {
 	if (!noClearStrand) { if (strand[0] && close_ctrl_mode && strand[0] == '<') { if (strand[strand.length() - 1] != '>') return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
 	if (rri && RSHIFTLSHIFT_Only) rri = 0;
-	if (toggle_ccm && !strand[0]) {
+	if (toggle_ccm) {
 		toggle_ccm = 0;
-		close_ctrl_mode = 1;
+		close_ctrl_mode = !close_ctrl_mode;
 	}
 }
 
@@ -3748,7 +3748,7 @@ RgbScaleLayout		1.0)";
 				if (min >= max) continue;
 				if (cKey == VK_SPACE) kb(VK_BACK);
 				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) continue;
-				close_ctrl_mode = 0;
+				close_ctrl_mode = !close_ctrl_mode;
 				toggle_ccm = 1;
 				continue;
 			}
