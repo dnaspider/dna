@@ -1350,7 +1350,7 @@ void scanDb() {
 		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| b == cell && close_ctrl_mode && b.size() == cell.size()//fallthrough
+			|| b == cell && close_ctrl_mode //fallthrough
 			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
@@ -3680,12 +3680,15 @@ se
 StartHidden				1
 ShowStrand				0
 RSHIFT+LSHIFT_Only		0
-CtrlScanOnlyMode		0
+Ignore_F1-F12			0
 Kb_Key_F2				>
 Kb_Key_Q				>q '<bs>
-CtrlKey					163 9
-Ignore_F1-F12			0
+Kb_Key_Period			.
+Kb_Key_Comma			,
+Kb_Key_Semicolon		;
 Kb_Key_Space  
+CtrlKey					163 9
+CtrlScanOnlyMode		0
 RSHIFT+CtrlKey_Toggle	9
 RgbScaleLayout			1.0)";
 					np = L"";
