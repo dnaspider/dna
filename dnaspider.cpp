@@ -1381,15 +1381,10 @@ void scanDb() {
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
 			if (tail.substr(0, io.size()) == io) {//io:
-				bool b = 0;	if (sv[0] != '<' && tail[io[0] > 127 ? 2 : 1] == '>') {//x[io]>
-					if (cell[sv.length()] == '>') { sv = sv.substr(0, sv.length() - 1); }
-					tail = tail.substr(io[0] > 127 ? 2 + 1 : 2, tail.length());
-					codes = sv[sv.length() - 1] == '>' ? sv.substr(0, sv.length() - 1) + tail : sv + tail; b = 1;
-				}
-				else tail = tail.substr(io[0] > 127 ? 2 : 1, tail.length());
+				tail = tail.substr(io[0] > 127 ? 2 : 1, tail.length());
 				if (tail[0] == '>') tail = tail.substr(1);
-				if (io_Auto_BS && !b) bs_input();
-				if (!b) codes = tail;
+				if (io_Auto_BS) bs_input();
+				codes = tail;
 				multi.t = tail;
 			}
 			else {
