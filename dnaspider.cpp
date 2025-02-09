@@ -59,7 +59,7 @@ short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
 short cKey = VK_SPACE, cKeyMax = 3; //<
 short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax;
-short RSHIFTLSHIFT_Only = 1, RSHIFTLSHIFTCtrlKey = 0;
+bool RSHIFTLSHIFT_Only = 1;
 bool toggle_ccm = 0; //RSHIFTCtrlKeyToggle close_ctrl_mode=0
 bool LSHIFTCtrlKey = 0; //<
 bool RSHIFTCtrlKeyToggle = 0;
@@ -489,13 +489,8 @@ static void loadSe() {
 		}
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
-			case 1536://RSHIFT+LSHIFT_Only: (0 1)
-				{ if (v.find(' ') != string::npos) {
-					wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
-					v = v.substr(0, v.find(' '));
-					RSHIFTLSHIFTCtrlKey = stoi(max);
-				} else RSHIFTLSHIFTCtrlKey = 1;
-				RSHIFTLSHIFT_Only = stoi(v); } break;
+			case 1536://RSHIFT+LSHIFT_Only:
+				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') RSHIFTLSHIFT_Only = stoi(v); else er(); } break;
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
@@ -822,7 +817,7 @@ static void printSe() {
 		cout << "CloseCtrlSpacer: " << CloseCtrlSpacer << '\n';
 		cout << "RSHIFT+CtrlKey_Toggle: " << RSHIFTCtrlKeyToggle << '\n';
 		cout << "CtrlScanOnlyMode: " << qScanOnly << '\n';
-		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << ' ' << RSHIFTLSHIFTCtrlKey << '\n';
+		cout << "RSHIFT+LSHIFT_Only: " << RSHIFTLSHIFT_Only << '\n';
 		cout << "StrandLengthMode: " << strandLengthMode << '\n';
 		cout << "RepeatKey: " << reKey << '\n';
 		cout << "PauseKey: " << PauseKey << '\n';
@@ -1337,8 +1332,8 @@ void scanDb() {
 	wstring cell; relink = 0; bool fallthrough = 0; while (getline(f, cell, multiLineDelim[0])) { //cout << cell << endl;
 		
 		if (fallthrough && strandLengthMode) {
-			fallthrough = 0;
 			if (cell.length() <= strandLengthMode) {
+				fallthrough = 0;
 				if (cell == L"") { f.close(); return; }
 				while (getline(f, cell, multiLineDelim[0])) {
 					if (cell == L"") { f.close(); return; }
@@ -1347,14 +1342,15 @@ void scanDb() {
 				}
 			}
 			auto xl = io + L">:-";
-			sv = cell.substr(cell.substr(0) == L"<", cell.find_first_of(xl) + 1);
+			sv = cell.substr(cell[0] == '<', cell.find_first_of(xl));
+			fallthrough = 1;
 		}
 		
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
-		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode);
+		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| b == cell && close_ctrl_mode //fallthrough
+			|| b == cell && close_ctrl_mode && b.size() == cell.size()//fallthrough
 			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
@@ -3313,7 +3309,7 @@ void scanDb() {
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
 	if (rri && RSHIFTLSHIFT_Only) rri = 0;
 	if (toggle_ccm) {
-		toggle_ccm = 0;
+		toggle_ccm = 0; fallthrough = 0; strand.clear();
 		close_ctrl_mode = !close_ctrl_mode;
 	}
 }
@@ -3340,7 +3336,7 @@ L"Interface\n"
 "COMMA+ESC\t\t"			"< (>)\n"
 "RSHIFT+LSHIFT\t\t"		"Toggle <\n"
 "LSHIFT+CtrlKey\t\t"	"Hard < (se.txt LSHIFT+CtrlKey: 1 | Increase for more time. 0 for off)\n"
-"RSHIFT+CtrlKey\t\t"	"Toggle se.txt CtrlScanOnlyMode & CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off). For running i^o codes\n"
+"RSHIFT+CtrlKey\t\t"	"Toggle se.txt CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off)\n"
 "RSHIFT+LSHIFT+CtrlKey\n"
 << enm(ClearStrandKey) << " (LSHIFT)\t\tClear/Reset strand (se.txt ClearStrandKey: " << to_wstring((short)ClearStrandKey) << ")\n"
 << enm(PauseKey) <<		"\t\t\tPause/Resume\n"
@@ -3675,24 +3671,25 @@ w <a:<win\g<win-\g><left6>
  Use RCTRL S E RCTRL to show settings.
  Or use RSHIFT+LSHIFT instead of RCTRL
  (Hold RSHIFT, press LSHIFT, release RSHIFT).
- Can also use S E RCTRL or Q Q S E Q
+ Can also use S E RCTRL or Q Q S E Q or S E F2
 se
 <se ><se>
 
  Use SCLK or RCTRL+LCTRL for repeat.)";
-					se_ = LR"(StrandLengthMode	2
-StartHidden			1
-ShowStrand			0
-RSHIFT+LSHIFT_Only	0 0
-CtrlScanOnlyMode	0
-Kb_Key_F2			>
-Kb_Key_Q			>q '<bs>
-CtrlKey				163 9
-Ignore_F1-F12		0
+					se_ = LR"(StrandLengthMode		2
+StartHidden				1
+ShowStrand				0
+RSHIFT+LSHIFT_Only		0
+CtrlScanOnlyMode		0
+Kb_Key_F2				>
+Kb_Key_Q				>q '<bs>
+CtrlKey					163 9
+Ignore_F1-F12			0
 Kb_Key_Space  
-RgbScaleLayout		1.0)";
+RSHIFT+CtrlKey_Toggle	9
+RgbScaleLayout			1.0)";
 					np = L"";
-					Kb_Key_Space = L" "; ignoreF1s = 0; Kb_Key_F2 = L">";  Kb_Key_Q = L">q '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
+					Kb_Key_Period = L"."; Kb_Key_Comma = L","; Kb_Key_Semicolon = L";"; Kb_Key_Space = L" "; ignoreF1s = 0; Kb_Key_F2 = L">";  Kb_Key_Q = L">q '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
