@@ -1347,10 +1347,10 @@ void scanDb() {
 		}
 		
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
-		if (auto a = cell.substr(0, sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
+		if (auto a = cell.substr(0, sv.size() > cell.size() ? cell.size() : sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| b == cell && close_ctrl_mode //fallthrough
+			|| b == cell && close_ctrl_mode || fallthrough
 			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
@@ -3845,7 +3845,7 @@ RgbScaleLayout			1.0)";
 					if (qScanOnly) { clearAllKeys(); } strand = L"<";
 				}
 			}
-			if (showStrand) { wcout.flush().clear(); } prints(); if (qScanOnly) clearAllKeys();
+			if (showStrand) { wcout.flush().clear(); } prints(); if (qScanOnly || !strand[0]) clearAllKeys();
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
