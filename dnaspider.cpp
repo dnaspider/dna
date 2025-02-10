@@ -1376,7 +1376,7 @@ void scanDb() {
 				}
 			}
 
-			tail = cell[0] == '>' ? tail : cell.substr(cell.find_first_of(io + L">:-"));
+			tail = re[0] && !sv[0] ? re : cell.substr(cell.find_first_of(io + L">:-"));
 
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
