@@ -1355,7 +1355,6 @@ void scanDb() {
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
-			|| a == b + L'^' //<x^>
 		) {
 			
 			if ((close_ctrl_mode || toggle_ccm) && cell[0] && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
@@ -1400,10 +1399,6 @@ void scanDb() {
 					if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.size()) + tail
 						: sv.substr(sv[0] == '<', (sv.size() - (sv[0] == '<') - (sv[sv.size() - 1] == '>'))) + tail;
  					break;
-				case '^'://i^o
-					close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly;//<^^>
-					if (tail[1] == '>' && sv[0] != '<') { tail = tail.substr(2); codes = strand + tail; break; }
-					[[fallthrough]];
 				case '-':
 					tail = tail.substr(1);
 					if (tail[0] == '>') tail = tail.substr(1);
@@ -1505,14 +1500,6 @@ void scanDb() {
 							tail = store.v; reTail = store.v1; i = -1; }
 						}
 						else if (qqb(L"<!>") || qqb(L"<!:>") || testqqb(L"<!:")) { if (qq[2] == ':') { if (qq[3] == '>') { strand.clear(); clearAllKeys(); rei(); break; } strand = qp; if (showStrand) { showOutsMsg(L"", OutsTemplate, strand + L"\n", 1); } } noClearStrand = 1; rei(); }
-						else conn();
-						break;
-					case '^':
-						if (qqb(L"<^^>")) {
-							close_ctrl_mode = !close_ctrl_mode; qScanOnly = !qScanOnly;
-							tail.replace(tail.find(L"<^^>"), 4, L"");
-							--i;
-						}
 						else conn();
 						break;
 					case '~':
@@ -3373,9 +3360,6 @@ L"Interface\n"
 "\t\t\t"				"<test-><~><connect:><~~>\n"
 "<~m>\t\t\t"			"Auto lock/unlock (se.txt MultiStrand: 1)\n"
 "<~~m>\t\t\t"			"Enable MultiStrand\n"
-"<^^>\t\t\t"			"Toggle CtrlScanOnlyMode & CloseCtrlMode\n"
-"\t\t\t"				"test^1 or test^>1 for auto <^^>\n"
-"\t\t\t"				"Use i^o to toggle back from RSHIFT+CtrlKey mode\n"
 "<lc>\t\t\t"			"LEFT, RIGHT, MIDDLE->CLICK, HOLD, RELEASE\n"
 "<rc>\n"
 "<mc>\n"
@@ -3627,7 +3611,6 @@ static void key(wstring k) {
 void repeat() {
 	if (multiblock) return;
 	kbRelease(reKey);
-	if (reTail.find('^') != string::npos) reTail.replace(reTail.find(L"<^^>"), 4, L"");
 	if (multiStrand) {
 		strand = L""; re = L">" + reTail; i = -1; thread thread(out, reTail); thread.detach(); if (showStrand) { wcout.flush().clear(); }
 	}  
