@@ -59,7 +59,7 @@ short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
 short cKey = VK_SPACE, cKeyMax = 3; //<
 short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax;
-bool RSHIFTLSHIFT_Only = 1;
+short RSHIFTLSHIFT_Only = 1;
 bool toggle_ccm = 0; //RSHIFTCtrlKeyToggle close_ctrl_mode=0
 bool LSHIFTCtrlKey = 0; //<
 bool RSHIFTCtrlKeyToggle = 0;
@@ -490,7 +490,7 @@ static void loadSe() {
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
 			case 1536://RSHIFT+LSHIFT_Only:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') RSHIFTLSHIFT_Only = stoi(v); else er(); } break;
+				{ if (short x = stoi(v); x >= 0) { RSHIFTLSHIFT_Only = x; rri = 0; } else er(); } break;
 			case 1261://LSHIFT+CtrlKey:
 				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
@@ -1375,8 +1375,8 @@ void scanDb() {
 				}
 			}
 
-			tail = re[0] && !sv[0] ? re : cell.substr(cell.find_first_of(io + L">:-"));
-
+			tail = cell.find_first_of(io + L">:-") == string::npos ?  L"" : cell.substr(cell.find_first_of(io + L">:-"));
+			
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
 			if (tail.substr(0, io.size()) == io) {//io:
@@ -3698,7 +3698,7 @@ RgbScaleLayout			1.0)";
 			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(cKey); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
 					while (GetAsyncKeyState(VK_RSHIFT) != 0) {
-					Sleep(frequency / 4);
+						Sleep(frequency / 4);
 					}
 					++rri; if (strand[0] || rri > 1) {
 						if (strand[0] == '<' && strand.length() > 1) {
@@ -3713,7 +3713,7 @@ RgbScaleLayout			1.0)";
 						}
 						if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
 					}
-					if (strandLengthMode) { strand = L"<"; rri = 0; prints(); if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } continue; }
+					if (strandLengthMode) { if (RSHIFTLSHIFT_Only > 1) { rri++; strand = L""; } else { strand = L"<"; rri = 0; } prints(); if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } continue; }
 					else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
