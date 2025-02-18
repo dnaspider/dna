@@ -1376,6 +1376,7 @@ void scanDb() {
 			}
 
 			tail = cell.find_first_of(io + L">:-") == string::npos ?  L"" : cell.substr(cell.find_first_of(io + L">:-"));
+			if (tail == L"") { fallthrough; continue; }
 			
 			tail = isVar(tail); //<r:>
 			if (multiStrand) multi.t = tail;
@@ -1396,7 +1397,8 @@ void scanDb() {
 					break;
 				case '>':
 					tail = tail.substr(1);
-					if (sv[0]) codes = strand[0] == '<' ? strand.substr(1, strand.size()) + tail
+					if (sv[0]) codes = strand[0] == '<' ? !fallthrough ? strand.substr(1, strand.size()) + tail : 
+						cell.substr(1, sv.size() - 1) + tail
 						: sv.substr(sv[0] == '<', (sv.size() - (sv[0] == '<') - (sv[sv.size() - 1] == '>'))) + tail;
  					break;
 				case '-':
