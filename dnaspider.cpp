@@ -1302,7 +1302,7 @@ wstring randn(bool bg = 0) {
 }
 
 static void bs_input() {
-	for (size_t t = 0; t < strand.length(); ++t) { if (strand[t] > 127) { ++t; continue; } if (strand[t] == 60 || ((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
+	for (size_t t = strand[0] == '<'; t < strand.length() - (strand[strand.length()] == '>'); ++t) { if (strand[t] > 127) { ++t; continue; } if (((Kb_Key_Menu[0]) && strand[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (strand[t] == Kb_Key_F1[0] || strand[t] == Kb_Key_F2[0] || strand[t] == Kb_Key_F3[0] || strand[t] == Kb_Key_F4[0] || strand[t] == Kb_Key_F5[0] || strand[t] == Kb_Key_F6[0] || strand[t] == Kb_Key_F7[0] || strand[t] == Kb_Key_F8[0] || strand[t] == Kb_Key_F9[0] || strand[t] == Kb_Key_F10[0] || strand[t] == Kb_Key_F11[0] || strand[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && strand[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && strand[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && strand[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && strand[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && strand[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && strand[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && strand[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && strand[t] == Kb_Key_Caps[0])) { continue; } kb(VK_BACK); } GetAsyncKeyState(VK_BACK);//exclude non bs: < LURD !@#$%^&*()_+ ~ S H A M C O P
 }
 
 static void replace_q(wstring &a, wstring b, wstring c) {
@@ -1396,10 +1396,21 @@ void scanDb() {
 					codes = tail;
 					break;
 				case '>':
+				{
+					wstring s = sv[0] ? sv : strand;
+					for (size_t t = s[0] == '<'; t < s.size() - (s[s.size() - 1] == '>'); ++t) {
+						if (s[t] > 127) { ++t; continue; }
+						if (((Kb_Key_Menu[0]) && s[t] == Kb_Key_Menu[0]) || (!ignoreF1s) && (s[t] == Kb_Key_F1[0] || s[t] == Kb_Key_F2[0] || s[t] == Kb_Key_F3[0] || s[t] == Kb_Key_F4[0] || s[t] == Kb_Key_F5[0] || s[t] == Kb_Key_F6[0] || s[t] == Kb_Key_F7[0] || s[t] == Kb_Key_F8[0] || s[t] == Kb_Key_F9[0] || s[t] == Kb_Key_F10[0] || s[t] == Kb_Key_F11[0] || s[t] == Kb_Key_F12[0]) || (Kb_Key_Esc[0] && s[t] == Kb_Key_Esc[0]) || (Kb_Key_Left_Shift[0] && s[t] == Kb_Key_Left_Shift[0]) || (Kb_Key_Right_Shift[0] && s[t] == Kb_Key_Right_Shift[0]) || (Kb_Key_Left_Alt[0] && s[t] == Kb_Key_Left_Alt[0]) || (Kb_Key_Right_Alt[0] && s[t] == Kb_Key_Right_Alt[0]) || (Kb_Key_Left_Ctrl[0] && s[t] == Kb_Key_Left_Ctrl[0]) || (Kb_Key_Right_Ctrl[0] && s[t] == Kb_Key_Right_Ctrl[0]) || (Kb_Key_Caps[0] && s[t] == Kb_Key_Caps[0])) {
+							s[t] = '>';
+							continue;
+						}
+					}
+					s = regex_replace(s, wregex(L">"), L"");
+					if (s[0] == '<') s = s.substr(1);
+					strand[0] ? strand = s : sv = s;
 					tail = tail.substr(1);
-					if (sv[0]) codes = strand[0] == '<' ? !fallthrough ? strand.substr(1, strand.size()) + tail : 
-						cell.substr(1, sv.size() - 1) + tail
-						: sv.substr(sv[0] == '<', (sv.size() - (sv[0] == '<') - (sv[sv.size() - 1] == '>'))) + tail;
+					codes = s + tail;
+				}
  					break;
 				case '-':
 					tail = tail.substr(1);
