@@ -240,8 +240,6 @@ static bool testqqb(const wstring s) {
 static void clearAllKeys() {
 	if (!ignoreAZ) for (int i = 65; i <= 90; ++i) { GetAsyncKeyState(i); }
 	if (!ignore09) for (int i = 48; i <= 57; ++i) { GetAsyncKeyState(i); }
-	GetAsyncKeyState(reKey);
-	GetAsyncKeyState(cKey);
 	GetAsyncKeyState(VK_RSHIFT);
 	GetAsyncKeyState(VK_LSHIFT);
 	GetAsyncKeyState(VK_BACK);
@@ -3618,7 +3616,7 @@ static void key(wstring k) {
 	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
 	if (multiStrand) { i = -1; thread thread(scanDb); if (close_ctrl_mode && strand[strand.length() - 1] == '>') Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb();
 	if (!close_ctrl_mode) return;
-	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); } clearAllKeys(); Kb_QQ_i = 0;
+	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); } Sleep(CloseCtrlSpacer); clearAllKeys(); Kb_QQ_i = 0;
 }
 
 void repeat() {
@@ -3724,10 +3722,10 @@ RgbScaleLayout			1.0)";
 						else {
 							strand = L"";
 						}
-						if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys(); continue;
+						if (showStrand) { wcout.flush().clear(); } prints(); continue;
 					}
-					if (strandLengthMode) { if (RSHIFTLSHIFT_Only > 1) { rri++; strand = L""; } else { strand = L"<"; rri = 0; } prints(); if (qScanOnly || RSHIFTLSHIFT_Only) { clearAllKeys(); } continue; }
-					else { strand = qScanOnly ? L"<" : L""; clearAllKeys(); } prints(); continue;
+					if (strandLengthMode) { if (RSHIFTLSHIFT_Only > 1) { rri++; strand = L""; } else { strand = L"<"; rri = 0; } prints(); continue; }
+					else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
 					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
@@ -3836,7 +3834,7 @@ RgbScaleLayout			1.0)";
 					if (qScanOnly) { clearAllKeys(); } strand = L"<";
 				}
 			}
-			if (showStrand) { wcout.flush().clear(); } prints(); if (qScanOnly || !strand[0]) clearAllKeys();
+			if (showStrand) { wcout.flush().clear(); } prints(); Sleep(CloseCtrlSpacer); clearAllKeys();
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
