@@ -3834,7 +3834,7 @@ RgbScaleLayout			1.0)";
 					if (qScanOnly) { clearAllKeys(); } strand = L"<";
 				}
 			}
-			if (showStrand) { wcout.flush().clear(); } prints(); Sleep(CloseCtrlSpacer); clearAllKeys();
+			if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys();
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
