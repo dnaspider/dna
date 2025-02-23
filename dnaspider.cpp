@@ -984,7 +984,7 @@ static wstring getAppT() {
 	return title;
 }
 
-wstring makeApp() {
+static wstring makeApp() {
 	wstring re = L"", x = L"><shift>,<shift->app:";
 	out(L"<alt><esc><alt-><,1>");
 	x += getAppT();
