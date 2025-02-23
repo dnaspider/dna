@@ -202,6 +202,7 @@ static void kbHold(short key) {
 static void kbRelease(short key) {
 	INPUT ip{}; ip.type = INPUT_KEYBOARD; ip.ki.wVk = key;
 	ip.ki.dwFlags = KEYEVENTF_KEYUP; SendInput(1, &ip, sizeof(INPUT));
+	GetAsyncKeyState(key);
 }
 
 static void mouseEvent(short key) {
@@ -430,6 +431,7 @@ static void kbPress(Multi multi, wstring s, short key) {
 			else SendInput(2, ip, sizeof(ip[0]));
 		}
 		else SendInput(2, ip, sizeof(ip[0]));
+		GetAsyncKeyState(key);
 		if (speed > 0 && sn != j + 1) Sleep(speed);
 	}
 	if (multiStrand) { i = multi.i_; qq = multi.q; }
@@ -1348,18 +1350,19 @@ void scanDb() {
 		if (auto a = cell.substr(0, sv.size() > cell.size() ? cell.size() : sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
-			|| b == cell && close_ctrl_mode || fallthrough
+			|| b == cell || fallthrough
 			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
 		) {
-			
-			if ((close_ctrl_mode || toggle_ccm) && cell[0] && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
+						
+			if (sv[0] && sv == cell || (close_ctrl_mode || toggle_ccm) && cell[0] && cell == sv.substr(0, sv.length() - close_ctrl_mode)) {
+				if (sv == cell) strand.clear();
 				fallthrough = 1;
 				continue;
 			}
-
+			
 			Multi multi;
 			if (multiStrand) { strand = multi.s; if (!re[0]) mainn.s1 = linkr = cell.substr(0, strand.size()); }
 			if (close_ctrl_mode && strand.length() > 0 && strand[strand.length() - 1] == '>') strand = strand.substr(0, strand.length() - 1); if (multiStrand) multi.s = strand;
@@ -3302,8 +3305,10 @@ void scanDb() {
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
 	if (rri && RSHIFTLSHIFT_Only) rri = 0;
 	if (toggle_ccm) {
-		toggle_ccm = 0; fallthrough = 0; strand.clear();
-		close_ctrl_mode = !close_ctrl_mode;
+		if (fallthrough && strand[0] || !fallthrough && !strand[0]) {
+			toggle_ccm = 0; fallthrough = 0; strand.clear();
+			close_ctrl_mode = !close_ctrl_mode;
+		}
 	}
 }
 
@@ -3614,9 +3619,10 @@ static void key(wstring k) {
 	}
 	prints();
 	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
-	if (multiStrand) { i = -1; thread thread(scanDb); if (close_ctrl_mode && strand[strand.length() - 1] == '>') Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb();
-	if (!close_ctrl_mode) return;
-	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); } Sleep(CloseCtrlSpacer); clearAllKeys(); Kb_QQ_i = 0;
+	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); rri++; Sleep(1); } else scanDb();
+	if (!close_ctrl_mode && strand[0] && strand[strand.length() - 1] != '>') return;
+	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); } Kb_QQ_i = 0;
+	rri = 0;
 }
 
 void repeat() {
@@ -3671,7 +3677,6 @@ ShowStrand				0
 RSHIFT+LSHIFT_Only		0
 Ignore_F1-F12			0
 Kb_Key_F2				>
-Kb_Key_Q				>q '<bs>
 Kb_Key_Period			.
 Kb_Key_Comma			,
 Kb_Key_Semicolon		;
@@ -3681,7 +3686,7 @@ CtrlScanOnlyMode		0
 RSHIFT+CtrlKey_Toggle	9
 RgbScaleLayout			1.0)";
 					np = L"";
-					Kb_Key_Period = L"."; Kb_Key_Comma = L","; Kb_Key_Semicolon = L";"; Kb_Key_Space = L" "; ignoreF1s = 0; Kb_Key_F2 = L">";  Kb_Key_Q = L">q '<bs>"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
+					Kb_Key_Period = L"."; Kb_Key_Comma = L","; Kb_Key_Semicolon = L";"; Kb_Key_Space = L" "; ignoreF1s = 0; Kb_Key_F2 = L">"; RgbScaleLayout = 1.0; strandLengthMode = 2; cKey = VK_RCONTROL; cKeyMax = 9; RSHIFTLSHIFT_Only = 0; qScanOnly = false;
 					Sleep(2048); kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				}
 				wofstream fd(database); fd.imbue(locale(fd.getloc(), new codecvt_utf8_utf16<wchar_t>)); fd << db_; fd.close(); wofstream fs(settings); fs.imbue(locale(fs.getloc(), new codecvt_utf8_utf16<wchar_t>)); fs << se_; fs.close(); out(L"<win>r<win-><app: run, 3, 60, :>" + np + settings + L"<enter><ms: 1500><win>r<win-><app: run, 3, 60, :>" + np + database + L"<enter>"); re.clear(); tail.clear(); strand.clear();
@@ -3692,7 +3697,7 @@ RgbScaleLayout			1.0)";
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
 	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>));
-	printIntro(); strand = L"<dna>"; if (multiStrand) { thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach(); } else scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; //run @ startup
+	printIntro(); strand = L"<dna>"; if (multiStrand) { thread thread(scanDb); thread.detach(); Sleep(1); } else scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; //run @ startup
 #pragma endregion
 	for (;; Sleep(frequency)) {
 		if (GetAsyncKeyState(VK_BACK)) {
@@ -3806,7 +3811,7 @@ RgbScaleLayout			1.0)";
 						else strand.clear();
 					}
 				}
-				else if (RSHIFTLSHIFT_Only && !close_ctrl_mode) { if (cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); scanDb(); }
+				else if (!close_ctrl_mode) { if (cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); if (strand != L"<>") { prints(); scanDb(); } }
 				if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 			}
 			else if (close_ctrl_mode && strand.length() > 0 && strand.find('>') == std::string::npos) {//x>
@@ -3814,7 +3819,7 @@ RgbScaleLayout			1.0)";
 				strand.append(L">"); prints();
 				if (strand[0] != '<') {
 					if (multiStrand) {
-						i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand = L""; } noClearStrand = 0; thread.detach();
+						i = -1; thread thread(scanDb); thread.detach(); Sleep(1); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 					} else {
 						scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue;
 					}
