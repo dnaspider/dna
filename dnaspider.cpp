@@ -3305,11 +3305,9 @@ void scanDb() {
 	if (!noClearStrand) { if (strand[0] && close_ctrl_mode && strand[0] == '<') { if (strand[strand.length() - 1] != '>') return; codes = tail = reTail = strand.substr(1, strand.length() - 2); } }//dbless repeat
 	if (ManualRepeat) { if (reTail.substr(0, 8) != L"<repeat>") pre = reTail; }
 	if (rri && RSHIFTLSHIFT_Only) rri = 0;
-	if (toggle_ccm) {
-		if (fallthrough && strand[0] || !fallthrough && !strand[0]) {
-			toggle_ccm = 0; fallthrough = 0; strand.clear();
-			close_ctrl_mode = !close_ctrl_mode;
-		}
+	if (toggle_ccm) { toggle_ccm = 0;
+		close_ctrl_mode = !close_ctrl_mode;
+		if (fallthrough && strand[0]) strand.clear();
 	}
 }
 
