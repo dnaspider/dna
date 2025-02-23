@@ -340,6 +340,16 @@ static wstring isVar(wstring &q) { // Replacer | {var} {var:} {var-} {var>} | <r
 	return q;
 }
 
+static wstring makeXY() {
+	wstring re = L"><shift>,<shift->xy:";
+	POINT pt; GetCursorPos(&pt);
+	wstring xy = to_wstring(pt.x) + L" " + to_wstring(pt.y);
+	re += xy;
+	re += L">";
+	if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << L"<xy:" + xy + L">\n"; }
+	return re;
+}
+
 static void scanDb(); static wstring conn(bool bg = 0) {//<connect:>
 	bool con = false; wstring qqs = qq.substr(0, qq.find('>') + 1);
 	if (qqs.find(io[0]) != std::string::npos || qqs.find(':') != std::string::npos || qqs.find('-') != std::string::npos) {// :> | ->
@@ -974,8 +984,13 @@ static wstring getAppT() {
 	return title;
 }
 
-static void getApp() {
-	out(L"<shift>,<shift->app:");
+wstring makeApp() {
+	wstring re = L"", x = L"><shift>,<shift->app:";
+	out(L"<alt><esc><alt-><,1>");
+	x += getAppT();
+	out(L"<shift><alt><esc><alt-><shift->");
+	re = x + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
+	return re;
 }
 
 static wstring getRGB(bool b = 0, bool bg = 0) {
@@ -1004,13 +1019,19 @@ static wstring getRGB(bool b = 0, bool bg = 0) {
 				return c;
 			}
 			if (GetAsyncKeyState(VK_LSHIFT))
-				tail = L"<shift>,<shift->rgb:" + c + L" " + to_wstring(x) + L" " + to_wstring(y) + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
+				tail = L"><shift>,<shift->rgb:" + c + L" " + to_wstring(x) + L" " + to_wstring(y) + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
 			else
-				tail = L"<shift>,<shift->rgb:" + c + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
+				tail = L"><shift>,<shift->rgb:" + c + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">");
 			re = tail;
 		}
 	}
 	return L"";
+}
+
+static wstring makeRGB() {
+	getRGB();
+	if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << "<" << tail.substr(16, tail.length()) << endl; }
+	return tail;
 }
 
 void cbSet(wstring& s) {
@@ -1371,9 +1392,12 @@ void scanDb() {
 				if (link[0] == '<' && cell.substr(0, link.length()) == link) relink = 1;
 				cell = re;
 				if (re[0] == '>') {
-					if (re.substr(0, 20) == L"><shift>,<shift->xy:") { POINT pt; GetCursorPos(&pt); wstring xy = to_wstring(pt.x) + L" " + to_wstring(pt.y); codes = L"<shift>,<shift->xy:"; cell = codes + xy + L">"; re = cell; linkr.clear(); if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << L"<xy:" + xy + L">\n"; } }
-					else if (re.substr(0, 21) == L"><shift>,<shift->rgb:") { cell = L"<shift>,<shift->rgb:"; getRGB(); linkr.clear(); if (showStrand) { showOutsMsg(L"", OutsTemplate, L"", 1); wcout << "<" << tail.substr(16, tail.length()) << endl; } mainn.t.clear(); }
-					else if (re.substr(0, 21) == L"><shift>,<shift->app:") { wstring x = L"><shift>,<shift->app:"; out(L"<alt><esc><alt-><,1>"); x += getAppT(); out(L"<shift><alt><esc><alt-><shift->"); re = x + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">"); }
+					if (re.substr(0, 20) == L"><shift>,<shift->xy:")
+						cell = codes = makeXY();
+					else if (re.substr(0, 21) == L"><shift>,<shift->rgb:")
+						cell = codes = makeRGB();
+					else if (re.substr(0, 21) == L"><shift>,<shift->app:")
+						cell = codes = makeApp();
 				}
 			}
 
@@ -3858,18 +3882,23 @@ RgbScaleLayout			1.0)";
 			GetAsyncKeyState(80); if (GetAsyncKeyState(80)) {//esc + p: <xy:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
-				re = L"<shift>,<shift->xy:";
-				out(re); continue;
+				re = makeXY();
+				scanDb();
+				continue;
 			}
 			GetAsyncKeyState(82); if (GetAsyncKeyState(82)) {//esc + r: <rgb:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
-				getRGB(); out(tail); continue;
+				re = makeRGB();
+				scanDb();
+				continue;
 			}
 			GetAsyncKeyState(65); if (GetAsyncKeyState(65)) {//esc + a: <app:>
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
-				wstring s = tail; getApp(); tail = s; continue;
+				re = makeApp();
+				scanDb();
+				continue;
 			}
 			GetAsyncKeyState(VK_OEM_PLUS); if (GetAsyncKeyState(VK_OEM_PLUS)) {//esc + plus: repeat
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
