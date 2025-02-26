@@ -224,6 +224,8 @@ static void shftRelease() {
 	ip.ki.wVk = VK_RSHIFT;
 	SendInput(1, &ip, sizeof(INPUT));
 	if (shft) { shft = false; }
+	if (Kb_Key_Left_Shift[0]) GetAsyncKeyState(VK_LSHIFT);
+	if (Kb_Key_Right_Shift[0]) GetAsyncKeyState(VK_RSHIFT);
 }
 
 static void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
@@ -241,10 +243,10 @@ static bool testqqb(const wstring s) {
 static void clearAllKeys() {
 	if (!ignoreAZ) for (int i = 65; i <= 90; ++i) { GetAsyncKeyState(i); }
 	if (!ignore09) for (int i = 48; i <= 57; ++i) { GetAsyncKeyState(i); }
-	GetAsyncKeyState(VK_RSHIFT);
-	GetAsyncKeyState(VK_LSHIFT);
-	GetAsyncKeyState(VK_BACK);
-	GetAsyncKeyState(VK_ESCAPE);
+	if (Kb_Key_Right_Shift[0]) GetAsyncKeyState(VK_RSHIFT);
+	if (Kb_Key_Left_Shift[0]) GetAsyncKeyState(VK_LSHIFT);
+	//GetAsyncKeyState(VK_BACK);
+	if (Kb_Key_Esc[0]) GetAsyncKeyState(VK_ESCAPE);
 	GetAsyncKeyState(VK_PAUSE);
 	if (Kb_Key_Space[0]) GetAsyncKeyState(VK_SPACE);
 	if (!ignoreF1s) { GetAsyncKeyState(VK_F1); GetAsyncKeyState(VK_F2); GetAsyncKeyState(VK_F3); GetAsyncKeyState(VK_F4); GetAsyncKeyState(VK_F5); GetAsyncKeyState(VK_F6); GetAsyncKeyState(VK_F7); GetAsyncKeyState(VK_F8); GetAsyncKeyState(VK_F9); GetAsyncKeyState(VK_F10); GetAsyncKeyState(VK_F11); GetAsyncKeyState(VK_F12); }
@@ -268,6 +270,7 @@ static void clearAllKeys() {
 	if (Kb_Key_Period[0])GetAsyncKeyState(VK_OEM_PERIOD);
 	if (Kb_Key_Forwardslash[0])GetAsyncKeyState(VK_OEM_2);
 	if (!ignoreNumPad) { GetAsyncKeyState(VK_NUMLOCK); GetAsyncKeyState(VK_DIVIDE); GetAsyncKeyState(VK_MULTIPLY); GetAsyncKeyState(VK_SUBTRACT); GetAsyncKeyState(VK_ADD); GetAsyncKeyState(VK_RETURN); GetAsyncKeyState(VK_DECIMAL); GetAsyncKeyState(VK_NUMPAD0); GetAsyncKeyState(VK_NUMPAD1); GetAsyncKeyState(VK_NUMPAD2); GetAsyncKeyState(VK_NUMPAD3); GetAsyncKeyState(VK_NUMPAD4); GetAsyncKeyState(VK_NUMPAD5); GetAsyncKeyState(VK_NUMPAD6); GetAsyncKeyState(VK_NUMPAD7); GetAsyncKeyState(VK_NUMPAD8); GetAsyncKeyState(VK_NUMPAD9); }
+//	if (!ignoreNumPad) { if (Kb_Key_Numlock[0]) GetAsyncKeyState(VK_NUMLOCK); if (Kb_Key_Numpad_Divide[0]) GetAsyncKeyState(VK_DIVIDE); if (Kb_Key_Numpad_Multiply[0]) GetAsyncKeyState(VK_MULTIPLY); if (Kb_Key_Numpad_Minus[0]) GetAsyncKeyState(VK_SUBTRACT); if (Kb_Key_Numpad_Add[0]) GetAsyncKeyState(VK_ADD); if (Kb_Key_Numpad_Enter[0]) GetAsyncKeyState(VK_RETURN); if (Kb_Key_Numpad_Period[0]) GetAsyncKeyState(VK_DECIMAL); if (Kb_Key_Numpad_0[0]) GetAsyncKeyState(VK_NUMPAD0); if (Kb_Key_Numpad_1[0]) GetAsyncKeyState(VK_NUMPAD1); if (Kb_Key_Numpad_2[0]) GetAsyncKeyState(VK_NUMPAD2); if (Kb_Key_Numpad_3[0]) GetAsyncKeyState(VK_NUMPAD3); if (Kb_Key_Numpad_4[0]) GetAsyncKeyState(VK_NUMPAD4); if (Kb_Key_Numpad_5[0]) GetAsyncKeyState(VK_NUMPAD5); if (Kb_Key_Numpad_6[0]) GetAsyncKeyState(VK_NUMPAD6); if (Kb_Key_Numpad_7[0]) GetAsyncKeyState(VK_NUMPAD7); if (Kb_Key_Numpad_8[0]) GetAsyncKeyState(VK_NUMPAD8); if (Kb_Key_Numpad_9[0]) GetAsyncKeyState(VK_NUMPAD9); }
 	if (Kb_Key_Insert[0]) GetAsyncKeyState(VK_INSERT); if (Kb_Key_Delete[0]) GetAsyncKeyState(VK_DELETE); if (Kb_Key_Home[0]) GetAsyncKeyState(VK_HOME); if (Kb_Key_End[0]) GetAsyncKeyState(VK_END); if (Kb_Key_PgUp[0]) GetAsyncKeyState(VK_PRIOR); if (Kb_Key_PgDn[0]) GetAsyncKeyState(VK_NEXT);
 	if (Kb_Key_Menu[0]) GetAsyncKeyState(VK_APPS); //menu
 }
@@ -3312,7 +3315,62 @@ void scanDb() {
 					if (multiStrand) { tail = multi.t; i = multi.i_; ctail = tail.substr(i, 1); }
 					kb(ctail[0]);
 					if (shft) shftRelease();
-					GetAsyncKeyState(VkKeyScanW(ctail[0])); GetAsyncKeyState(ctail[0]);//clear
+					
+					char x = (char)ctail[0];
+					switch (ctail[0]) {
+					case ' ': x = (char)VK_SPACE; break;
+					case '0':
+					case ')': x = 48; break;
+					case '1':
+					case '!': x = 49; break;
+					case '2':
+					case '@': x = 50; break;
+					case '3':
+					case '#': x = 51; break;
+					case '4':
+					case '$': x = 52; break;
+					case '5':
+					case '%': x = 53; break;
+					case '6':
+					case '^': x = 54; break;
+					case '7':
+					case '&': x = 55; break;
+					case '8':
+					case '*': x = 56; break;
+					case '9':
+					case '(': x = 57; break;
+					case '_':
+					case '-': x = (char)VK_SUBTRACT; break;
+					case '+':
+					case '=': x = (char)VK_OEM_PLUS; break;
+					case '{':
+					case '[': x = (char)VK_OEM_4; break;
+					case '}':
+					case ']': x = (char)VK_OEM_6; break;
+					case '|':
+					case '\\': x = (char)VK_OEM_5; break;
+					case ':':
+					case ';': x = (char)VK_OEM_1; break;
+					case '"':
+					case '\'': x = (char)VK_OEM_7; break;
+					case '<':
+					case ',': x = (char)VK_OEM_COMMA; break;
+					case '>':
+					case '.': x = (char)VK_OEM_PERIOD; break;
+					case '?':
+					case '/': x = (char)VK_OEM_2; break;
+					case '~':
+					case '`': x = (char)VK_OEM_3; break;
+					default:
+					{
+						if (ctail[0] > 96 && ctail[0] < 123)
+							x -= 32; //a-z
+						else
+							x = (char)ctail[0];
+					}
+					}
+					GetAsyncKeyState(x);
+					//GetAsync KeyState(VkKeyScanW(ctail[0]));
 				}
 			}
 			
@@ -3643,7 +3701,7 @@ static void key(wstring k) {
 	}
 	prints();
 	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
-	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); rri++; Sleep(1); } else scanDb();
+	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); Sleep(CloseCtrlSpacer); rri++; } else scanDb();
 	if (!close_ctrl_mode && strand[0] && strand[strand.length() - 1] != '>') return;
 	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); }
 	rri = 0;
@@ -3844,7 +3902,7 @@ RgbScaleLayout			1.0)";
 				strand.append(L">"); prints();
 				if (strand[0] != '<') {
 					if (multiStrand) {
-						i = -1; thread thread(scanDb); thread.detach(); Sleep(1); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
+						i = -1; thread thread(scanDb); thread.detach(); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
 					} else {
 						scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue;
 					}
