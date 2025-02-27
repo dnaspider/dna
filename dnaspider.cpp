@@ -52,7 +52,7 @@ int speed = 0; //<<
 int qxc = 0, qyc = 0;//<rp>
 int qxcc = 0, qycc = 0;//cc
 int CloseCtrlSpacer = 96;
-short Kb_QQ_i{}, Kb_QQ_k{}; //qq < [Kb_Key_Q: >q '<bs>]
+short Kb_QQ_i = 0, Kb_QQ_k = 0; //qq < [Kb_Key_Q: >q '<bs>]
 short strandLengthMode = 0;
 short PauseKey = 123; //VK_F12
 short ClearStrandKey = 123;
@@ -245,7 +245,7 @@ static void clearAllKeys() {
 	if (!ignore09) for (int i = 48; i <= 57; ++i) { GetAsyncKeyState(i); }
 	if (Kb_Key_Right_Shift[0]) GetAsyncKeyState(VK_RSHIFT);
 	if (Kb_Key_Left_Shift[0]) GetAsyncKeyState(VK_LSHIFT);
-	//GetAsyncKeyState(VK_BACK);
+	GetAsyncKeyState(VK_BACK);
 	if (Kb_Key_Esc[0]) GetAsyncKeyState(VK_ESCAPE);
 	GetAsyncKeyState(VK_PAUSE);
 	if (Kb_Key_Space[0]) GetAsyncKeyState(VK_SPACE);
@@ -1372,11 +1372,11 @@ void scanDb() {
 		}
 		
 		if (cell[1] == '\'') { if (cell.substr(0, 4) == L"<'''") break; } //ignore db...
-		if (auto a = cell.substr(0, sv.size() > cell.size() ? cell.size() : sv.size() + !close_ctrl_mode), b = sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
+		if (auto a = strandLengthMode == 1 && sv[0] != '<' ? cell.substr(0, 2) : cell.substr(0, sv.size() > cell.size() ? cell.size() : sv.size() + !close_ctrl_mode), b = strandLengthMode == 1 && sv[0] != '<' ? sv.substr(0, 1) : sv.substr(0, sv.size() - close_ctrl_mode + fallthrough);
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
 			|| b == cell || fallthrough
-			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode) == b || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
+			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode + 1) == sv || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
@@ -3701,7 +3701,7 @@ static void key(wstring k) {
 	}
 	prints();
 	if (close_ctrl_mode && strand[strand.length() - 1] != '>') return;
-	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); Sleep(CloseCtrlSpacer); rri++; } else scanDb();
+	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); Sleep(1); Sleep(CloseCtrlSpacer); rri++; } else scanDb();
 	if (!close_ctrl_mode && strand[0] && strand[strand.length() - 1] != '>') return;
 	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); }
 	rri = 0;
@@ -3872,7 +3872,7 @@ RgbScaleLayout			1.0)";
 			}
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;continue;
 		}
-		if (GetAsyncKeyState(cKey) && cKeyMax > 0) {//toggle <
+		if (GetAsyncKeyState(cKey) && (bool)cKeyMax) {//toggle <
 			if (cKeyMax > 0 || cKey == VK_RCONTROL) {
 				short min = 0, max = cKeyMax == 1 ? 3 : cKeyMax; GetAsyncKeyState(VK_LCONTROL); GetAsyncKeyState(cKey); while (GetAsyncKeyState(cKey) != 0) { ++min;
 					if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 4); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } min = max + 1; break; }//rctrl+lctrl
@@ -3959,6 +3959,7 @@ RgbScaleLayout			1.0)";
 				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
 				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
 				re = L"><shift>,<shift->app:";
+				strand.clear();
 				scanDb();
 				continue;
 			}
@@ -4000,7 +4001,7 @@ RgbScaleLayout			1.0)";
 			if (Kb_Key_Esc[0]) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
 			continue;
 		}
-		if (RSHIFTLSHIFT_Only && !strand[0] && Kb_QQ_k > 0 && GetAsyncKeyState(Kb_QQ_k)) {
+		if (GetAsyncKeyState(Kb_QQ_k) && RSHIFTLSHIFT_Only && !strand[0]) {
 			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i;
 			if (Kb_QQ_i > qqLen - 1) { Kb_QQ_i = 0; for(auto i = 0; i < qqLen; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = qScanOnly ? L"<" : L""; ++rri; prints(); clearAllKeys(); continue; }
 			Sleep(frequency / 3);
