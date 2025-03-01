@@ -3703,6 +3703,7 @@ static void key(wstring k) {
 	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); Sleep(1); Sleep(CloseCtrlSpacer); rri++; } else scanDb();
 	if (!close_ctrl_mode && strand[0] && strand[strand.length() - 1] != '>') return;
 	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); }
+	if (rri) rri = 0;
 }
 
 void repeat() {
