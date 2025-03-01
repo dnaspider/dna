@@ -1376,7 +1376,7 @@ void scanDb() {
 			re[0] && !sv[0] || sv[0] && a[0] && a[0] != ' '
 			&& a == b + io[0] //<x >
 			|| b == cell || fallthrough
-			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, strandLengthMode + 1) == sv || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
+			|| strandLengthMode && sv[0] != '<' && (!svi && cell.substr(0, (size_t)strandLengthMode + 1) == sv || svi > strandLengthMode && cell.substr(0, svi) == b) //xxx
 			|| a == b + L':' //<x:>
 			|| a == b + L'-' //<x->
 			|| a == b + L'>' //<x>
@@ -1459,7 +1459,7 @@ void scanDb() {
 			if (noClearStrand) noClearStrand = 0;
 			if (multiStrand) { reTail = codes; tail = multi.t; }
 			if (tail.find(L"<rp>") != std::string::npos) { POINT pt; GetCursorPos(&pt); qxc = pt.x; qyc = pt.y; }
-			f.close(); fail = 0; esc_pressed = 0;
+			f.close(); fail = 0; esc_pressed = 0; if (rri && RSHIFTLSHIFT_Only) rri = 0;
 			for (i = 0; i < tail.length(); ++i) {
 				if (multiStrand) { multi.t = tail; multi.i_ = i; }
 				if (speed > 0) { if (sleep) { if (multiStrand) { re = multi.t = tail; multi.i_ = i; multi.q = qq; multi.speed_ = speed; } Sleep(speed); if (multiStrand) { tail = multi.t; i = multi.i_; qq = multi.q; } } sleep = 1; }
@@ -3418,7 +3418,6 @@ L"Interface\n"
 "RSHIFT+LSHIFT\t\t"		"Toggle <\n"
 "LSHIFT+CtrlKey\t\t"	"Hard < (se.txt LSHIFT+CtrlKey: 1 | Increase for more time. 0 for off)\n"
 "RSHIFT+CtrlKey\t\t"	"Toggle se.txt CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off)\n"
-"RSHIFT+LSHIFT+CtrlKey\n"
 << enm(ClearStrandKey) << " (LSHIFT)\t\tClear/Reset strand (se.txt ClearStrandKey: " << to_wstring((short)ClearStrandKey) << ")\n"
 << enm(PauseKey) <<		"\t\t\tPause/Resume\n"
 "P+ESC\t\t\t"			"<xy:>\n"
@@ -3517,7 +3516,7 @@ L"Interface\n"
 "\t\t\t"				"<test-><+><*:7>\n"
 "<down+>\t\t\t"			"Variable press* <+>\n"
 "\t\t\t"				"<test:><speed:1000><+:1><tab+><test:>\n"
-"<bs++>\t\t\t"			"Variable press.Auto increment <+>\n"
+"<bs++>\t\t\t"			"Variable press. Auto increment <+>\n"
 "\t\t\t"				"<test-><speed:1000><esc++><<:\\+\\n><test->\n"
 "<if+:>\t\t\t"			"Stop if <+> (Use \" \" for true)\n"
 "\t\t\t"				"<test-><+:1><<:\\+:)\\n><if+g:3 true:><test->\n"
@@ -3704,7 +3703,6 @@ static void key(wstring k) {
 	if (multiStrand) { i = -1; thread thread(scanDb); thread.detach(); Sleep(1); Sleep(CloseCtrlSpacer); rri++; } else scanDb();
 	if (!close_ctrl_mode && strand[0] && strand[strand.length() - 1] != '>') return;
 	if (!noClearStrand) { strand = L""; } noClearStrand = 0; if (multiStrand) { if (showStrand) wcout.flush().clear(); }
-	rri = 0;
 }
 
 void repeat() {
@@ -3884,7 +3882,7 @@ RgbScaleLayout			1.0)";
 					if (strand.find('>') != std::string::npos) strand.clear();
 					else {
 						if (strand.length() > 1) {
-							strand.append(L">"); prints(); if (cKey == VK_SPACE) { kb(VK_BACK); } if (RSHIFTLSHIFT_Only) { rri = 0; }
+							strand.append(L">"); prints(); if (cKey == VK_SPACE) kb(VK_BACK);
 							if (multiStrand) {
 								i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach();
 							} else {
