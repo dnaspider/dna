@@ -2230,6 +2230,14 @@ void scanDb() {
 											}
 										}
 										break;
+									case '+': //<ifcb+:>
+									{
+										wstring xcb = cbGet();
+										if (auto x = xcb.find(qp);x) {
+											ic = (int)x; multi.br = 1;
+										}
+									}
+										break;
 									case 'S': //if cb starts with | <ifcbS:test>
 									case 'E': //ends with | <ifcbE:>
 										a = regex_replace(a, wregex(L"\\\\g"), L">");
@@ -3316,9 +3324,9 @@ void scanDb() {
 					kb(ctail[0]);
 					if (shft) shftRelease();
 					
-					char x = (char)ctail[0];
+					auto x = (int)ctail[0];
 					switch (ctail[0]) {
-					case ' ': x = (char)VK_SPACE; break;
+					case ' ': x = VK_SPACE; break;
 					case '0':
 					case ')': x = 48; break;
 					case '1':
@@ -3340,37 +3348,34 @@ void scanDb() {
 					case '9':
 					case '(': x = 57; break;
 					case '_':
-					case '-': x = (char)VK_SUBTRACT; break;
+					case '-': x = VK_SUBTRACT; break;
 					case '+':
-					case '=': x = (char)VK_OEM_PLUS; break;
+					case '=': x = VK_OEM_PLUS; break;
 					case '{':
-					case '[': x = (char)VK_OEM_4; break;
+					case '[': x = VK_OEM_4; break;
 					case '}':
-					case ']': x = (char)VK_OEM_6; break;
+					case ']': x = VK_OEM_6; break;
 					case '|':
-					case '\\': x = (char)VK_OEM_5; break;
+					case '\\': x = VK_OEM_5; break;
 					case ':':
-					case ';': x = (char)VK_OEM_1; break;
+					case ';': x = VK_OEM_1; break;
 					case '"':
-					case '\'': x = (char)VK_OEM_7; break;
+					case '\'': x = VK_OEM_7; break;
 					case '<':
-					case ',': x = (char)VK_OEM_COMMA; break;
+					case ',': x = VK_OEM_COMMA; break;
 					case '>':
-					case '.': x = (char)VK_OEM_PERIOD; break;
+					case '.': x = VK_OEM_PERIOD; break;
 					case '?':
-					case '/': x = (char)VK_OEM_2; break;
+					case '/': x = VK_OEM_2; break;
 					case '~':
-					case '`': x = (char)VK_OEM_3; break;
+					case '`': x = VK_OEM_3; break;
 					default:
 					{
 						if (ctail[0] > 96 && ctail[0] < 123)
 							x -= 32; //a-z
-						else
-							x = (char)ctail[0];
 					}
 					}
 					GetAsyncKeyState(x);
-					//GetAsync KeyState(VkKeyScanW(ctail[0]));
 				}
 			}
 			
@@ -3572,6 +3577,7 @@ L"Interface\n"
 "<ifcble:>\t\t"			"<=\n"
 "<ifcbf:>\t\t"			"Regex find\n"
 "<ifcbF:>\t\t"			"Find\n"
+"<ifcb+:>\t\t"			"Set <+> to first occurrence (for <up+>)\n"
 "<ifcbA:1 x>\t\t"		"Offset find x\n"
 "<ifcbS:>\t\t"			"Starts with\n"
 "<ifcbE:>\t\t"			"Ends with\n"
