@@ -16,8 +16,8 @@ using ctp = chrono::steady_clock::time_point;
 wstring&&
 	Kb_Key_A = L"a", Kb_Key_B = L"b", Kb_Key_C = L"c", Kb_Key_D = L"d", Kb_Key_E = L"e", Kb_Key_F = L"f", Kb_Key_G = L"g", Kb_Key_H = L"h", Kb_Key_I = L"i", Kb_Key_J = L"j", Kb_Key_K = L"k", Kb_Key_L = L"l", Kb_Key_M = L"m", Kb_Key_N = L"n", Kb_Key_O = L"o", Kb_Key_P = L"p", Kb_Key_Q = L"q", Kb_Key_R = L"r", Kb_Key_S = L"s", Kb_Key_T = L"t", Kb_Key_U = L"u", Kb_Key_V = L"v", Kb_Key_W = L"w", Kb_Key_X = L"x", Kb_Key_Y = L"y", Kb_Key_Z = L"z",
 	Kb_Key_0 = L"0", Kb_Key_1 = L"1", Kb_Key_2 = L"2", Kb_Key_3 = L"3", Kb_Key_4 = L"4", Kb_Key_5 = L"5", Kb_Key_6 = L"6", Kb_Key_7 = L"7", Kb_Key_8 = L"8", Kb_Key_9 = L"9",
-	Kb_Key_F1 = L"!", Kb_Key_F2 = L"@", Kb_Key_F3 = L"#", Kb_Key_F4 = L"$", Kb_Key_F5 = L"%", Kb_Key_F6 = L"^", Kb_Key_F7 = L"&", Kb_Key_F8 = L"*", Kb_Key_F9 = L"(", Kb_Key_F10 = L")", Kb_Key_F11 = L"_", Kb_Key_F12 = L"+",
-	Kb_Key_Left = L"L", Kb_Key_Up = L"U", Kb_Key_Right = L"R", Kb_Key_Down = L"D",
+	Kb_Key_F1 = L"", Kb_Key_F2 = L"", Kb_Key_F3 = L"", Kb_Key_F4 = L"", Kb_Key_F5 = L"", Kb_Key_F6 = L"", Kb_Key_F7 = L"", Kb_Key_F8 = L"", Kb_Key_F9 = L"", Kb_Key_F10 = L"", Kb_Key_F11 = L"", Kb_Key_F12 = L"",
+	Kb_Key_Left = L"", Kb_Key_Up = L"", Kb_Key_Right = L"", Kb_Key_Down = L"",
 	Kb_Key_Esc = L"", Kb_Key_Space = L"", Kb_Key_Tab = L"", Kb_Key_Left_Shift = L"", Kb_Key_Right_Shift = L"", Kb_Key_Left_Alt = L"", Kb_Key_Right_Alt = L"", Kb_Key_Left_Ctrl = L"", Kb_Key_Right_Ctrl = L"", Kb_Key_Enter = L"", Kb_Key_Caps = L"", Kb_Key_Grave_Accent = L"", Kb_Key_Minus = L"", Kb_Key_Equal = L"", Kb_Key_Left_Bracket = L"", Kb_Key_Right_Bracket = L"", Kb_Key_Backslash = L"", Kb_Key_Semicolon = L"", Kb_Key_Quote = L"", Kb_Key_Comma = L"", Kb_Key_Period = L"", Kb_Key_Forwardslash = L"", Kb_Key_Menu = L"",
 	Kb_Key_Print_Screen = L"", Kb_Key_Insert = L"", Kb_Key_Delete = L"", Kb_Key_Home = L"", Kb_Key_End = L"", Kb_Key_PgUp = L"", Kb_Key_PgDn = L"",
 	Kb_Key_Numpad_0 = L"", Kb_Key_Numpad_1 = L"", Kb_Key_Numpad_2 = L"", Kb_Key_Numpad_3 = L"", Kb_Key_Numpad_4 = L"", Kb_Key_Numpad_5 = L"", Kb_Key_Numpad_6 = L"", Kb_Key_Numpad_7 = L"", Kb_Key_Numpad_8 = L"", Kb_Key_Numpad_9 = L"", Kb_Key_Numlock = L"", Kb_Key_Numpad_Divide = L"", Kb_Key_Numpad_Multiply = L"", Kb_Key_Numpad_Minus = L"", Kb_Key_Numpad_Add = L"", Kb_Key_Numpad_Period = L"", Kb_Key_Numpad_Enter = L""
@@ -3877,7 +3877,7 @@ RgbScaleLayout			1.0)";
 			}
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;continue;
 		}
-		if (GetAsyncKeyState(cKey) && (bool)cKeyMax) {//toggle <
+		if (GetAsyncKeyState(cKey) && cKeyMax) {//toggle <
 			if (cKeyMax > 0 || cKey == VK_RCONTROL) {
 				short min = 0, max = cKeyMax == 1 ? 3 : cKeyMax; GetAsyncKeyState(VK_LCONTROL); GetAsyncKeyState(cKey); while (GetAsyncKeyState(cKey) != 0) { ++min;
 					if (GetAsyncKeyState(VK_LCONTROL) && cKey == 163) { while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 4); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } min = max + 1; break; }//rctrl+lctrl
@@ -4006,7 +4006,7 @@ RgbScaleLayout			1.0)";
 			if (Kb_Key_Esc[0]) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
 			continue;
 		}
-		if (GetAsyncKeyState(Kb_QQ_k) && RSHIFTLSHIFT_Only && !strand[0]) {
+		if (Kb_QQ_k != 0 && GetAsyncKeyState(Kb_QQ_k) && RSHIFTLSHIFT_Only && !strand[0]) {
 			GetAsyncKeyState(Kb_QQ_k); ++Kb_QQ_i;
 			if (Kb_QQ_i > qqLen - 1) { Kb_QQ_i = 0; for(auto i = 0; i < qqLen; ++i) kb(VK_BACK); GetAsyncKeyState(VK_BACK); strand = qScanOnly ? L"<" : L""; ++rri; prints(); clearAllKeys(); continue; }
 			Sleep(frequency / 3);
@@ -4016,70 +4016,111 @@ RgbScaleLayout			1.0)";
 		if (!rri && RSHIFTLSHIFT_Only && !strand[0]) { if (Kb_QQ_i > 0) { Kb_QQ_i = 0; } continue; }
 #pragma region input_strand
 		if (!ignoreAZ) {
-			if (GetAsyncKeyState(0x41) && Kb_Key_A[0]) { key(Kb_Key_A); continue; }
-			if (GetAsyncKeyState(0x42) && Kb_Key_B[0]) { key(Kb_Key_B); continue; }
-			if (GetAsyncKeyState(0x43) && Kb_Key_C[0]) { key(Kb_Key_C); continue; }
-			if (GetAsyncKeyState(0x44) && Kb_Key_D[0]) { key(Kb_Key_D); continue; }
-			if (GetAsyncKeyState(0x45) && Kb_Key_E[0]) { key(Kb_Key_E); continue; }
-			if (GetAsyncKeyState(0x46) && Kb_Key_F[0]) { key(Kb_Key_F); continue; }
-			if (GetAsyncKeyState(0x47) && Kb_Key_G[0]) { key(Kb_Key_G); continue; }
-			if (GetAsyncKeyState(0x48) && Kb_Key_H[0]) { key(Kb_Key_H); continue; }
-			if (GetAsyncKeyState(0x49) && Kb_Key_I[0]) { key(Kb_Key_I); continue; }
-			if (GetAsyncKeyState(0x4A) && Kb_Key_J[0]) { key(Kb_Key_J); continue; }
-			if (GetAsyncKeyState(0x4B) && Kb_Key_K[0]) { key(Kb_Key_K); continue; }
-			if (GetAsyncKeyState(0x4C) && Kb_Key_L[0]) { key(Kb_Key_L); continue; }
-			if (GetAsyncKeyState(0x4D) && Kb_Key_M[0]) { key(Kb_Key_M); continue; }
-			if (GetAsyncKeyState(0x4E) && Kb_Key_N[0]) { key(Kb_Key_N); continue; }
-			if (GetAsyncKeyState(0x4F) && Kb_Key_O[0]) { key(Kb_Key_O); continue; }
-			if (GetAsyncKeyState(0x50) && Kb_Key_P[0]) { key(Kb_Key_P); continue; }
-			if (GetAsyncKeyState(0x51) && Kb_Key_Q[0]) { key(Kb_Key_Q); continue; }
-			if (GetAsyncKeyState(0x52) && Kb_Key_R[0]) { key(Kb_Key_R); continue; }
-			if (GetAsyncKeyState(0x53) && Kb_Key_S[0]) { key(Kb_Key_S); continue; }
-			if (GetAsyncKeyState(0x54) && Kb_Key_T[0]) { key(Kb_Key_T); continue; }
-			if (GetAsyncKeyState(0x55) && Kb_Key_U[0]) { key(Kb_Key_U); continue; }
-			if (GetAsyncKeyState(0x56) && Kb_Key_V[0]) { key(Kb_Key_V); continue; }
-			if (GetAsyncKeyState(0x57) && Kb_Key_W[0]) { key(Kb_Key_W); continue; }
-			if (GetAsyncKeyState(0x58) && Kb_Key_X[0]) { key(Kb_Key_X); continue; }
-			if (GetAsyncKeyState(0x59) && Kb_Key_Y[0]) { key(Kb_Key_Y); continue; }
-			if (GetAsyncKeyState(0x5A) && Kb_Key_Z[0]) { key(Kb_Key_Z); continue; }
+			if (Kb_Key_A[0] && GetAsyncKeyState(0x41)) { key(Kb_Key_A); continue; }
+			if (Kb_Key_B[0] && GetAsyncKeyState(0x42)) { key(Kb_Key_B); continue; }
+			if (Kb_Key_C[0] && GetAsyncKeyState(0x43)) { key(Kb_Key_C); continue; }
+			if (Kb_Key_D[0] && GetAsyncKeyState(0x44)) { key(Kb_Key_D); continue; }
+			if (Kb_Key_E[0] && GetAsyncKeyState(0x45)) { key(Kb_Key_E); continue; }
+			if (Kb_Key_F[0] && GetAsyncKeyState(0x46)) { key(Kb_Key_F); continue; }
+			if (Kb_Key_G[0] && GetAsyncKeyState(0x47)) { key(Kb_Key_G); continue; }
+			if (Kb_Key_H[0] && GetAsyncKeyState(0x48)) { key(Kb_Key_H); continue; }
+			if (Kb_Key_I[0] && GetAsyncKeyState(0x49)) { key(Kb_Key_I); continue; }
+			if (Kb_Key_J[0] && GetAsyncKeyState(0x4A)) { key(Kb_Key_J); continue; }
+			if (Kb_Key_K[0] && GetAsyncKeyState(0x4B)) { key(Kb_Key_K); continue; }
+			if (Kb_Key_L[0] && GetAsyncKeyState(0x4C)) { key(Kb_Key_L); continue; }
+			if (Kb_Key_M[0] && GetAsyncKeyState(0x4D)) { key(Kb_Key_M); continue; }
+			if (Kb_Key_N[0] && GetAsyncKeyState(0x4E)) { key(Kb_Key_N); continue; }
+			if (Kb_Key_O[0] && GetAsyncKeyState(0x4F)) { key(Kb_Key_O); continue; }
+			if (Kb_Key_P[0] && GetAsyncKeyState(0x50)) { key(Kb_Key_P); continue; }
+			if (Kb_Key_Q[0] && GetAsyncKeyState(0x51)) { key(Kb_Key_Q); continue; }
+			if (Kb_Key_R[0] && GetAsyncKeyState(0x52)) { key(Kb_Key_R); continue; }
+			if (Kb_Key_S[0] && GetAsyncKeyState(0x53)) { key(Kb_Key_S); continue; }
+			if (Kb_Key_T[0] && GetAsyncKeyState(0x54)) { key(Kb_Key_T); continue; }
+			if (Kb_Key_U[0] && GetAsyncKeyState(0x55)) { key(Kb_Key_U); continue; }
+			if (Kb_Key_V[0] && GetAsyncKeyState(0x56)) { key(Kb_Key_V); continue; }
+			if (Kb_Key_W[0] && GetAsyncKeyState(0x57)) { key(Kb_Key_W); continue; }
+			if (Kb_Key_X[0] && GetAsyncKeyState(0x58)) { key(Kb_Key_X); continue; }
+			if (Kb_Key_Y[0] && GetAsyncKeyState(0x59)) { key(Kb_Key_Y); continue; }
+			if (Kb_Key_Z[0] && GetAsyncKeyState(0x5A)) { key(Kb_Key_Z); continue; }
 		}
 		if (!ignore09) {
-			if (GetAsyncKeyState(0x30) && Kb_Key_0[0]) { key(Kb_Key_0); continue; }
-			if (GetAsyncKeyState(0x31) && Kb_Key_1[0]) { key(Kb_Key_1); continue; }
-			if (GetAsyncKeyState(0x32) && Kb_Key_2[0]) { key(Kb_Key_2); continue; }
-			if (GetAsyncKeyState(0x33) && Kb_Key_3[0]) { key(Kb_Key_3); continue; }
-			if (GetAsyncKeyState(0x34) && Kb_Key_4[0]) { key(Kb_Key_4); continue; }
-			if (GetAsyncKeyState(0x35) && Kb_Key_5[0]) { key(Kb_Key_5); continue; }
-			if (GetAsyncKeyState(0x36) && Kb_Key_6[0]) { key(Kb_Key_6); continue; }
-			if (GetAsyncKeyState(0x37) && Kb_Key_7[0]) { key(Kb_Key_7); continue; }
-			if (GetAsyncKeyState(0x38) && Kb_Key_8[0]) { key(Kb_Key_8); continue; }
-			if (GetAsyncKeyState(0x39) && Kb_Key_9[0]) { key(Kb_Key_9); continue; }
+			if (Kb_Key_0[0] && GetAsyncKeyState(0x30)) { key(Kb_Key_0); continue; }
+			if (Kb_Key_1[0] && GetAsyncKeyState(0x31)) { key(Kb_Key_1); continue; }
+			if (Kb_Key_2[0] && GetAsyncKeyState(0x32)) { key(Kb_Key_2); continue; }
+			if (Kb_Key_3[0] && GetAsyncKeyState(0x33)) { key(Kb_Key_3); continue; }
+			if (Kb_Key_4[0] && GetAsyncKeyState(0x34)) { key(Kb_Key_4); continue; }
+			if (Kb_Key_5[0] && GetAsyncKeyState(0x35)) { key(Kb_Key_5); continue; }
+			if (Kb_Key_6[0] && GetAsyncKeyState(0x36)) { key(Kb_Key_6); continue; }
+			if (Kb_Key_7[0] && GetAsyncKeyState(0x37)) { key(Kb_Key_7); continue; }
+			if (Kb_Key_8[0] && GetAsyncKeyState(0x38)) { key(Kb_Key_8); continue; }
+			if (Kb_Key_9[0] && GetAsyncKeyState(0x39)) { key(Kb_Key_9); continue; }
 		}
 		if (!ignoreF1s) {
-			if (GetAsyncKeyState(0x70) && Kb_Key_F1[0]) { key(Kb_Key_F1); continue; }
-			if (GetAsyncKeyState(0x71) && Kb_Key_F2[0]) { key(Kb_Key_F2); continue; }
-			if (GetAsyncKeyState(0x72) && Kb_Key_F3[0]) { key(Kb_Key_F3); continue; }
-			if (GetAsyncKeyState(0x73) && Kb_Key_F4[0]) { key(Kb_Key_F4); continue; }
-			if (GetAsyncKeyState(0x74) && Kb_Key_F5[0]) { key(Kb_Key_F5); continue; }
-			if (GetAsyncKeyState(0x75) && Kb_Key_F6[0]) { key(Kb_Key_F6); continue; }
-			if (GetAsyncKeyState(0x76) && Kb_Key_F7[0]) { key(Kb_Key_F7); continue; }
-			if (GetAsyncKeyState(0x77) && Kb_Key_F8[0]) { key(Kb_Key_F8); continue; }
-			if (GetAsyncKeyState(0x78) && Kb_Key_F9[0]) { key(Kb_Key_F9); continue; }
-			if (GetAsyncKeyState(0x79) && Kb_Key_F10[0]) { key(Kb_Key_F10); continue; }
-			if (GetAsyncKeyState(0x7A) && Kb_Key_F11[0]) { key(Kb_Key_F11); continue; }
-			if (GetAsyncKeyState(0x7B) && Kb_Key_F12[0]) { key(Kb_Key_F12); continue; }
+			if (Kb_Key_F1[0] && GetAsyncKeyState(0x70)) { key(Kb_Key_F1); continue; }
+			if (Kb_Key_F2[0] && GetAsyncKeyState(0x71)) { key(Kb_Key_F2); continue; }
+			if (Kb_Key_F3[0] && GetAsyncKeyState(0x72)) { key(Kb_Key_F3); continue; }
+			if (Kb_Key_F4[0] && GetAsyncKeyState(0x73)) { key(Kb_Key_F4); continue; }
+			if (Kb_Key_F5[0] && GetAsyncKeyState(0x74)) { key(Kb_Key_F5); continue; }
+			if (Kb_Key_F6[0] && GetAsyncKeyState(0x75)) { key(Kb_Key_F6); continue; }
+			if (Kb_Key_F7[0] && GetAsyncKeyState(0x76)) { key(Kb_Key_F7); continue; }
+			if (Kb_Key_F8[0] && GetAsyncKeyState(0x77)) { key(Kb_Key_F8); continue; }
+			if (Kb_Key_F9[0] && GetAsyncKeyState(0x78)) { key(Kb_Key_F9); continue; }
+			if (Kb_Key_F10[0] && GetAsyncKeyState(0x79)) { key(Kb_Key_F10); continue; }
+			if (Kb_Key_F11[0] && GetAsyncKeyState(0x7A)) { key(Kb_Key_F11); continue; }
+			if (Kb_Key_F12[0] && GetAsyncKeyState(0x7B)) { key(Kb_Key_F12); continue; }
 		}
 		if (!ignoreArrows) {
-			if (GetAsyncKeyState(VK_LEFT) && Kb_Key_Left[0]) { key(Kb_Key_Left); continue; }
-			if (GetAsyncKeyState(VK_UP) && Kb_Key_Up[0]) { key(Kb_Key_Up); continue; }
-			if (GetAsyncKeyState(VK_RIGHT) && Kb_Key_Right[0]) { key(Kb_Key_Right); continue; }
-			if (GetAsyncKeyState(VK_DOWN) && Kb_Key_Down[0]) { key(Kb_Key_Down); continue; }
+			if (Kb_Key_Left[0] && GetAsyncKeyState(VK_LEFT)) { key(Kb_Key_Left); continue; }
+			if (Kb_Key_Up[0] && GetAsyncKeyState(VK_UP)) { key(Kb_Key_Up); continue; }
+			if (Kb_Key_Right[0] && GetAsyncKeyState(VK_RIGHT)) { key(Kb_Key_Right); continue; }
+			if (Kb_Key_Down[0] && GetAsyncKeyState(VK_DOWN)) { key(Kb_Key_Down); continue; }
 		}
-		if (GetAsyncKeyState(VK_SNAPSHOT) && Kb_Key_Print_Screen[0]) { key(Kb_Key_Print_Screen); continue; }
-		if (GetAsyncKeyState(VK_SPACE) && Kb_Key_Space[0]) { key(Kb_Key_Space); continue; }
-		if (GetAsyncKeyState(VK_TAB) && Kb_Key_Tab[0]) { key(Kb_Key_Tab); continue; }
-		if (GetAsyncKeyState(VK_LSHIFT) && Kb_Key_Left_Shift[0]) { key(Kb_Key_Left_Shift); continue; }
-		if (GetAsyncKeyState(VK_RSHIFT) && Kb_Key_Right_Shift[0]) { key(Kb_Key_Right_Shift); continue; }
+		if (Kb_Key_Print_Screen[0] && GetAsyncKeyState(VK_SNAPSHOT)) { key(Kb_Key_Print_Screen); continue; }
+		if (Kb_Key_Space[0] && GetAsyncKeyState(VK_SPACE)) { key(Kb_Key_Space); continue; }
+		if (Kb_Key_Tab[0] && GetAsyncKeyState(VK_TAB)) { key(Kb_Key_Tab); continue; }
+		if (Kb_Key_Left_Shift[0] && GetAsyncKeyState(VK_LSHIFT)) { key(Kb_Key_Left_Shift); continue; }
+		if (Kb_Key_Right_Shift[0] && GetAsyncKeyState(VK_RSHIFT)) { key(Kb_Key_Right_Shift); continue; }
+		if (Kb_Key_Left_Ctrl[0] && GetAsyncKeyState(VK_LCONTROL)) { key(Kb_Key_Left_Ctrl); continue; }
+		if (Kb_Key_Right_Ctrl[0] && GetAsyncKeyState(VK_RCONTROL)) { key(Kb_Key_Right_Ctrl); continue; }
+		if (Kb_Key_Enter[0] && GetAsyncKeyState(VK_RETURN)) { key(Kb_Key_Enter); continue; }
+		if (Kb_Key_Caps[0] && GetAsyncKeyState(VK_CAPITAL)) { key(Kb_Key_Caps); continue; }
+		if (Kb_Key_Grave_Accent[0] && GetAsyncKeyState(VK_OEM_3)) { key(Kb_Key_Grave_Accent); continue; }
+		if (Kb_Key_Minus[0] && GetAsyncKeyState(VK_OEM_MINUS)) { key(Kb_Key_Minus); continue; }
+		if (Kb_Key_Equal[0] && GetAsyncKeyState(VK_OEM_PLUS)) { key(Kb_Key_Equal); continue; }
+		if (Kb_Key_Left_Bracket[0] && GetAsyncKeyState(VK_OEM_4)) { key(Kb_Key_Left_Bracket); continue; }
+		if (Kb_Key_Right_Bracket[0] && GetAsyncKeyState(VK_OEM_6)) { key(Kb_Key_Right_Bracket); continue; }
+		if (Kb_Key_Backslash[0] && GetAsyncKeyState(VK_OEM_5)) { key(Kb_Key_Backslash); continue; }
+		if (Kb_Key_Semicolon[0] && GetAsyncKeyState(VK_OEM_1)) { key(Kb_Key_Semicolon); continue; }
+		if (Kb_Key_Quote[0] && GetAsyncKeyState(VK_OEM_7)) { key(Kb_Key_Quote); continue; }
+		if (Kb_Key_Comma[0] && GetAsyncKeyState(VK_OEM_COMMA)) { key(Kb_Key_Comma); continue; }
+		if (Kb_Key_Period[0] && GetAsyncKeyState(VK_OEM_PERIOD)) { key(Kb_Key_Period); continue; }
+		if (Kb_Key_Forwardslash[0] && GetAsyncKeyState(VK_OEM_2)) { key(Kb_Key_Forwardslash); continue; }
+		if (Kb_Key_Menu[0] && GetAsyncKeyState(VK_APPS)) { key(Kb_Key_Menu); continue; }
+		if (Kb_Key_Insert[0] && GetAsyncKeyState(VK_INSERT)) { key(Kb_Key_Insert); continue; }
+		if (Kb_Key_Delete[0] && GetAsyncKeyState(VK_DELETE)) { key(Kb_Key_Delete); continue; }
+		if (Kb_Key_Home[0] && GetAsyncKeyState(VK_HOME)) { key(Kb_Key_Home); continue; }
+		if (Kb_Key_End[0] && GetAsyncKeyState(VK_END)) { key(Kb_Key_End); continue; }
+		if (Kb_Key_PgUp[0] && GetAsyncKeyState(VK_PRIOR)) { key(Kb_Key_PgUp); continue; }
+		if (Kb_Key_PgDn[0] && GetAsyncKeyState(VK_NEXT)) { key(Kb_Key_PgDn); continue; }
+		if (!ignoreNumPad) {
+			if (Kb_Key_Numpad_0[0] && GetAsyncKeyState(VK_NUMPAD0)) { key(Kb_Key_Numpad_0); continue; }
+			if (Kb_Key_Numpad_1[0] && GetAsyncKeyState(VK_NUMPAD1)) { key(Kb_Key_Numpad_1); continue; }
+			if (Kb_Key_Numpad_2[0] && GetAsyncKeyState(VK_NUMPAD2)) { key(Kb_Key_Numpad_2); continue; }
+			if (Kb_Key_Numpad_3[0] && GetAsyncKeyState(VK_NUMPAD3)) { key(Kb_Key_Numpad_3); continue; }
+			if (Kb_Key_Numpad_4[0] && GetAsyncKeyState(VK_NUMPAD4)) { key(Kb_Key_Numpad_4); continue; }
+			if (Kb_Key_Numpad_5[0] && GetAsyncKeyState(VK_NUMPAD5)) { key(Kb_Key_Numpad_5); continue; }
+			if (Kb_Key_Numpad_6[0] && GetAsyncKeyState(VK_NUMPAD6)) { key(Kb_Key_Numpad_6); continue; }
+			if (Kb_Key_Numpad_7[0] && GetAsyncKeyState(VK_NUMPAD7)) { key(Kb_Key_Numpad_7); continue; }
+			if (Kb_Key_Numpad_8[0] && GetAsyncKeyState(VK_NUMPAD8)) { key(Kb_Key_Numpad_8); continue; }
+			if (Kb_Key_Numpad_9[0] && GetAsyncKeyState(VK_NUMPAD9)) { key(Kb_Key_Numpad_9); continue; }
+			if (Kb_Key_Numlock[0] && GetAsyncKeyState(VK_NUMLOCK)) { key(Kb_Key_Numlock); continue; }
+			if (Kb_Key_Numpad_Divide[0] && GetAsyncKeyState(VK_DIVIDE)) { key(Kb_Key_Numpad_Divide); continue; }
+			if (Kb_Key_Numpad_Multiply[0] && GetAsyncKeyState(VK_MULTIPLY)) { key(Kb_Key_Numpad_Multiply); continue; }
+			if (Kb_Key_Numpad_Minus[0] && GetAsyncKeyState(VK_SUBTRACT)) { key(Kb_Key_Numpad_Minus); continue; }
+			if (Kb_Key_Numpad_Add[0] && GetAsyncKeyState(VK_ADD)) { key(Kb_Key_Numpad_Add); continue; }
+			if (Kb_Key_Numpad_Period[0] && GetAsyncKeyState(VK_DECIMAL)) { key(Kb_Key_Numpad_Period); continue; }
+			if (Kb_Key_Numpad_Enter[0] && GetAsyncKeyState(VK_RETURN)) { key(Kb_Key_Numpad_Enter); continue; }
+		}
 		if (GetAsyncKeyState(VK_LMENU)) {
 			if (Kb_Key_Left_Alt[0]) key(Kb_Key_Left_Alt);
 			else {
@@ -4100,47 +4141,6 @@ RgbScaleLayout			1.0)";
 			while (GetAsyncKeyState(VK_LWIN) != 0 || GetAsyncKeyState(VK_RWIN) != 0) Sleep(frequency / 4);
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
-		}
-		if (GetAsyncKeyState(VK_LCONTROL) && Kb_Key_Left_Ctrl[0]) { key(Kb_Key_Left_Ctrl); continue; }
-		if (GetAsyncKeyState(VK_RCONTROL) && Kb_Key_Right_Ctrl[0]) { key(Kb_Key_Right_Ctrl); continue; }
-		if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Enter[0]) { key(Kb_Key_Enter); continue; }
-		if (GetAsyncKeyState(VK_CAPITAL) && Kb_Key_Caps[0]) { key(Kb_Key_Caps); continue; }
-		if (GetAsyncKeyState(VK_OEM_3) && Kb_Key_Grave_Accent[0]) { key(Kb_Key_Grave_Accent); continue; }
-		if (GetAsyncKeyState(VK_OEM_MINUS) && Kb_Key_Minus[0]) { key(Kb_Key_Minus); continue; }
-		if (GetAsyncKeyState(VK_OEM_PLUS) && Kb_Key_Equal[0]) { key(Kb_Key_Equal); continue; }
-		if (GetAsyncKeyState(VK_OEM_4) && Kb_Key_Left_Bracket[0]) { key(Kb_Key_Left_Bracket); continue; }
-		if (GetAsyncKeyState(VK_OEM_6) && Kb_Key_Right_Bracket[0]) { key(Kb_Key_Right_Bracket); continue; }
-		if (GetAsyncKeyState(VK_OEM_5) && Kb_Key_Backslash[0]) { key(Kb_Key_Backslash); continue; }
-		if (GetAsyncKeyState(VK_OEM_1) && Kb_Key_Semicolon[0]) { key(Kb_Key_Semicolon); continue; }
-		if (GetAsyncKeyState(VK_OEM_7) && Kb_Key_Quote[0]) { key(Kb_Key_Quote); continue; }
-		if (GetAsyncKeyState(VK_OEM_COMMA) && Kb_Key_Comma[0]) { key(Kb_Key_Comma); continue; }
-		if (GetAsyncKeyState(VK_OEM_PERIOD) && Kb_Key_Period[0]) { key(Kb_Key_Period); continue; }
-		if (GetAsyncKeyState(VK_OEM_2) && Kb_Key_Forwardslash[0]) { key(Kb_Key_Forwardslash); continue; }
-		if (GetAsyncKeyState(VK_APPS) && Kb_Key_Menu[0]) { key(Kb_Key_Menu); continue; }
-		if (GetAsyncKeyState(VK_INSERT) && Kb_Key_Insert[0]) { key(Kb_Key_Insert); continue; }
-		if (GetAsyncKeyState(VK_DELETE) && Kb_Key_Delete[0]) { key(Kb_Key_Delete); continue; }
-		if (GetAsyncKeyState(VK_HOME) && Kb_Key_Home[0]) { key(Kb_Key_Home); continue; }
-		if (GetAsyncKeyState(VK_END) && Kb_Key_End[0]) { key(Kb_Key_End); continue; }
-		if (GetAsyncKeyState(VK_PRIOR) && Kb_Key_PgUp[0]) { key(Kb_Key_PgUp); continue; }
-		if (GetAsyncKeyState(VK_NEXT) && Kb_Key_PgDn[0]) { key(Kb_Key_PgDn); continue; }
-		if (!ignoreNumPad) {
-			if (GetAsyncKeyState(VK_NUMPAD0) && Kb_Key_Numpad_0[0]) { key(Kb_Key_Numpad_0); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD1) && Kb_Key_Numpad_1[0]) { key(Kb_Key_Numpad_1); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD2) && Kb_Key_Numpad_2[0]) { key(Kb_Key_Numpad_2); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD3) && Kb_Key_Numpad_3[0]) { key(Kb_Key_Numpad_3); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD4) && Kb_Key_Numpad_4[0]) { key(Kb_Key_Numpad_4); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD5) && Kb_Key_Numpad_5[0]) { key(Kb_Key_Numpad_5); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD6) && Kb_Key_Numpad_6[0]) { key(Kb_Key_Numpad_6); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD7) && Kb_Key_Numpad_7[0]) { key(Kb_Key_Numpad_7); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD8) && Kb_Key_Numpad_8[0]) { key(Kb_Key_Numpad_8); continue; }
-			if (GetAsyncKeyState(VK_NUMPAD9) && Kb_Key_Numpad_9[0]) { key(Kb_Key_Numpad_9); continue; }
-			if (GetAsyncKeyState(VK_NUMLOCK) && Kb_Key_Numlock[0]) { key(Kb_Key_Numlock); continue; }
-			if (GetAsyncKeyState(VK_DIVIDE) && Kb_Key_Numpad_Divide[0]) { key(Kb_Key_Numpad_Divide); continue; }
-			if (GetAsyncKeyState(VK_MULTIPLY) && Kb_Key_Numpad_Multiply[0]) { key(Kb_Key_Numpad_Multiply); continue; }
-			if (GetAsyncKeyState(VK_SUBTRACT) && Kb_Key_Numpad_Minus[0]) { key(Kb_Key_Numpad_Minus); continue; }
-			if (GetAsyncKeyState(VK_ADD) && Kb_Key_Numpad_Add[0]) { key(Kb_Key_Numpad_Add); continue; }
-			if (GetAsyncKeyState(VK_DECIMAL) && Kb_Key_Numpad_Period[0]) { key(Kb_Key_Numpad_Period); continue; }
-			if (GetAsyncKeyState(VK_RETURN) && Kb_Key_Numpad_Enter[0]) { key(Kb_Key_Numpad_Enter); continue; }
 		}
 #pragma endregion
 	}
