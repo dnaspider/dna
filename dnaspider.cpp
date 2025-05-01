@@ -3805,7 +3805,7 @@ RgbScaleLayout			1.0)";
 						Sleep(frequency / 4);
 					}
 					++rri; if (strand[0] || rri > 1) {
-						if (strand[0] == '<' && strand.length() > 1 || RSHIFTLSHIFT_Only == 2 && strand[0]) {
+						if (strand[0] == '<' && strand.length() > 1 || RSHIFTLSHIFT_Only == 2 && strand[0] && strand != L"<") {
 							rri = 0; strand.append(L">"); prints(); if (!multiStrand) { scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue; }
 							else { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach(); }
 						}
