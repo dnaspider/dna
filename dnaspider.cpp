@@ -1681,12 +1681,14 @@ void scanDb() {
 						if (qq.find('>') != string::npos && qqb(L"<''")) i = tail.length();//<''ignore>...
 						else if (qq.find('>') != string::npos && qqb(L"<'")) { //<'comments>
 							if (showStrand) {
-								showOutsMsg(L"", OutsTemplate, L"", 1);
-								const wstring& v = qq.substr(2, qq.find('>') - 2);
-								if (multiStrand)
-									showOutsMsg(multi, L"", v, L"\n", 1);
-								else
-									showOutsMsg(L"", v, L"\n", 1);
+ 								if(qq[2] != ' '){
+									showOutsMsg(L"", OutsTemplate, L"", 1);
+									const wstring& v = qq.substr(2, qq.find('>') - 2);
+									if (multiStrand)
+										showOutsMsg(multi, L"", v, L"\n", 1);
+									else
+										showOutsMsg(L"", v, L"\n", 1);
+								}
 							}
 							rei(); sleep = 0;
 						}
@@ -3532,6 +3534,7 @@ L"Interface\n"
 "\t\t\t"				"<test-><+:1><<:\\+:)\\n><if+g:3 true:><test->\n"
 "\t\t\t"				"<true:>1\n"
 "<'>\t\t\t"				"Print to console\n"
+"<' >\t\t\t"			"No print\n"
 "<''>\t\t\t"			"Ignore rest of line\n"
 "<'''>\t\t\t"			"Ignore rest of db \n"
 "\t\t\t"				"<test->1<'bs>1<''test>0\n"
