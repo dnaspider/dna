@@ -3683,8 +3683,12 @@ static void key(wstring k) {
 			}
 			if (y) showMultiStrandElapsedOnly = y;
 		}
-	} else
-		strand.append(k);
+	}
+	else {
+		if (k[0] == '>' && !strand[0]) {}
+		else if (k[0] == '>' && strand == L"<") { strand.clear(); prints(); if (RSHIFTLSHIFT_Only) { rri = 1; } return; }
+		else strand.append(k);
+	}
 	if (!bk && Kb_QQ_i > 0) { Kb_QQ_i = 0; } if (strand[0] == '<' && strand[1] == '>' || strand[0] == '>') { prints(); strand = L""; prints(); return; }
 	if (k[0] == '<' || k[0] == '>') {
 		strand = strand.substr(0, strand.size() - 1);
