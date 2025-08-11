@@ -975,9 +975,12 @@ static void toggle_visibility() {
 		SetForegroundWindow(GetConsoleWindow());
 		kb(VK_F12);//if title "Select dnaspider"
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
+		Sleep(150); out(L"<alt><esc><alt-><,1>");
 	}
-	else
+	else {
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
+		SetForegroundWindow(GetConsoleWindow());
+	}
 	Sleep(150);
 	strand = L"";
 }
