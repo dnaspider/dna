@@ -44,9 +44,9 @@ wstring&& OutTab = L"\t"; //OutTabs
 double RgbScaleLayout = 1.00; //100%
 size_t i = 0;
 size_t qqLen = 2;
+size_t ic = 0; //<+> icp
 int rri = 0; //++RSHIFTLSHIFT_Only
 int CommaSleep = 128;
-int ic = 0; //<+> icp
 int frequency = 128; //>> ms response -> vk_
 int speed = 0; //<< 
 int qxc = 0, qyc = 0;//<rp>
@@ -456,7 +456,6 @@ static void kbPress(Multi multi, wstring s, short key) {
 static void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
 
 static void calc() {
-	if (assume) { i += qq.find('>'); return; }
 	qq = to_wstring(ic) + qq.substr(qq.find('>') + 1, qq.length());
 	i = -1;
 	if (speed > 0) sleep = 0;
@@ -1575,53 +1574,40 @@ void scanDb() {
 						else conn();
 						break;
 					case'+': //calc
-						if (qqb(L"<+>")) {//repeat#
-							calc();
-							break;
-						}
-						else if (testqqb(L"<+:")) {//calc +
-							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) { multi.icp += stoi(qp); if (!assume) ic = (int)multi.icp; } else ic += stoi(qp);
-							calc();
-							break;
-						}
-						else conn();
-						break;
 					case'-':
-						if (testqqb(L"<-:")) {//-
-							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) { multi.icp -= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic -= stoi(qp);
-							calc();
-							break;
-						}
-						else conn();
-						break;
 					case'*':
-						if (testqqb(L"<*:")) {//*
-							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) { multi.icp *= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic *= stoi(qp);
-							calc();
-							break;
-						}
-						else conn();
-						break;
 					case'/':
-						if (testqqb(L"</:")) {//divide
-							if (check_if_num(qp) == L"" || stoi(qp) <= 0) { printq(); continue; }
-							if (multiStrand) { multi.icp /= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic /= stoi(qp);
-							calc();
-							break;
+					case'%': {
+						bool b = 0; if (qqb(L"<+>")) b = 1; //repeat#
+						else if (qq[2] != ':' || check_if_num(qp) == L"") { printq(); continue; }
+
+						if (qq[3] == ' ')
+							multi.icp = ic = stoi(cbGet());
+						else
+							multi.icp = ic;
+
+						if (b) {}
+						else if (testqqb(L"<+:")) //calc +
+							ic = multi.icp += stoi(qp);
+						else if (testqqb(L"<-:")) //-
+							ic = multi.icp -= stoi(qp);
+						else if (testqqb(L"<*:")) //*
+							ic = multi.icp *= stoi(qp);
+						else if (testqqb(L"</:")) {//divide
+							if (stoi(qp) <= 0) { printq(); continue; }
+							ic = multi.icp /= stoi(qp);
 						}
-						else conn();
-						break;
-					case'%':
-						if (testqqb(L"<%:")) {//%
-							if (check_if_num(qp) == L"") { printq(); continue; }
-							if (multiStrand) { multi.icp %= stoi(qp); if (!assume) ic = (int)multi.icp; } else ic %= stoi(qp);
-							calc();
-							break;
+						else if (testqqb(L"<%:")) //%
+							ic = multi.icp %= stoi(qp);
+
+						if (qq[3] == ' ') {
+							auto x = to_wstring(ic);
+							cbSet(x);
 						}
-						else conn();
+
+						if (b || !assume) calc();
+						else rei();
+					}
 						break;
 					case',':
 						if (qqb(L"<,") && qq[2] != ':' && qq[2] != '-') { //<,#> || <,*
@@ -3518,12 +3504,12 @@ L"Interface\n"
 "\t\t\t"				"<test-><a:<shift\\g<shift-\\g><left8>\n"
 "<speed:>\t\t"			"Output\n"
 "\t\t\t"				"<test->1<speed:1000>11\n"
-"<+:>\t\t\t"			"Calc. (No print, se.txt Assume: 1)\n"
-"<-:>\t\t\t"			"<test-><+:1><+:-1>\n"
+"<+:>\t\t\t"			"Calc. (Set to cb, use ' ')\n"
+"<-:>\t\t\t"			"<test-><+: 1>\n"
 "<*:>\n"
 "</:>\n"
 "<%:>\n"
-"<+>\t\t\t"				"Total\n"
+"<+>\t\t\t"				"Print total\n"
 "\t\t\t"				"<test-><+><*:7>\n"
 "<down+>\t\t\t"			"Variable press* <+>\n"
 "\t\t\t"				"<test:><speed:1000><+:1><tab+><test:>\n"
