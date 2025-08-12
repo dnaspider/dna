@@ -1587,7 +1587,7 @@ void scanDb() {
 						bool c = 0;
 						if (qq[3] == ' ') {
 							multi.icp = ic = stod(cbGet());
-							if (cbGet().find('.') == string::npos) c = 1;
+							if (cbGet().find('.') != string::npos || qp.find('.') != string::npos) c = 1;
 						}
 						else
 							multi.icp = ic;
@@ -1607,7 +1607,7 @@ void scanDb() {
 
 						if (qq[3] == ' ') {
 							wstring x = to_wstring(ic);
-							if (qq[1] == '%' || c) x = x.substr(0, x.find(L"."));
+							if (qq[1] == '%' || !c) x = x.substr(0, x.find(L"."));
 							cbSet(x);
 						}
 
