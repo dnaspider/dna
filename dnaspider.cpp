@@ -42,9 +42,9 @@ wstring&& Loop_Insert_Text = L"";
 wstring&& multiLineDelim = L"\n"; //DbMultiLineDelimiter:
 wstring&& OutTab = L"\t"; //OutTabs
 double RgbScaleLayout = 1.00; //100%
+double ic = 0; //<+> icp
 size_t i = 0;
 size_t qqLen = 2;
-size_t ic = 0; //<+> icp
 int rri = 0; //++RSHIFTLSHIFT_Only
 int CommaSleep = 128;
 int frequency = 128; //>> ms response -> vk_
@@ -127,7 +127,7 @@ struct Mainn {
 
 struct Multi {
 	wstring qp, r, g, b, a, x, m, l, t = tail, q = qq, s = strand;
-	size_t i_ = i, icp = 0;
+	double icp = 0; size_t i_ = i;
 	int cx = 0, cy = 0, speed_ = 0;
 	bool esc = 0, br = 0;//break
 	//~Multi() {}
@@ -1581,30 +1581,33 @@ void scanDb() {
 					case'*':
 					case'/':
 					case'%': {
-						bool b = 0; if (qqb(L"<+>")) b = 1; //repeat#
-						else if (qq[2] != ':' || check_if_num(qp) == L"") { printq(); continue; }
+						bool b = 0; if (qq[2] == '>' && qq[1] == '+') b = 1; //<+>
+						else if (check_if_num(qp) == L"") { conn(); continue; }
 
-						if (qq[3] == ' ')
-							multi.icp = ic = stoi(cbGet());
+						bool c = 0;
+						if (qq[3] == ' ') {
+							multi.icp = ic = stod(cbGet());
+							if (cbGet().find('.') == string::npos) c = 1;
+						}
 						else
 							multi.icp = ic;
 
 						if (b) {}
-						else if (testqqb(L"<+:")) //calc +
-							ic = multi.icp += stoi(qp);
-						else if (testqqb(L"<-:")) //-
-							ic = multi.icp -= stoi(qp);
-						else if (testqqb(L"<*:")) //*
-							ic = multi.icp *= stoi(qp);
-						else if (testqqb(L"</:")) {//divide
-							if (stoi(qp) <= 0) { printq(); continue; }
-							ic = multi.icp /= stoi(qp);
+						else {
+							switch (qq[1]) {
+							case'+': multi.icp = ic += stod(qp); break; // <+:>
+							case'-': multi.icp = ic -= stod(qp); break;
+							case'*': multi.icp = ic *= stod(qp); break;
+							case'/':
+							case'%': if (stoi(qp) <= 0) { printq(); continue; }
+								if (int x = (int)ic; qq[1] == '/') multi.icp = ic /= stod(qp);
+								else multi.icp = ic = x % stoi(qp);
+							}
 						}
-						else if (testqqb(L"<%:")) //%
-							ic = multi.icp %= stoi(qp);
 
 						if (qq[3] == ' ') {
-							auto x = to_wstring(ic);
+							wstring x = to_wstring(ic);
+							if (qq[1] == '%' || c) x = x.substr(0, x.find(L"."));
 							cbSet(x);
 						}
 
