@@ -1575,11 +1575,11 @@ void scanDb() {
 					case'%': {
 						bool b = 0;
 						if (qq[2] == '>' && qq[1] == '+') b = 1; //<+>
-						else if (qp[0] > '9' || qp == L"") { if(conn() > L"") showOutsMsg(L"NAN: " + qq.substr(0, qq.find(':') + 1), L"\\4" + qq.substr(qq.find(':') + 1, qp.length()) + L"\\7", L">", 1); continue; }
+						else if (qp[0] > '9' || qp == L"") { if (conn(1) == L"") { showOutsMsg(L"NAN: " + qq.substr(0, 3), L"\\4" + qq.substr(3, qp.length() + (qq[3] == ' ')) + L"\\7", L">", 1); } else { printq(); } continue; }
 
 						wstring cb = cbGet();
 						if (qq[3] == ' ') {
-							if (cb[0] > '9' || cb == L"") { conn(); showOutsMsg(L"NAN: cb{", L"\\4" + cb + L"\\7", L"}", 1); continue; }
+							if (cb[0] == ' ' || cb[0] == '\t' || cb[0] == '\r' || cb[0] > '9') { conn(); showOutsMsg(L"NAN: cb{", L"\\4" + cb + L"\\7", L"}", 1); continue; }
 							multi.icp = stod(cb);
 						}
 
@@ -3802,8 +3802,9 @@ RgbScaleLayout			1.0)";
 			short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
 			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(cKey); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
-					while (GetAsyncKeyState(VK_RSHIFT) != 0) {
-						Sleep(frequency / 4);
+					kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); int x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+						if (GetAsyncKeyState(VK_LSHIFT)) ++x;
+						Sleep(1);
 					}
 					++rri; if (strand[0] || rri > 1) {
 						if (strand[0] == '<' && strand.length() > 1 || RSHIFTLSHIFT_Only == 2 && strand[0] && strand != L"<") {
@@ -3814,11 +3815,11 @@ RgbScaleLayout			1.0)";
 							strand = L"<";
 						}
 						else {
-							strand = L"";
+							strand = x > 1 && RSHIFTLSHIFT_Only > 1 ? L"<" : L"";
 						}
 						if (showStrand) { wcout.flush().clear(); } prints(); continue;
 					}
-					if (strandLengthMode) { if (RSHIFTLSHIFT_Only > 1) { rri++; strand = L""; } else { strand = L"<"; rri = 0; } prints(); continue; }
+					if (strandLengthMode) { if (RSHIFTLSHIFT_Only > 1) { rri++; strand = x > 1 ? L"<" : L""; } else { strand = L"<"; rri = 0; } prints(); continue; }
 					else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
