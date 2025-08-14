@@ -455,14 +455,6 @@ static void kbPress(Multi multi, wstring s, short key) {
 
 static void out(wstring ai) { re = L">" + ai; strand.clear(); scanDb(); re.clear(); }
 
-static void calc() {
-	qq = to_wstring(ic) + qq.substr(qq.find('>') + 1, qq.length());
-	i = -1;
-	if (speed > 0) sleep = 0;
-	re = L" ";
-	tail = qq;
-}
-
 static void loadSe() {
 	wifstream f(settings); if (!f) { showOutsMsg(L"\nSettings \"", settings, L"\" not found!", 0); if (!settings[0]) { cout << "Create c:\\dna\\se.txt manually\n"; } return; }
 	if (Unicode) f.imbue(locale(f.getloc(), new codecvt_utf8_utf16<wchar_t>));
@@ -1581,37 +1573,43 @@ void scanDb() {
 					case'*':
 					case'/':
 					case'%': {
-						bool b = 0; if (qq[2] == '>' && qq[1] == '+') b = 1; //<+>
-						else if (check_if_num(qp) == L"") { conn(); continue; }
+						bool b = 0;
+						if (qq[2] == '>' && qq[1] == '+') b = 1; //<+>
+						else if (qp[0] > '9' || qp == L"") { if(conn() > L"") showOutsMsg(L"NAN: " + qq.substr(0, qq.find(':') + 1), L"\\4" + qq.substr(qq.find(':') + 1, qp.length()) + L"\\7", L">", 1); continue; }
+
+						wstring cb = cbGet();
+						if (qq[3] == ' ') {
+							if (cb[0] > '9' || cb == L"") { conn(); showOutsMsg(L"NAN: cb{", L"\\4" + cb + L"\\7", L"}", 1); continue; }
+							multi.icp = stod(cb);
+						}
 
 						bool c = 0;
-						if (qq[3] == ' ') {
-							multi.icp = ic = stod(cbGet());
-							if (cbGet().find('.') != string::npos || qp.find('.') != string::npos) c = 1;
-						}
-						else
-							multi.icp = ic;
-
+						if (qp.find('.') != string::npos || cb.find('.') != string::npos) c = 1;
+						 
 						if (b) {}
 						else {
+							if (qq[2] != ':') { conn(); continue; }
 							switch (qq[1]) {
-							case'+': multi.icp = ic += stod(qp); break; // <+:>
-							case'-': multi.icp = ic -= stod(qp); break;
-							case'*': multi.icp = ic *= stod(qp); break;
+							case'+': multi.icp += stod(qp); break; // <+:>
+							case'-': multi.icp -= stod(qp); break;
+							case'*': multi.icp *= stod(qp); break;
 							case'/':
 							case'%': if (stoi(qp) <= 0) { printq(); continue; }
-								if (int x = (int)ic; qq[1] == '/') multi.icp = ic /= stod(qp);
-								else multi.icp = ic = x % stoi(qp);
+								if (int x = (int)multi.icp; qq[1] == '/') multi.icp /= stod(qp);
+								else multi.icp = x % stoi(qp);
 							}
 						}
 
-						if (qq[3] == ' ') {
-							wstring x = to_wstring(ic);
-							if (qq[1] == '%' || !c) x = x.substr(0, x.find(L"."));
-							cbSet(x);
+						wstring x = to_wstring(multi.icp);
+						if (!c || qq[1] == '%') x = x.substr(0, x.find(L"."));
+						
+						if (qq[3] == ' ') cbSet(x);						
+						
+						if (b) {
+							tail = x + qq.substr(qq.find('>') + 1, qq.length());
+							i = -1;
+							ic = multi.icp;
 						}
-
-						if (b || !assume) calc();
 						else rei();
 					}
 						break;
