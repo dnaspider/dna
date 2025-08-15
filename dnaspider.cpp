@@ -153,24 +153,13 @@ ctp clockr(ctp& t) {
 
 static wstring check_if_num(wstring &s) {
 	if (assume) return s;
-	if (s > L"") {
-		int c = 0, d = 0;
-		auto f = [&s]() { if (showStrand) wcout << "NAN: " << OutTab << OutTab << s << endl; s.clear(); return s; };
-		for (size_t t = 0; t < s.length(); ++t) {//!0-9
-			if (s[0] == ' ') {
-				if (s.length() == 1) {
-					s.clear(); return s;
-				}
-				s = s.substr(1, s.length()); --t;
-				continue;
-			}//rem ws
-			if (c > 1 || d > 1) f();
-			if (s[t] == '.') { if (s.length() == 1) { f(); } ++d; continue; }
-			if (t == 0 && (s[0] == 45 || s[0] == 43) && s.length() != 1) { ++c; continue; }//-+
-			if (!(s[t] >= 48 && s[t] <= 57)) f();
-		}
+	
+	char d = 0;
+	for (size_t x = 0; x < s.length(); ++x) {
+		if (x == 0 && s[0] == '-') { if (s.length() == 1) { s.clear(); break; } continue; }
+		if (s[x] == '.') { ++d; if (d > 1 || s.length() == 1) { s.clear(); break; } continue; }
+		if (s[x] < '0' || s[x] > '9') { s.clear(); break; }
 	}
-	else s.clear();
 	return s;
 }
 
@@ -1496,7 +1485,6 @@ void scanDb() {
 						if (multiStrand) multi.qp = qp;
 					}
 					switch (qq[1]) {
-						if (multiStrand) { qp = multi.qp; qq = multi.q; }
 					case '<':
 						if (testqqb(L"<<:")) {//cout
 							if (replacerDb[0]) { wstring t = qq; t = isVar(t); } //<<:{<x:>}>
@@ -1573,19 +1561,20 @@ void scanDb() {
 					case'*':
 					case'/':
 					case'%': {
-						bool b = 0;
-						if (qq[2] == '>' && qq[1] == '+') b = 1; //<+>
-						else if (qp[0] > '9' || qp == L"") { if (conn(1) == L"") { showOutsMsg(L"NAN: " + qq.substr(0, 3), L"\\4" + qq.substr(3, qp.length() + (qq[3] == ' ')) + L"\\7", L">", 1); } else { printq(); } continue; }
-
-						wstring cb = cbGet();
-						if (qq[3] == ' ') {
-							if (cb[0] == ' ' || cb[0] == '\t' || cb[0] == '\r' || cb[0] > '9') { conn(); showOutsMsg(L"NAN: cb{", L"\\4" + cb + L"\\7", L"}", 1); continue; }
+						if (qq[3] == ' ') { //<+: #>
+							wstring cb = cbGet();
+							if (auto e = cb; !e[0] || check_if_num(e) == L"") { conn(); showOutsMsg(L"NAN: cb{", L"\\4" + cb + L"\\7", L"}", 1); continue; }
 							multi.icp = stod(cb);
 						}
+						
+						bool b = 0;
+						if (qq[2] == '>' && qq[1] == '+') b = 1; //<+>
+						else if (auto e = qp; !e[0] || check_if_num(e) == L"") {
+							if (!qp[0]) conn();
+							else { showOutsMsg(L"NAN: " + qq.substr(0, 3), L"\\4" + qq.substr(3, qp.length() + (qq[3] == ' ')) + L"\\7", L">", 1); printq(); }
+							continue;
+						}
 
-						bool c = 0;
-						if (qp.find('.') != string::npos || cb.find('.') != string::npos) c = 1;
-						 
 						if (b) {}
 						else {
 							if (qq[2] != ':') { conn(); continue; }
@@ -1600,13 +1589,16 @@ void scanDb() {
 							}
 						}
 
+						static bool dp;
+						if (qp.find('.') != string::npos || qq[3] == ' ' && cbGet().find('.') != string::npos) dp = 1; else { if (!b) dp = 0; }
+
 						wstring x = to_wstring(multi.icp);
-						if (!c || qq[1] == '%') x = x.substr(0, x.find(L"."));
+						if (!dp || qq[1] == '%') x = x.substr(0, x.find(L"."));
 						
-						if (qq[3] == ' ') cbSet(x);						
-						
+						if (qq[3] == ' ') cbSet(x);
+
 						if (b) {
-							tail = x + qq.substr(qq.find('>') + 1, qq.length());
+							tail = x + qq.substr(qq.find('>') + 1);
 							i = -1;
 							ic = multi.icp;
 						}
@@ -3799,10 +3791,10 @@ RgbScaleLayout			1.0)";
 			continue;
 		}
 		if (GetAsyncKeyState(VK_RSHIFT)) {
-			short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
+			unsigned short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
 			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(cKey); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
-					kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); int x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+					kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); unsigned short x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 						if (GetAsyncKeyState(VK_LSHIFT)) ++x;
 						Sleep(1);
 					}
