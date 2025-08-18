@@ -4003,9 +4003,9 @@ RgbScaleLayout			1.0)";
 				clearAllKeys();
 				continue;
 			}
-			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) return 0; } //esc + x
+			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) { kb(VK_BACK); return 0; } } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
-				if (EscHAutoBs) { kb(VK_BACK); } GetAsyncKeyState(VK_ESCAPE);
+				if (EscHAutoBs) { kb(VK_BACK); Sleep(1); } GetAsyncKeyState(VK_ESCAPE);
 				toggle_visibility();
 				if (showStrand && !qScanOnly) showOutsMsg(L"", OutsTemplate, strand + L"\n", 1);
 				continue;
