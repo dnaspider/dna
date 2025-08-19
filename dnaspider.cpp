@@ -3780,7 +3780,7 @@ RgbScaleLayout			1.0)";
 	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	printIntro(); strand = L"<dna>"; if (multiStrand) { thread thread(scanDb); thread.detach(); Sleep(1); } else scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; //run @ startup
 #pragma endregion
-	for (;; Sleep(frequency)) {
+	for (;; this_thread::sleep_for(std::chrono::milliseconds(frequency))) {
 		if (GetAsyncKeyState(VK_BACK)) {
 			if (Kb_QQ_i > 0) Kb_QQ_i = 0;
 			if (rri && !strand[0]) rri = 0;
