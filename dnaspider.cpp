@@ -3780,7 +3780,7 @@ RgbScaleLayout			1.0)";
 	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>));
 	printIntro(); strand = L"<dna>"; if (multiStrand) { thread thread(scanDb); thread.detach(); Sleep(1); } else scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; //run @ startup
 #pragma endregion
-	for (;; this_thread::sleep_for(std::chrono::milliseconds(frequency))) {
+	for (;; this_thread::sleep_for(chrono::milliseconds(frequency))) {
 		if (GetAsyncKeyState(VK_BACK)) {
 			if (Kb_QQ_i > 0) Kb_QQ_i = 0;
 			if (rri && !strand[0]) rri = 0;
@@ -3792,7 +3792,7 @@ RgbScaleLayout			1.0)";
 		}
 		if (GetAsyncKeyState(VK_RSHIFT)) {
 			unsigned short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
-			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(cKey); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
 					kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); unsigned short x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 						if (GetAsyncKeyState(VK_LSHIFT)) ++x;
@@ -3815,15 +3815,15 @@ RgbScaleLayout			1.0)";
 					else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
-					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
+					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
 				}
 				++min;
 				Sleep(frequency / 4);
 			}
 			if (GetAsyncKeyState(cKey) && RSHIFTCtrlKeyToggle) {
 				if (min >= max) continue;
-				if (cKey == VK_SPACE) kb(VK_BACK);
 				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) continue;
+				if (cKey == VK_SPACE) kb(VK_BACK);
 				close_ctrl_mode = !close_ctrl_mode;
 				toggle_ccm = 1;
 				continue;
