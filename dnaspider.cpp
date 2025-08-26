@@ -3804,7 +3804,8 @@ RgbScaleLayout			1.0)";
 							else { i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; thread.detach(); }
 						}
 						else if (strand[0] != '<') {
-							strand = L"<";
+							if (strand[0] && x == 0) { key(L">"); continue; }
+							else strand = L"<";
 						}
 						else {
 							strand = x > 1 && RSHIFTLSHIFT_Only > 1 ? L"<" : L"";
