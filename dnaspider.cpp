@@ -58,11 +58,10 @@ short PauseKey = 123; //VK_F12
 short ClearStrandKey = 123;
 short reKey = VK_PAUSE; //repeat
 short cKey = VK_SPACE, cKeyMax = 3; //<
-short LSHIFTCtrlKeyMax, RSHIFTCtrlKeyToggleMax;
 short RSHIFTLSHIFT_Only = 1;
+short LSHIFTCtrlKey = 0; //<
+short RSHIFTCtrlKeyToggle = 0;
 bool toggle_ccm = 0; //RSHIFTCtrlKeyToggle close_ctrl_mode=0
-bool LSHIFTCtrlKey = 0; //<
-bool RSHIFTCtrlKeyToggle = 0;
 bool ManualRepeat = 0;//<repeat>
 bool io_Auto_BS = 1;//i*o
 bool NoEscapeOrPause = 0; //<~esc>, <~~esc>
@@ -485,23 +484,23 @@ static void loadSe() {
 		auto er = [se, v]() { showOutsMsg(L"Error in ", settings, L" [" + se + L" " + v + L"]", 0); };
 		switch (x) {
 			case 1536://RSHIFT+LSHIFT_Only:
-				{ if (short x = stoi(v); x >= 0) { RSHIFTLSHIFT_Only = x; rri = 0; } else er(); } break;
+				{ if (check_if_num(v) > L"") { RSHIFTLSHIFT_Only = stoi(v); rri = 0; } else er(); } break;
 			case 1261://LSHIFT+CtrlKey:
-				{ if (short x = stoi(v); x >= 0) LSHIFTCtrlKey = LSHIFTCtrlKeyMax = x; else er(); } break;
+				{ if (check_if_num(v) > L"") LSHIFTCtrlKey = stoi(v); else er(); } break;
 			case 1972://RSHIFT+CtrlKey_Toggle:
-				{ if (short x = stoi(v); x >= 0) RSHIFTCtrlKeyToggle = RSHIFTCtrlKeyToggleMax = x; else er(); } break;
+				{ if (check_if_num(v) > L"") RSHIFTCtrlKeyToggle = stoi(v); else er(); } break;
 			case 1273://ManualRepeat:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ManualRepeat = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") ManualRepeat = stoi(v); else er(); } break;
 			case 959://AutoBs_io:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') io_Auto_BS = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") io_Auto_BS = stoi(v); else er(); } break;
 			case 274://io:
 				{ if (!v[0]) { v[0] = ' '; } io = v; } break;
 			case 2738://ShowMultiStrandElapsedOnly:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showMultiStrandElapsedOnly = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") showMultiStrandElapsedOnly = stoi(v); else er(); } break;
 			case 865://PauseKey:
-				{ if (check_if_num(v)[0]) PauseKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") PauseKey = stoi(v); else er(); } break;
 			case 1543://NoEscapeOrPause:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
+				{ if (check_if_num(v) > L"") { NoEscapeOrPause = stoi(v); GetAsyncKeyState(VK_ESCAPE); } else er(); } break;
 			case 1708://Loop_Insert_Text:
 				{ if (!v[0]) { v[0] = '>'; } if (v[v.length() - 1] != '>') v += '>'; Loop_Insert_Text = v; } break;
 			case 1946://Kb_Key_Print_Screen:
@@ -565,7 +564,7 @@ static void loadSe() {
 			case 768://Kb_Key_2:
 				Kb_Key_2 = v; break;
 			case 769://Unicode: | //Kb_Key_3:
-				{ if (se == L"Unicode:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') Unicode = stoi(v); else er(); }
+				{ if (se == L"Unicode:") { if (check_if_num(v) > L"") Unicode = stoi(v); else er(); }
 				else if (se == L"Kb_Key_3:") Kb_Key_3 = v;
 				} break;
 			case 770://Kb_Key_4:
@@ -701,11 +700,11 @@ static void loadSe() {
 			case 2066://DbMultiLineDelimiter:
 				multiLineDelim = v[0] != '\\' ? v[0] : L'\n'; break;
 			case 764://OutTabs:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
+				{ if (check_if_num(v) > L"") { OutTabs = stoi(v); OutTab = OutTabs ? L"\t" : L""; } else er(); } break;
 			case 1462://ClearStrandKey:
-				{ if (check_if_num(v)[0]) ClearStrandKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") ClearStrandKey = stoi(v); else er(); } break;
 			case 1056://CommaSleep:
-				{ if (check_if_num(v)[0]) { if (stoi(v) <= 0) { v = L"1"; } CommaSleep = stoi(v); } else er(); } break;
+				{ if (check_if_num(v) > L"") { if (stoi(v) <= 0) { v = L"1"; } CommaSleep = stoi(v); } else er(); } break;
 			case 673://Editor:
 				editor = v; break;
 			case 722://Editor1:
@@ -713,9 +712,9 @@ static void loadSe() {
 			case 857://EditorSe:
 				editorSe = v; break;
 			case 680://Assume:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') assume = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") assume = stoi(v); else er(); } break;
 			case 1095://ShowStrand:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showStrand = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") showStrand = stoi(v); else er(); } break;
 			case 847://Database:
 				{ if (v.length() > 0) { database = v; database = regex_replace(database, wregex(L"/"), L"\\"); db = database.substr(database.find_last_of('\\') + 1) + L" - "; } else er(); } break;
 			case 1038://ReplacerDb:
@@ -725,19 +724,19 @@ static void loadSe() {
 				else if (se == L"Kb_Key_Delete:") Kb_Key_Delete = v;
 				} break;
 			case 1354://CloseCtrlMode:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') close_ctrl_mode = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") close_ctrl_mode = stoi(v); else er(); } break;
 			case 1659://CtrlScanOnlyMode:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') qScanOnly = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") qScanOnly = stoi(v); else er(); } break;
 			case 1677://StrandLengthMode:
-				{ if (short x = stoi(v); x >= 0) strandLengthMode = x; else er(); } break;
+				{ if (check_if_num(v) > L"") strandLengthMode = stoi(v); else er(); } break;
 			case 965://Ignore_A-Z:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreAZ = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") ignoreAZ = stoi(v); else er(); } break;
 			case 915://Ignore_0-9: | Kb_Key_Up:
-				{ if (se == L"Ignore_0-9:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignore09 = stoi(v); else er(); }
+				{ if (se == L"Ignore_0-9:") { if (check_if_num(v) > L"") ignore09 = stoi(v); else er(); }
 				else if (se == L"Kb_Key_Up:")Kb_Key_Up = v;
 				} break;
 			case 1172://StartHidden:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') startHidden = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") startHidden = stoi(v); else er(); } break;
 			case 760://CtrlKey: (vk_enum max)
 				{ if (v.find(' ') != string::npos) {
 					wstring max = v.substr(v.find(' ') + 1); if (max.find(' ') != string::npos || max[0] == 0) { er(); break; }
@@ -746,44 +745,44 @@ static void loadSe() {
 				} else cKeyMax = 1;
 				cKey = stoi(v); } break;
 			case 999://ShowIntro:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showIntro = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") showIntro = stoi(v); else er(); } break;
 			case 1324://ShowSettings:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') showSettings = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") showSettings = stoi(v); else er(); } break;
 			case 1004://Frequency:
-				{ if (check_if_num(v)[0]) frequency = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") frequency = stoi(v); else er(); } break;
 			case 964://RepeatKey:
-				{ if (check_if_num(v)[0]) reKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") reKey = stoi(v); else er(); } break;
 			case 1649://AutoBs_RepeatKey:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') AutoBs_RepeatKey = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") AutoBs_RepeatKey = stoi(v); else er(); } break;
 			case 2913://SlightPauseInBetweenConnects:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SlightPauseInBetweenConnects = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") SlightPauseInBetweenConnects = stoi(v); else er(); } break;
 			case 1571://CloseCtrlSpacer:
-				{ if (check_if_num(v)[0]) { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
+				{ if (check_if_num(v) > L"") { if (stoi(v) <= 0) { v = L"1"; } CloseCtrlSpacer = stoi(v); } else er(); } break;
 			case 1467://RgbScaleLayout:
-				{ if (check_if_num(v)[0]) RgbScaleLayout = stod(v); else er(); } break;
+				{ if (check_if_num(v) > L"") RgbScaleLayout = stod(v); else er(); } break;
 			case 1201://MultiStrand:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') multiStrand = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") multiStrand = stoi(v); else er(); } break;
 			case 1098://AutoBs_EscH: | Ignore_F1-F12: | Kb_Key_PgUp:
-				{ if (se == L"AutoBs_EscH:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscHAutoBs = stoi(v); else er(); }
-				else if (se == L"Ignore_F1-F12:") { if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreF1s = stoi(v); else er(); }
+				{ if (se == L"AutoBs_EscH:") { if (check_if_num(v) > L"") EscHAutoBs = stoi(v); else er(); }
+				else if (se == L"Ignore_F1-F12:") { if (check_if_num(v) > L"") ignoreF1s = stoi(v); else er(); }
 				else if (se == L"Kb_Key_PgUp:") Kb_Key_PgUp = v;
 				} break;
 			case 1519://AutoBs_EscComma:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscCommaAutoBs = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") EscCommaAutoBs = stoi(v); else er(); } break;
 			case 1530://AutoBs_EscEqual:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') EscEqualAutoBs = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") EscEqualAutoBs = stoi(v); else er(); } break;
 			case 1723://SeHotReload_CtrlS:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SeHotReload_CtrlS = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") SeHotReload_CtrlS = stoi(v); else er(); } break;
 			case 2098://SeDbClearStrand_CtrlS:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") SeDbClearStrand_CtrlS = stoi(v); else er(); } break;
 			case 1403://Ignore_Arrows:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreArrows = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") ignoreArrows = stoi(v); else er(); } break;
 			case 1001://Kb_Key_Esc:
 				Kb_Key_Esc = v; break;
 			case 1346://Ignore_NumPad:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') ignoreNumPad = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") ignoreNumPad = stoi(v); else er(); } break;
 			case 934://Exit_EscX:
-				{ if (v.length() == 1 && v[0] == '1' || v[0] == '0') enableEscX = stoi(v); else er(); } break;
+				{ if (check_if_num(v) > L"") enableEscX = stoi(v); else er(); } break;
 		}
 		if (Kb_Key_Print_Screen[0] || Kb_Key_Space[0] || Kb_Key_Tab[0] || Kb_Key_Left_Shift[0] || Kb_Key_Right_Shift[0] || Kb_Key_Left_Ctrl[0] || Kb_Key_Right_Ctrl[0] || Kb_Key_Enter[0] || Kb_Key_Caps[0] || Kb_Key_Grave_Accent[0] || Kb_Key_Minus[0] || Kb_Key_Equal[0] || Kb_Key_Left_Bracket[0] || Kb_Key_Right_Bracket[0] || Kb_Key_Backslash[0] || Kb_Key_Semicolon[0] || Kb_Key_Quote[0] || Kb_Key_Comma[0] || Kb_Key_Period[0] || Kb_Key_Forwardslash[0] || Kb_Key_Menu[0] || Kb_Key_Insert[0] || Kb_Key_Delete[0] || Kb_Key_Home[0] || Kb_Key_End[0] || Kb_Key_PgUp[0] || Kb_Key_PgDn[0])
 			ignoreOtherKeys = 0;
@@ -3774,7 +3773,6 @@ RgbScaleLayout			1.0)";
 			}
 		}
 	}
-	LSHIFTCtrlKeyMax = LSHIFTCtrlKey == 1 ? 3 : LSHIFTCtrlKey; RSHIFTCtrlKeyToggleMax = RSHIFTCtrlKeyToggle == 1 ? 3 : RSHIFTCtrlKeyToggle;
 	loadSe();
 	if (startHidden)ShowWindow(GetConsoleWindow(), SW_HIDE);
 	SetConsoleOutputCP(CP_UTF8); wcout.imbue(locale(wcout.getloc(), new codecvt_utf8_utf16<wchar_t>));
@@ -3791,7 +3789,7 @@ RgbScaleLayout			1.0)";
 			continue;
 		}
 		if (GetAsyncKeyState(VK_RSHIFT)) {
-			unsigned short min = 0, max = RSHIFTCtrlKeyToggleMax == 1 ? 3 : RSHIFTCtrlKeyToggleMax;
+			unsigned short min = 0;
 			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
 					kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); unsigned short x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
@@ -3822,7 +3820,7 @@ RgbScaleLayout			1.0)";
 				Sleep(frequency / 4);
 			}
 			if (GetAsyncKeyState(cKey) && RSHIFTCtrlKeyToggle) {
-				if (min >= max) continue;
+				if (min >= RSHIFTCtrlKeyToggle) continue;
 				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) continue;
 				if (cKey == VK_SPACE) kb(VK_BACK);
 				close_ctrl_mode = !close_ctrl_mode;
@@ -3835,10 +3833,10 @@ RgbScaleLayout			1.0)";
 		if (GetAsyncKeyState(VK_LSHIFT)) {
 			GetAsyncKeyState(VK_ESCAPE); while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 				if (LSHIFTCtrlKey) {
-					GetAsyncKeyState(cKey); short min = 0, max = LSHIFTCtrlKeyMax == 1 ? 3 : LSHIFTCtrlKeyMax; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
+					GetAsyncKeyState(cKey); short min = 0; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 						++min;
 						if (GetAsyncKeyState(cKey)) {
-							if (min >= max) { Sleep(frequency / 4); continue; } GetAsyncKeyState(VK_LSHIFT);
+							if (min >= LSHIFTCtrlKey) { Sleep(frequency / 4); continue; } GetAsyncKeyState(VK_LSHIFT);
 							if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); rri = 1; while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 4); } break;
 						}
 						Sleep(frequency / 4);
