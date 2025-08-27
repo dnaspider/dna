@@ -47,7 +47,7 @@ size_t i = 0;
 size_t qqLen = 2;
 int rri = 0; //++RSHIFTLSHIFT_Only
 int CommaSleep = 128;
-int frequency = 128; //>> ms response -> vk_
+int frequency = 160; //>> ms response -> vk_
 int speed = 0; //<< 
 int qxc = 0, qyc = 0;//<rp>
 int qxcc = 0, qycc = 0;//cc
@@ -3405,9 +3405,10 @@ L"Interface\n"
 "X+ESC\t\t\t"			"Exit (Or press: CTRL+C or CTRL+BREAK)\n"
 "F11\t\t\t"				"Fullscreen\n"
 "H+ESC\t\t\t"			"Toggle visibility\n"
+"L+ESC\t\t\t"			"Toggle RSHIFT+LSHIFT_Only: 2\n"
 << enm(cKey) <<			L"\t\tToggle < or run (>) (se.txt CtrlKey: " << to_wstring((short)cKey) << " | Or try CtrlKey: 145, RepeatKey: 19, PauseKey: 123, ClearStrandKey: 123 instead/SCRLK, PAUSE, F12)\n"
 "COMMA+ESC\t\t"			"< (>)\n"
-"RSHIFT+LSHIFT\t\t"		"Toggle <\n"
+"RSHIFT+LSHIFT\t\t"		"Toggle < or double press for <\n"
 "LSHIFT+CtrlKey\t\t"	"Hard < (se.txt LSHIFT+CtrlKey: 1 | Increase for more time. 0 for off)\n"
 "RSHIFT+CtrlKey\t\t"	"Toggle se.txt CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off)\n"
 << enm(ClearStrandKey) << " (LSHIFT)\t\tClear/Reset strand (se.txt ClearStrandKey: " << to_wstring((short)ClearStrandKey) << ")\n"
@@ -3796,22 +3797,17 @@ RgbScaleLayout			1.0)";
 						if (GetAsyncKeyState(VK_LSHIFT)) ++x;
 						Sleep(1);
 					}
-					++rri; if (strand[0] || rri > 1) {
-						if (strand[0] == '<' && strand.length() > 1 || RSHIFTLSHIFT_Only == 2 && strand[0] && strand != L"<") {
-							if (strand[0] && x == 0) { key(L">"); continue; }
-							else strand = L"<";
-						}
-						else if (strand[0] != '<') {
-							if (strand[0] && x == 0) { key(L">"); continue; }
-							else strand = L"<";
-						}
-						else {
-							strand = x > 1 && RSHIFTLSHIFT_Only > 1 ? L"<" : L"";
-						}
-						if (showStrand) { wcout.flush().clear(); } prints(); continue;
+					++rri; if (!strand[0] && rri > 1) {
+						if (x) {}
+						else { strand = L"<"; prints(); continue; }
 					}
-					if (strandLengthMode) { if (RSHIFTLSHIFT_Only > 1) { rri++; strand = x > 1 ? L"<" : L""; } else { strand = L"<"; rri = 0; } prints(); continue; }
-					else { strand = qScanOnly ? L"<" : L""; } prints(); continue;
+					if (x) strand = L"<";
+					else {
+						if (strand[0] && strand != L"<") { key(L">"); prints(); continue; }
+						if (RSHIFTLSHIFT_Only > 1) strand = L"";
+						else strand = strand[0] == '<' ? L"" : L"<";
+					}
+					if (showStrand) { wcout.flush().clear(); } prints(); continue;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
 					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
@@ -4002,6 +3998,15 @@ RgbScaleLayout			1.0)";
 				clearAllKeys();
 				continue;
 			}
+			GetAsyncKeyState(76); if (GetAsyncKeyState(76)) {
+				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
+				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
+				static unsigned short escL = RSHIFTLSHIFT_Only;
+				if (RSHIFTLSHIFT_Only) RSHIFTLSHIFT_Only = 0;
+				else RSHIFTLSHIFT_Only = escL ? escL : !qScanOnly + close_ctrl_mode;
+				strand.clear(); clearAllKeys(); prints();
+				continue;
+			} //esc + L
 			GetAsyncKeyState(0x58); if (GetAsyncKeyState(0x58)) { if (enableEscX) { kb(VK_BACK); return 0; } } //esc + x
 			GetAsyncKeyState(0x48); if (GetAsyncKeyState(0x48)) {//esc + h
 				if (EscHAutoBs) { kb(VK_BACK); Sleep(1); } GetAsyncKeyState(VK_ESCAPE);
@@ -4009,7 +4014,14 @@ RgbScaleLayout			1.0)";
 				if (showStrand && !qScanOnly) showOutsMsg(L"", OutsTemplate, strand + L"\n", 1);
 				continue;
 			}
-			GetAsyncKeyState(VK_OEM_2); if (GetAsyncKeyState(VK_OEM_2)) { printCtrls(); continue; } //? + esc
+			GetAsyncKeyState(VK_OEM_2); if (GetAsyncKeyState(VK_OEM_2)) {
+				kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE);
+				kb(VK_BACK); GetAsyncKeyState(VK_BACK);
+				printCtrls();
+				ShowWindow(GetConsoleWindow(), SW_SHOW);
+				SetForegroundWindow(GetConsoleWindow());
+				continue;
+			} //? + esc
 			if (Kb_Key_Esc[0]) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); key(Kb_Key_Esc); }
 			continue;
 		}
