@@ -3838,7 +3838,7 @@ RgbScaleLayout			1.0)";
 							prints();
 							rri = 1;
 							while (GetAsyncKeyState(cKey) != 0) Sleep(frequency / 4);
-							break;
+							continue;
 						}
 						Sleep(frequency / 4);
 					}
