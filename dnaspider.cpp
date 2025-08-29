@@ -1407,7 +1407,6 @@ void scanDb() {
 			}
 			else {
 				switch (tail[0]) {//set_tail
-					if (multiStrand) tail = multi.t;
 				case ':':
 					tail = tail.substr(1);
 					if (tail[0] == '>') tail = tail.substr(1);
