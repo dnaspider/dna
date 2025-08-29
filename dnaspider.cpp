@@ -3409,8 +3409,8 @@ L"Interface\n"
 << enm(cKey) <<			L"\t\tToggle < or run (>) (se.txt CtrlKey: " << to_wstring((short)cKey) << " | Or try CtrlKey: 145, RepeatKey: 19, PauseKey: 123, ClearStrandKey: 123 instead/SCRLK, PAUSE, F12)\n"
 "COMMA+ESC\t\t"			"< (>)\n"
 "RSHIFT+LSHIFT\t\t"		"Toggle < or double press for <\n"
-"LSHIFT+CtrlKey\t\t"	"Hard < (se.txt LSHIFT+CtrlKey: 1 | Increase for more time. 0 for off)\n"
-"RSHIFT+CtrlKey\t\t"	"Toggle se.txt CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 1 | Increase for more time. 0 for off)\n"
+"LSHIFT+CtrlKey\t\t"	"Clear/Reset strand (se.txt LSHIFT+CtrlKey: 9 | Increased for more time. 0 for off)\n"
+"RSHIFT+CtrlKey\t\t"	"Toggle se.txt CloseCtrlMode (se.txt RSHIFT+CtrlKey_Toggle: 9 | Increased for more time. 0 for off)\n"
 << enm(ClearStrandKey) << " (LSHIFT)\t\tClear/Reset strand (se.txt ClearStrandKey: " << to_wstring((short)ClearStrandKey) << ")\n"
 << enm(PauseKey) <<		"\t\t\tPause/Resume\n"
 "P+ESC\t\t\t"			"<xy:>\n"
@@ -3831,9 +3831,15 @@ RgbScaleLayout			1.0)";
 				if (LSHIFTCtrlKey) {
 					GetAsyncKeyState(cKey); short min = 0; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 						++min;
-						if (GetAsyncKeyState(cKey)) {
+						if (GetAsyncKeyState(cKey)) { //lshift + ctrlKey
 							if (min >= LSHIFTCtrlKey) { Sleep(frequency / 4); continue; } GetAsyncKeyState(VK_LSHIFT);
-							if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); strand = qScanOnly ? L"<" : L""; prints(); rri = 1; while (GetAsyncKeyState(cKey) != 0) { Sleep(frequency / 4); } break;
+							if (cKey == VK_SPACE) kb(VK_BACK);
+							clearAllKeys();
+							strand = strand[0] == '<' ? L"<" : L"";
+							prints();
+							rri = 1;
+							while (GetAsyncKeyState(cKey) != 0) Sleep(frequency / 4);
+							break;
 						}
 						Sleep(frequency / 4);
 					}
@@ -3850,21 +3856,22 @@ RgbScaleLayout			1.0)";
 			GetAsyncKeyState(VK_RCONTROL); GetAsyncKeyState(83); while (GetAsyncKeyState(VK_LCONTROL) != 0) {
 				if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 4); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } continue; }//rctrl+lctrl repeat
 				while (GetAsyncKeyState(VK_LCONTROL) != 0) {
-				if (GetAsyncKeyState(83)) { while (GetAsyncKeyState(83) != 0) { Sleep(frequency / 3); } 
-					if (SeHotReload_CtrlS && (FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())) {
-						loadSe(); clearAllKeys(); strand.clear(); prints();
-					}
-					else if (SeDbClearStrand_CtrlS && (FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())) {
-						clearAllKeys(); strand.clear(); prints();
-					}
-					while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); }
-					break;
-				}//lctrl+s
-				Sleep(frequency / 4); 
-			}			
+					if (GetAsyncKeyState(83)) { while (GetAsyncKeyState(83) != 0) { Sleep(frequency / 3); } 
+						if (SeHotReload_CtrlS && (FindWindowW(0, (editorSe).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (se + editor1).c_str()) == GetForegroundWindow())) {
+							loadSe(); clearAllKeys(); strand.clear(); prints();
+						}
+						else if (SeDbClearStrand_CtrlS && (FindWindowW(0, (editorDb).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor).c_str()) == GetForegroundWindow() || FindWindowW(0, (db + editor1).c_str()) == GetForegroundWindow())) {
+							clearAllKeys(); strand.clear(); prints();
+						}
+						while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); }
+						break;
+					}//lctrl+s
+					Sleep(frequency / 4); 
+				}
 				Sleep(frequency / 4);
 			}
-			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;continue;
+			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
+			continue;
 		}
 		if (GetAsyncKeyState(cKey) && cKeyMax) {//toggle <
 			if (cKeyMax > 0 || cKey == VK_RCONTROL) {
@@ -3938,11 +3945,10 @@ RgbScaleLayout			1.0)";
 			continue;
 		}
 		if (GetAsyncKeyState(ClearStrandKey)) {
-			Kb_QQ_i = 0;
-			if (!strand[0]) continue;
-			if (strand == L"<") strand.clear();
-			else if (strand[0] == '<') strand = L"<";
-			else strand.clear();
+			if (Kb_QQ_i) Kb_QQ_i = 0;
+			if (!strand[0] || strand == L"<") continue;
+			clearAllKeys();
+			strand = strand[0] == '<' ? L"<" : L"";
 			prints();
 			continue; 
 		}
