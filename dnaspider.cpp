@@ -3799,12 +3799,11 @@ RgbScaleLayout			1.0)";
 						while (GetAsyncKeyState(VK_LSHIFT) != 0)
 							Sleep(1);
 					}
-					if (!strand[0] || x > 1) strand = L"<";
-					else {
-						if (strand[0] && strand != L"<") { key(L">"); prints(); ex = 1; break; }
-						if (RSHIFTLSHIFT_Only > 1) strand = L"";
-						else strand = strand[0] == '<' ? L"" : L"<";
-					}
+					if (strand[0] && strand != L"<") { key(L">"); prints(); ex = 1; break; }
+					else if (x > 1) strand = L"<";
+					else if (!strand[0]) { strand = RSHIFTLSHIFT_Only > 1 && rri == 1 ? L"" : L"<"; }
+					else if (RSHIFTLSHIFT_Only > 1) strand = L"";
+					else strand = strand[0] == '<' ? L"" : L"<";
 					prints(); break;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
