@@ -212,9 +212,9 @@ static void shftRelease() {
 	SendInput(1, &ip, sizeof(INPUT));
 	ip.ki.wVk = VK_RSHIFT;
 	SendInput(1, &ip, sizeof(INPUT));
-	if (shft) { shft = false; }
-	if (Kb_Key_Left_Shift[0]) GetAsyncKeyState(VK_LSHIFT);
-	if (Kb_Key_Right_Shift[0]) GetAsyncKeyState(VK_RSHIFT);
+	if (shft) shft = false;
+	GetAsyncKeyState(VK_LSHIFT);
+	GetAsyncKeyState(VK_RSHIFT);
 }
 
 static void printq() { kbHold(VK_LSHIFT); kb('<'); shftRelease(); }
@@ -3789,70 +3789,81 @@ RgbScaleLayout			1.0)";
 			continue;
 		}
 		if (GetAsyncKeyState(VK_RSHIFT)) {
-			unsigned short min = 0;
-			GetAsyncKeyState(VK_ESCAPE); GetAsyncKeyState(VK_LSHIFT); while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+			unsigned short min = 0; bool ex = 0;
+			while (GetAsyncKeyState(VK_RSHIFT) != 0) {
 				if (GetAsyncKeyState(VK_LSHIFT)) { //RSHIFT+LSHIFT <
-					kbRelease(VK_LSHIFT); GetAsyncKeyState(VK_LSHIFT); unsigned short x = 0; while (GetAsyncKeyState(VK_RSHIFT) != 0) {
-						if (GetAsyncKeyState(VK_LSHIFT)) ++x;
-						Sleep(1);
+					++rri; unsigned short x = 0;
+					while (GetAsyncKeyState(VK_RSHIFT) != 0) {
+						if (GetAsyncKeyState(VK_LSHIFT))
+							++x;
+						while (GetAsyncKeyState(VK_LSHIFT) != 0)
+							Sleep(1);
 					}
-					++rri; if (!strand[0] && rri > 1) {
-						if (x) {}
-						else { strand = L"<"; prints(); continue; }
-					}
-					if (x) strand = L"<";
+					if (!strand[0] || x > 1) strand = L"<";
 					else {
-						if (strand[0] && strand != L"<") { key(L">"); prints(); continue; }
+						if (strand[0] && strand != L"<") { key(L">"); prints(); ex = 1; break; }
 						if (RSHIFTLSHIFT_Only > 1) strand = L"";
 						else strand = strand[0] == '<' ? L"" : L"<";
 					}
-					if (showStrand) { wcout.flush().clear(); } prints(); continue;
+					prints(); break;
 				}
 				if (GetAsyncKeyState(VK_ESCAPE)) { //rshift + r + esc
-					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); qq = L"<rgbxy:>"; getRGB(1, 1); continue; }
+					if (GetAsyncKeyState(82)) {
+						kb(VK_BACK);
+						qq = L"<rgbxy:>"; getRGB(1, 1);
+						ex = 1; break;
+					}
+				}
+				if (GetAsyncKeyState(cKey) && RSHIFTCtrlKeyToggle) {
+					if (min >= RSHIFTCtrlKeyToggle) { ex = 1; break; }
+					if (cKey == VK_SPACE) kb(VK_BACK);
+					close_ctrl_mode = !close_ctrl_mode;
+					toggle_ccm = 1;
+					ex = 1; break;
 				}
 				++min;
 				Sleep(frequency / 4);
 			}
-			if (GetAsyncKeyState(cKey) && RSHIFTCtrlKeyToggle) {
-				if (min >= RSHIFTCtrlKeyToggle) continue;
-				GetAsyncKeyState(VK_RSHIFT); if (GetAsyncKeyState(VK_RSHIFT)) continue;
-				if (cKey == VK_SPACE) kb(VK_BACK);
-				close_ctrl_mode = !close_ctrl_mode;
-				toggle_ccm = 1;
-				continue;
-			}
+			if (ex) continue;
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LSHIFT)) {
-			GetAsyncKeyState(VK_ESCAPE); while (GetAsyncKeyState(VK_LSHIFT) != 0) {
+			bool ex = 0; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 				if (LSHIFTCtrlKey) {
-					GetAsyncKeyState(cKey); short min = 0; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
+					short min = 0; while (GetAsyncKeyState(VK_LSHIFT) != 0) {
 						++min;
 						if (GetAsyncKeyState(cKey)) { //lshift + ctrlKey
-							if (min >= LSHIFTCtrlKey) { Sleep(frequency / 4); continue; } GetAsyncKeyState(VK_LSHIFT);
+							if (min > LSHIFTCtrlKey) { Sleep(frequency / 4); continue; }
 							if (cKey == VK_SPACE) kb(VK_BACK);
 							clearAllKeys();
 							strand = strand[0] == '<' ? L"<" : L"";
 							prints();
 							rri = 1;
 							while (GetAsyncKeyState(cKey) != 0) Sleep(frequency / 4);
-							break;
+							kbRelease(VK_LSHIFT);
+							ex = 1; break;
 						}
+						if (GetAsyncKeyState(VK_ESCAPE)) break;
 						Sleep(frequency / 4);
 					}
 				}
+				if (ex) break;
 				if (GetAsyncKeyState(VK_ESCAPE)) { //lshift + r + esc
-					GetAsyncKeyState(82); if (GetAsyncKeyState(82)) { kbRelease(VK_ESCAPE); GetAsyncKeyState(VK_ESCAPE); kb(VK_BACK); GetAsyncKeyState(VK_BACK); out(L"<shift>,<shift->rgb: " + getRGB() + L" " + qx + L" " + qy + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">")); continue; }
+					if (GetAsyncKeyState(82)) {
+						kbRelease(VK_ESCAPE); kb(VK_BACK);
+						out(L"<shift>,<shift->rgb: " + getRGB() + L" " + qx + L" " + qy + (Loop_Insert_Text > L"" ? Loop_Insert_Text : L">"));
+						ex = 1;	break;
+					}
 				}
 				Sleep(frequency / 4);
 			}
+			if (ex) continue;
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
 		}
 		if (GetAsyncKeyState(VK_LCONTROL)) {
-			GetAsyncKeyState(VK_RCONTROL); GetAsyncKeyState(83); while (GetAsyncKeyState(VK_LCONTROL) != 0) {
+			GetAsyncKeyState(VK_RCONTROL); GetAsyncKeyState(83); bool ex = 0; while (GetAsyncKeyState(VK_LCONTROL) != 0) {
 				if (GetAsyncKeyState(VK_RCONTROL)) { while (GetAsyncKeyState(VK_RCONTROL) != 0) { Sleep(frequency / 4); } GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {} else { repeat(); } continue; }//rctrl+lctrl repeat
 				while (GetAsyncKeyState(VK_LCONTROL) != 0) {
 					if (GetAsyncKeyState(83)) { while (GetAsyncKeyState(83) != 0) { Sleep(frequency / 3); } 
@@ -3863,80 +3874,48 @@ RgbScaleLayout			1.0)";
 							clearAllKeys(); strand.clear(); prints();
 						}
 						while (GetAsyncKeyState(VK_CONTROL) != 0) { Sleep(frequency / 3); }
-						break;
+						ex = 1; break;
 					}//lctrl+s
 					Sleep(frequency / 4); 
 				}
+				if (ex) break;
 				Sleep(frequency / 4);
 			}
+			if (ex) continue;
 			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
 			continue;
 		}
 		if (GetAsyncKeyState(cKey) && cKeyMax) {//toggle <
-			if (cKeyMax > 0 || cKey == VK_RCONTROL) {
-				short min = 0, max = cKeyMax == 1 ? 3 : cKeyMax; GetAsyncKeyState(VK_LCONTROL); GetAsyncKeyState(cKey); while (GetAsyncKeyState(cKey) != 0) { ++min;
-					if (unsigned char rclc = 0; GetAsyncKeyState(VK_LCONTROL) && cKey == 163) {
-						while (GetAsyncKeyState(cKey) != 0) {
-							GetAsyncKeyState(VK_LCONTROL); if (GetAsyncKeyState(VK_LCONTROL)) {
-								rclc += 1;
-								while (GetAsyncKeyState(VK_LCONTROL) != 0) { Sleep(frequency / 4); } 
-							}
-							Sleep(frequency / 4);
-						}
-						wstring x = L""; for (unsigned char i = 0; i < rclc; ++i) { x += reTail; }
-						reTail = x;
-						repeat();
-						rclc = 0; min = max + 1;
-					}//rctrl+lctrl
-					Sleep(frequency / 4);
+			unsigned short x = 0, min = 0;
+			while (GetAsyncKeyState(cKey) != 0) {
+				if (GetAsyncKeyState(VK_LCONTROL)) {
+					while (GetAsyncKeyState(VK_LCONTROL) != 0) Sleep(1);
+					++x;
 				}
-				if (min >= max) { clearAllKeys(); continue; }
+				++min;
+				if (min > 1) Sleep(frequency / 4);
+			}
+			if (x) { //ctrlKey + lctrl
+				if (GetAsyncKeyState(VK_ESCAPE)) continue;
+				wstring r = L""; for (unsigned char i = 0; i < x; ++i) r += reTail;
+				reTail = r;
+				repeat();
+				continue;
 			}
 			if (RSHIFTLSHIFT_Only && !strand[0] && !rri) continue;
-			if (strand[0] == '<') {
-				if (close_ctrl_mode) {//<x>	
-					if (strand.find('>') != std::string::npos) strand.clear();
-					else {
-						if (strand.length() > 1) {
-							strand.append(L">"); prints(); if (cKey == VK_SPACE) kb(VK_BACK);
-							if (multiStrand) {
-								i = -1; thread thread(scanDb); Sleep(CloseCtrlSpacer); thread.detach();
-							} else {
-								scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue;
-							}
-						}
-						else strand.clear();
-					}
-				}
-				else if (!close_ctrl_mode) { if (cKey == VK_SPACE) { kb(VK_BACK); } strand.append(L">"); if (strand != L"<>") { prints(); scanDb(); } }
-				if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
-			}
-			else if (close_ctrl_mode && strand.length() > 0 && strand.find('>') == std::string::npos) {//x>
-				if (cKey == VK_SPACE) { kb(VK_BACK); }
-				strand.append(L">"); prints();
-				if (strand[0] != '<') {
-					if (multiStrand) {
-						i = -1; thread thread(scanDb); thread.detach(); Sleep(CloseCtrlSpacer); if (!noClearStrand) { strand.clear(); } noClearStrand = 0;
-					} else {
-						scanDb(); if (!noClearStrand) { strand.clear(); } noClearStrand = 0; prints(); continue;
-					}
-				}
-			}//reg
+			if (min > cKeyMax) {}
 			else {
-				if (close_ctrl_mode && strand.length() > 0) strand.clear();
+				if (cKey == VK_SPACE) kb(VK_BACK);
+				if (!strand[0]) strand = L"<";
 				else {
-					if (RSHIFTLSHIFT_Only) {
-						if (rri) {
-							if (strand == L"" && qScanOnly || strand == L"<") { rri = 0; strand.clear(); continue; }
-							strand = L"<"; if (cKey == VK_SPACE) { kb(VK_BACK); } clearAllKeys(); prints(); continue;
-						}
-						if (strand[0]) { clearAllKeys(); strand.clear(); prints(); }
-						continue;
-					}
-					if (qScanOnly) { clearAllKeys(); } strand = L"<";
+					if (strand[0] && strand != L"<") { key(L">"); prints(); continue; }
+					if (RSHIFTLSHIFT_Only > 1) strand = L"";
+					else strand = strand[0] == '<' ? L"" : L"<";
 				}
+				prints();
 			}
-			if (showStrand) { wcout.flush().clear(); } prints(); clearAllKeys();
+			clearAllKeys(); if (Kb_QQ_i) Kb_QQ_i = 0;
+			continue;
 		}
 		if (GetAsyncKeyState(reKey)) { //repeat - scroll_lock
 			if (AutoBs_RepeatKey) kb(VK_BACK);
@@ -4009,6 +3988,7 @@ RgbScaleLayout			1.0)";
 				static unsigned short escL = RSHIFTLSHIFT_Only;
 				if (RSHIFTLSHIFT_Only) RSHIFTLSHIFT_Only = 0;
 				else RSHIFTLSHIFT_Only = escL ? escL : !qScanOnly + close_ctrl_mode;
+				if (!RSHIFTLSHIFT_Only) Sleep(frequency);
 				strand.clear(); clearAllKeys(); prints();
 				continue;
 			} //esc + L
