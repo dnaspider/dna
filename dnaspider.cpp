@@ -3797,7 +3797,8 @@ RgbScaleLayout			1.0)";
 						if (GetAsyncKeyState(VK_LSHIFT))
 							++x;
 						while (GetAsyncKeyState(VK_LSHIFT) != 0)
-							Sleep(1);
+							Sleep(frequency / 4);
+						Sleep(1);
 					}
 					if (strand[0] && strand != L"<") { key(L">"); prints(); ex = 1; break; }
 					else if (x > 1) strand = L"<";
@@ -3814,7 +3815,7 @@ RgbScaleLayout			1.0)";
 					}
 				}
 				if (GetAsyncKeyState(cKey) && RSHIFTCtrlKeyToggle) {
-					if (min >= RSHIFTCtrlKeyToggle) { ex = 1; break; }
+					if (min > RSHIFTCtrlKeyToggle) { ex = 1; break; }
 					if (cKey == VK_SPACE) kb(VK_BACK);
 					close_ctrl_mode = !close_ctrl_mode;
 					toggle_ccm = 1;
@@ -3892,7 +3893,7 @@ RgbScaleLayout			1.0)";
 					++x;
 				}
 				++min;
-				if (min > 1) Sleep(frequency / 4);
+				Sleep(frequency / 4);
 			}
 			if (x) { //ctrlKey + lctrl
 				if (GetAsyncKeyState(VK_ESCAPE)) continue;
