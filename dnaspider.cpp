@@ -1580,6 +1580,7 @@ void scanDb() {
 						if (b) {
 							tail = x + qq.substr(qq.find('>') + 1);
 							i = -1;
+							if (speed > 0) sleep = 0;
 							ic = multi.icp;
 						}
 						else rei();
@@ -1796,7 +1797,7 @@ void scanDb() {
 								}
 
 								if (multiStrand) {
-									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; i += qqC.find('>'); } //rei
+									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; if (linkC[linkC.length() - 1] == ',') { /*false, retry*/ } else i += qqC.find('>'); } //rei
 								}
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
@@ -1810,6 +1811,7 @@ void scanDb() {
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
+										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == ',') { --i; break; }// false, retry
 									}
 									f(); break;
 								}
@@ -2114,7 +2116,7 @@ void scanDb() {
 								}
 								
 								if (multiStrand) {
-									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; i += qqC.find('>'); } //rei
+									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; if (linkC[linkC.length() - 1] == ',') { /*false, retry*/ } else i += qqC.find('>'); } //rei
 								}
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
@@ -2128,6 +2130,7 @@ void scanDb() {
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { rei(); } break; }//false, continue
+										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == ',') { --i; break; }// false, retry
 									}
 									f(); break;
 								}
@@ -2337,7 +2340,7 @@ void scanDb() {
 								}
 							
 								if (multiStrand) {
-									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; i += qqC.find('>'); } //rei
+									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; if (linkC[linkC.length() - 1] == ',') { /*false, retry*/ } else i += qqC.find('>'); } //rei
 								}
 								CloseClipboard();
 								if (size >= length) {//fail
@@ -2352,6 +2355,7 @@ void scanDb() {
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue | Use < in the false slot for continue | <ifcb:a,x,ms,link: <>
+										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == ',') { --i; break; }// false, retry | Use , in false slot to retry
 									}
 									f(); break;
 								}
@@ -2575,7 +2579,7 @@ void scanDb() {
 									}
 								}
 								if (multiStrand) {
-									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; i += qqC.find('>'); } //rei
+									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { if (linkC[linkC.length() - 1] == ',') { /*false, retry*/ } else tail = multi.t; i += qqC.find('>'); } //rei
 								}
 								if (size >= length) {//fail
 									if (linkC.length() > 0) {
@@ -2589,6 +2593,7 @@ void scanDb() {
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
+										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == ',') { --i; break; }// false, retry
 									}
 									f(); break;
 								}
@@ -2913,7 +2918,7 @@ void scanDb() {
 								}
 
 								if (multiStrand) {
-									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; i += qqC.find('>'); } //rei
+									i = multi.i_; qqC = multi.q; linkC = multi.l; if (!mF) { tail = multi.t; if (linkC[linkC.length() - 1] == ',') { /*false, retry*/ } else i += qqC.find('>'); } //rei
 								}
 								if (size >= length) {
 									if (linkC.length() > 0) {
@@ -2927,6 +2932,7 @@ void scanDb() {
 											if (speed > 0) sleep = 0; re = L" "; i = -1; fail = 1; break;
 										}
 										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == '<') { if (multiStrand) { rei(multi); } else { i = 0; rei(); } break; }//false, continue
+										else if (linkC.find(' ') != string::npos && linkC[linkC.length() - 1] == ',') { --i; break; }// false, retry
 									}
 									f(); break;
 								}
@@ -2960,6 +2966,7 @@ void scanDb() {
 									break;
 								}
 
+								w = w.substr(0, w.find('>') + 1);
 								wstring b = L""; if (w[w.size() - 2] == ',' || w[w.size() - 2] == '~') { 
 									b = w[w.size() - 2];
 								}
@@ -3218,14 +3225,15 @@ void scanDb() {
 					case'x':
 						switch (qq[2]) {
 						case 'y':
-							if (testqqb(L"<xy:")) {
+							if (testqqb(L"<xy:") || testqqb(L"<xy~:")) {
 								if (multiLineDelim[0] != '\\' && qx[0] == '\n' || qx[0] == '\t' || qy[0] == '\n' || qy[0] == '\t') {
 									qx = regex_replace(qx, wregex(L"\n"), L""); qx = regex_replace(qx, wregex(L"\t"), L"");
 									qy = regex_replace(qy, wregex(L"\n"), L""); qy = regex_replace(qy, wregex(L"\t"), L"");
 								}
-								if (qx[0] == '.' || qy[0] == '.') {//Use . for current pt | <xy:. 0>  <t-<ifxy:0 . | . 0 | . 864 | 1638 .,1,1000,:>1
+								if (qx[0] == '.' || qy[0] == '.' || qq[3] == '~') {//Use . for current pt | <xy:. 0>  <t-<ifxy:0 . | . 0 | . 864 | 1638 .,1,1000,:>1
 									POINT pt; GetCursorPos(&pt);
-									qx == L"." ? qx = to_wstring(pt.x) : qy = to_wstring(pt.y);
+									if (qq[3] == '~') { qxcc = pt.x; qycc = pt.y; } //for <~~>
+									else { qx == L"." ? qx = to_wstring(pt.x) : qy = to_wstring(pt.y); }
 								}
 								SetCursorPos(stoi(qx), stoi(qy)); rei();
 							}
@@ -3510,6 +3518,7 @@ L"Interface\n"
 "\t\t\t"				"Use \" \" to expand connect option: true- false-\n"
 "\t\t\t"				"Use < to reconnect: <true- <false-\n"
 "\t\t\t"				"Use < in true or false slot for continue\n"
+"\t\t\t"				"Use , in false slot for retry\n"
 "\t\t\t"				"Use ' or '?' after : to print to console\n"
 "\t\t\t"				"<test-><app:'Calculator,1,150,true- false->\n"
 "\t\t\t"				"<true->1+1<enter>\n"
